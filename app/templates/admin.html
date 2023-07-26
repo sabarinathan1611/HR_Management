@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Page</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <!-- Font Awesome CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+<nav class="sidebar" id="sidebar">
+  <ul class="navbar-nav">
+    <li index="0" class="nav-item ">
+      <a class="btn  mt-3 btn-primary nav-link" href="#"><i class="fas fa-users"></i> &nbsp; All</a>
+    </li>
+    <li index="1" class="nav-item ">
+        <a class="btn  mt-3 btn-success nav-link" href="#"><i class="fas fa-check"></i> &nbsp; Present</a>
+    </li>
+    <li index="2" class="nav-item">
+        <a class="btn  mt-3 btn-danger nav-link" href="#"><i class="fas fa-times"></i> &nbsp; Absent</a>
+    </li>
+  </ul>
+</nav>
+
+<div id="menubtn" class="sidebar-toggle-btn" onclick="toggleSidebar()">
+ 
+</div>
+
+<main role="main" class="container mt-5">
+    <div class="filters">
+        <input placeholder="11/08/2003" type="text" name="from" id="from"> to <input placeholder="15/08/2003" type="text" name="to" id="to">
+
+        <input type="text" name="filter" id="filter" placeholder="eg: 0001 or vinoth">
+    </div>
+  <div class="row justify-content-center">
+    
+    <div class="col-md-8">
+      <table class="table table-bordered table-hover">
+        <thead>
+          <tr>
+            <th>id</th>
+            <th>name</th>
+            <th>attendance</th>
+            <th>date</th>
+            <th>work type</th>
+            <th>wages per Day</th>
+        </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="id">0001</td>
+            <td class="name">vinoth</td>
+            <td class="attend">present</td>
+            <td class="date">11/08/2003</td>
+            <td class="dept">daily</td>
+            <td class="wage">750</td>
+          </tr>
+          <tr>
+            <td class="id">0012</td>
+            <td class="name">sabari</td>
+            <td class="attend">absent</td>
+            <td class="date">09/08/2003</td>
+            <td class="dept">monthly</td>
+            <td class="wage">1000</td>
+          </tr>
+          <tr>
+            <td class="id">0113</td>
+            <td class="name">harish</td>
+            <td class="attend">present</td>
+            <td class="date">15/08/2003</td>
+            <td class="dept">daily</td>
+            <td class="wage">750</td>
+          </tr>
+          <tr>
+            <td class="id">1114</td>
+            <td class="name">muthu kumar</td>
+            <td class="attend">absent</td>
+            <td class="date">01/08/2003</td>
+            <td class="dept">monthly</td>
+            <td class="wage">1000</td>
+          </tr>
+
+          <!-- ..diff month datas.. -->
+          <tr>
+            <td class="id">1001</td>
+            <td class="name">s vinoth</td>
+            <td class="attend">present</td>
+            <td class="date">11/07/2003</td>
+            <td class="dept">daily</td>
+            <td class="wage">750</td>
+          </tr>
+          <tr>
+            <td class="id">1012</td>
+            <td class="name">v sabari</td>
+            <td class="attend">absent</td>
+            <td class="date">09/07/2003</td>
+            <td class="dept">monthly</td>
+            <td class="wage">1000</td>
+          </tr>
+          <tr>
+            <td class="id">1113</td>
+            <td class="name">v harish</td>
+            <td class="attend">present</td>
+            <td class="date">15/07/2003</td>
+            <td class="dept">daily</td>
+            <td class="wage">750</td>
+          </tr>
+          <tr>
+            <td class="id">2114</td>
+            <td class="name">s muthu kumar</td>
+            <td class="attend">absent</td>
+            <td class="date">01/07/2003</td>
+            <td class="dept">monthly</td>
+            <td class="wage">1000</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="/static/javascript/script.js"></script>
+</body>
+</html>
+
+

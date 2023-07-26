@@ -1,0 +1,100 @@
+ *{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+ }   /* Add your custom styles here */
+body {
+      padding-top: 60px; /* Adjust this value to account for the fixed top navbar */
+}
+
+/* Sidebar styles */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -250px;
+  height: 100%;
+  width: 250px;
+  padding: 20px;
+  background-color: #333;
+  color: #fff;
+  transition: left 0.3s ease-in-out;
+}
+
+ .sidebar.active{
+    left: 0;
+}
+
+ .sidebar a {
+  display: block;
+  color: #fff;
+  padding: 10px;
+  text-decoration: none;
+}
+
+ /* Sidebar toggle button styles */
+.sidebar-toggle-btn {
+  position: absolute;
+  width:  30px;
+  height: 30px;
+  border-radius: 50%;
+  top: 20px;
+  left: 20px;
+  font-size: 20px;
+  color: #fff;
+  cursor: pointer;
+  z-index: 999;
+  background-image: url(/static/img/open.png);
+  background-size: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: left 0.3s ease-in-out;
+}
+
+.sidebar-toggle-btn.active{
+    left: 255px;
+    background-image: url(/static/img/close.jpg);
+    background-size: 100%;
+}
+.filters{
+    position: absolute;
+    top: 30px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* padding: 7px; */
+    /* border-radius: 5px; */
+    /* border: 2px solid #555; */
+}
+input{
+  padding: 5px; 
+  border-radius: 5px;
+  border: 2px solid #555;
+  margin: 5px;
+}
+#filter{
+  margin-left: 20px;
+}
+
+.alert{
+  position: absolute;
+  top: -40px;
+  right: 20px;
+  animation: popdown 5s ease-in forwards;
+  cursor: pointer;
+}
+
+@keyframes popdown {
+  0%{
+    top: -40px;
+    opacity: 0;
+  }10%,20%,30%,40%,50%,60%{
+    top: 20px;
+    opacity: 1;
+  }100%{
+    top: -40px;
+    opacity: 0;
+  }
+}
