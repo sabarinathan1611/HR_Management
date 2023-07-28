@@ -16,7 +16,7 @@ class Employee(db.Model,UserMixin):
     name=db.Column(db.String(150),nullable=False)
     date = db.Column(db.DateTime(timezone=True), default=func.now())
     dob = db.Column(db.DateTime(timezone=True))   
-    # salary=db.Column(db.String(150))
+    
     workType=db.Column(db.String(150))
     phoneNumber=db.Column(db.Integer)
     adharNumber=db.Column(db.Integer)
@@ -28,12 +28,15 @@ class Employee(db.Model,UserMixin):
 
 class Attendance(db.Model,UserMixin):
     id=db.Column(db.Integer,primary_key=True)
+    date = db.Column(db.DateTime(timezone=True), default=func.now())
     emp_id = db.Column(db.Integer, db.ForeignKey('employee.id'))
     attendance =db.Column(db.String(150))
+    wages_per_Day=db.Column(db.String(150))
     inTime=db.Column(db.String(150))
     outTime=db.Column(db.String(150))
     overtime=db.Column(db.String(150))
-    date = db.Column(db.DateTime(timezone=True), default=func.now())
+    shift=db.Column(db.String(150))
+    
 
     
     
