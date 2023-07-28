@@ -1,5 +1,9 @@
 from app import create_app
-from auth import schedule_next_sunday,scheduler
+from app import schedule_next_sunday,scheduler
+import datetime
+import sched
+import time
+from datetime import datetime, timedelta
 
 app= create_app()
 
@@ -11,3 +15,4 @@ if __name__ == '__main__':
 
     # Run the scheduler loop
     scheduler.run()
+    

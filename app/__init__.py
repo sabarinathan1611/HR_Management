@@ -1,6 +1,10 @@
 from flask import Flask
 from flask_sqlalchemy import  SQLAlchemy
 from flask_login import LoginManager
+import datetime
+import sched
+import time
+from datetime import datetime, timedelta
 
 db= SQLAlchemy()
 DB_NAME="database.db"
@@ -64,7 +68,7 @@ def schedule_next_sunday():
 
 def run_for_all_employees():
     # Assuming Employee is your SQLAlchemy model for employees
-    employees = Employee.query.filter_by(workType='desired_workType_value').all()
+    employees = Employee.query.filter_by(workType='employee').all()
 
     for employee in employees:
         count_attendance_and_update_shift_periodic(employee.id)

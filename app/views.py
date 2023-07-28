@@ -28,7 +28,8 @@ def empEdit():
         
         
         
-        redirect(url_for('views.admin'))
+        return redirect(url_for('views.admin'))
+    
         
     
          
