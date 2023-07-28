@@ -42,90 +42,47 @@
       <table class="table table-bordered table-hover">
         <thead>
           <tr>
-            <th>id</th>
+            <th>empid</th>
             <th>name</th>
             <th>attendance</th>
-            <th>date</th>
+            <th>Date</th>
+            <th>salary</th>
             <th>work type</th>
             <th>wages per Day</th>
+            <th>phoneNumber</th>
+            <th>inTime</th>
+            <th>outTime</th>
         </tr>
         </thead>
         <tbody>
+{%for emp in employee%}
           <tr>
-            <td class="id">0001</td>
-            <td class="name">vinoth</td>
-            <td class="attend">present</td>
-            <td class="date">11/08/2003</td>
-            <td class="dept">daily</td>
-            <td class="wage">750</td>
+            <td class="id">{{emp.id}}</td>
+            <td class="name">{{emp.name}}</td>
+            <td class="attend">{{emp.attendance}}</td>
+            <td class="date">{{emp.date.date()}}</td>
+
+            <td class="dept">{{emp.salary}}</td>
+            <td class="wage">{{emp.workType}}</td>
+            <td class="phoneNumber">{{emp.phoneNumber}}</td>
+            <td class="wages_per_Day">{{emp.wages_per_Day}}</td>
+            
+            <td class="inTime">{{emp.inTime}}</td>
+            <td class="outTime">{{emp.outTime}}</td>
           </tr>
-          <tr>
-            <td class="id">0012</td>
-            <td class="name">sabari</td>
-            <td class="attend">absent</td>
-            <td class="date">09/08/2003</td>
-            <td class="dept">monthly</td>
-            <td class="wage">1000</td>
-          </tr>
-          <tr>
-            <td class="id">0113</td>
-            <td class="name">harish</td>
-            <td class="attend">present</td>
-            <td class="date">15/08/2003</td>
-            <td class="dept">daily</td>
-            <td class="wage">750</td>
-          </tr>
-          <tr>
-            <td class="id">1114</td>
-            <td class="name">muthu kumar</td>
-            <td class="attend">absent</td>
-            <td class="date">01/08/2003</td>
-            <td class="dept">monthly</td>
-            <td class="wage">1000</td>
-          </tr>
+{%endfor%}
 
           <!-- ..diff month datas.. -->
-          <tr>
-            <td class="id">1001</td>
-            <td class="name">s vinoth</td>
-            <td class="attend">present</td>
-            <td class="date">11/07/2003</td>
-            <td class="dept">daily</td>
-            <td class="wage">750</td>
-          </tr>
-          <tr>
-            <td class="id">1012</td>
-            <td class="name">v sabari</td>
-            <td class="attend">absent</td>
-            <td class="date">09/07/2003</td>
-            <td class="dept">monthly</td>
-            <td class="wage">1000</td>
-          </tr>
-          <tr>
-            <td class="id">1113</td>
-            <td class="name">v harish</td>
-            <td class="attend">present</td>
-            <td class="date">15/07/2003</td>
-            <td class="dept">daily</td>
-            <td class="wage">750</td>
-          </tr>
-          <tr>
-            <td class="id">2114</td>
-            <td class="name">s muthu kumar</td>
-            <td class="attend">absent</td>
-            <td class="date">01/07/2003</td>
-            <td class="dept">monthly</td>
-            <td class="wage">1000</td>
-          </tr>
+
         </tbody>
       </table>
     </div>
   </div>
 </main>
 
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<!-- <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> -->
 <script src="/static/javascript/script.js"></script>
 </body>
 </html>

@@ -8,5 +8,5 @@ views = Blueprint('views', __name__)
 
 @views.route('/admin',methods=['POST','GET'])
 def admin():
-    employee =Employee.query.order_by(Employee.empid)
+    employee =Employee.query.order_by(Employee.id)
     return render_template('admin.html',employee=employee)
