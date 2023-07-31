@@ -8,7 +8,7 @@ function toggleSidebar(event) {
 
 var filter = document.getElementById("filter");
 const id = document.querySelectorAll(".id");
-const name = document.querySelectorAll(".name");
+const ename = document.querySelectorAll(".name");
 
 filter.addEventListener("input", function () {
   let value = filter.value;
@@ -22,7 +22,7 @@ filter.addEventListener("input", function () {
       }
     });
   } else {
-    name.forEach((e) => {
+    ename.forEach((e) => {
       var nameV = e.innerHTML;
       if (nameV.includes(value)) {
         e.parentElement.style.display = "";
@@ -68,12 +68,9 @@ navbtns.forEach((btn) => {
 var fromDate = document.getElementById("from");
 var toDate = document.getElementById("to");
 
-// toDate.addEventListener("input", function () {
-
-// });
-
 // /////////////////////////////////////////////////////////////////////////////////////////
 function filterTableByDate() {
+  console.log("called");
   if (fromDate.value === "" || fromDate.value.length <= 0) {
     if (document.querySelector(".alert")) {
       document.querySelector(".alert").remove();
@@ -87,14 +84,19 @@ function filterTableByDate() {
   } else {
     const dates = document.querySelectorAll(".date");
     dates.forEach((date) => {
-      if (date.innerHTML >= fromDate.value && date.innerHTML <= toDate.value) {
-        var val = date.innerHTML;
-        val = val[3] + val[4];
-        var fromMon = fromDate.value[3] + fromDate.value[4];
-        var toMon = toDate.value[3] + toDate.value[4];
+      var dates = date.innerHTML[0] + date.innerHTML[1];
+      var fromd = fromDate.value.toString().slice(8, 10);
+      var tod = toDate.value.toString().slice(8, 10);
+      if (
+        parseInt(dates) >= parseInt(fromd) &&
+        parseInt(dates) <= parseInt(tod)
+      ) {
+        var mon = date.innerHTML;
+        mon = mon[3] + mon[4];
+        var fromMon = fromDate.value[5] + fromDate.value[6];
+        var toMon = toDate.value[5] + toDate.value[6];
 
-        // date.parentElement.style.display = "";
-        if (val >= fromMon && val <= toMon) {
+        if (parseInt(mon) >= fromMon && mon <= toMon) {
           date.parentElement.style.display = "";
         } else {
           date.parentElement.style.display = "none";
@@ -106,5 +108,49 @@ function filterTableByDate() {
   }
 }
 
-document.getElementById("from").addEventListener("keyup", filterTableByDate);
-document.getElementById("to").addEventListener("keyup", filterTableByDate);
+document.getElementById("from").addEventListener("change", filterTableByDate);
+document.getElementById("to").addEventListener("change", filterTableByDate);
+
+var edit_btns = document.querySelectorAll(".edit-btn");
+
+function editmodul(event) {
+  var id = event.target.parentElement.parentElement.children[0].innerHTML;
+  var uname = event.target.parentElement.parentElement.children[1].innerHTML;
+  var attend = event.target.parentElement.parentElement.children[2].innerHTML;
+  var dob = event.target.parentElement.parentElement.children[3].innerHTML;
+  var workType = event.target.parentElement.parentElement.children[4].innerHTML;
+  var phnum = event.target.parentElement.parentElement.children[5].innerHTML;
+  var aadhar = event.target.parentElement.parentElement.children[6].innerHTML;
+  var address = event.target.parentElement.parentElement.children[7].innerHTML;
+  var gender = event.target.parentElement.parentElement.children[8].innerHTML;
+  var module = document.querySelector(".module");
+  module.classList.add("active");
+  document.getElementById("empid").value = id;
+  document.getElementById("uname").value = uname;
+  document.getElementById("worktype").value = workType;
+  document.getElementById("attend").value = attend;
+  document.getElementById("dob").value = dob;
+  document.getElementById("Phnumber").value = phnum;
+  document.getElementById("aadhar").value = aadhar;
+  document.getElementById("address").value = address;
+  document.getElementById("gender").value = gender;
+}
+
+function change() {
+  var module = document.querySelector(".module");
+  module.classList.remove("active");
+}
+
+edit_btns.forEach((edit) => {
+  edit.addEventListener("click", function (event) {
+    editmodul(event);
+  });
+});
+
+const delete_btn = document.querySelectorAll(".delete-btn");
+
+delete_btn.forEach((btn) => {
+  btn.addEventListener("click", function () {
+    btn.parentElement.parentElement.remove();
+  });
+});

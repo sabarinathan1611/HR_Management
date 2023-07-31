@@ -34,7 +34,7 @@ class Attendance(db.Model,UserMixin):
     wages_per_Day=db.Column(db.String(150))
     inTime=db.Column(db.String(150))
     outTime=db.Column(db.String(150))
-    overtime=db.Column(db.String(150))
+    overtime=db.Column(db.String(150),default='00:00')
     shift=db.Column(db.String(150))
     
 

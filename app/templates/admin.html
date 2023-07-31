@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,85 +10,145 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
-
 <body>
 
-  <nav class="sidebar" id="sidebar">
-    <ul class="navbar-nav">
-      <li index="0" class="nav-item ">
-        <a class="btn  mt-3 btn-primary nav-link" href="#"><i class="fas fa-users"></i> &nbsp; All</a>
-      </li>
-      <li index="1" class="nav-item ">
+<nav class="sidebar" id="sidebar">
+  <ul class="navbar-nav">
+    <li index="0" class="nav-item ">
+      <a class="btn  mt-3 btn-primary nav-link" href="#"><i class="fas fa-users"></i> &nbsp; All</a>
+    </li>
+    <li index="1" class="nav-item ">
         <a class="btn  mt-3 btn-success nav-link" href="#"><i class="fas fa-check"></i> &nbsp; Present</a>
-      </li>
-      <li index="2" class="nav-item">
+    </li>
+    <li index="2" class="nav-item">
         <a class="btn  mt-3 btn-danger nav-link" href="#"><i class="fas fa-times"></i> &nbsp; Absent</a>
-      </li>
-    </ul>
-  </nav>
+    </li>
+  </ul>
+</nav>
 
-  <div id="menubtn" class="sidebar-toggle-btn" onclick="toggleSidebar()">
+<div id="menubtn" class="sidebar-toggle-btn" onclick="toggleSidebar()">
+ 
+</div>
 
-  </div>
-
-  <main role="main" class="container mt-5">
+<main role="main" class="container mt-5">
     <div class="filters">
-      <input placeholder="11/08/2003" type="text" name="from" id="from"> to <input placeholder="15/08/2003" type="text"
-        name="to" id="to">
+        <input placeholder="11-08-2003" type="date" name="from" id="from"> to <input placeholder="15-08-2003" type="date" name="to" id="to">
 
-      <input type="text" name="filter" id="filter" placeholder="eg: 0001 or vinoth">
+        <input type="text" name="filter" id="filter" placeholder="eg: 0001 or vinoth">
     </div>
-    <div class="row justify-content-center">
-
-      <div class="col-md-8">
-        <table class="table table-bordered table-hover">
+  <div class="row justify-content-center">
+    
+    <div class="col-md-8">
+      <table  class="table table-bordered table-hover">
+        <thead>
           <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Date of Birth</th>
-            <th>Gender</th>
-            <th>Work Type</th>
-            <th>Phone Number</th>
-            <th>Aadhar Number</th>
-            <th>Address</th>
-            <th>Profile Picture</th>
-            <th>Attendance</th>
-            <th>In Time</th>
-            <th>Out Time</th>
-            <th>Overtime</th>
-            <th>Date</th>
+            <th>id</th><!--0-->
+            <th>name</th> <!--1-->
+            <th>dob</th> <!--2-->
+            <th>work type</th> <!--3-->
+            <th>Phone Number</th> <!--4-->
+            <th>Aadhar No</th> <!--5-->
+            <th>Address</th> <!--6-->
+            <th>Gender</th> <!--7-->
+            <th>wages per Day</th> <!--8-->
+            <th>attendance</th> <!--9-->
+            <th>Date</th> <!--10-->
+            <th>inTime</th> <!--11-->
+            <th>outTime</th> <!--12-->
+            <th>overtime</th> <!--13-->
+            <th>actions</th><!--14-->
+            
         </tr>
-        {% for emp in employee %}
-        <tr>
-            <td>{{ emp.id }}</td>
-            <td>{{ emp.name }}</td>
-            <td>{{ emp.dob.date() }}</td>
-            <td>{{ emp.gender }}</td>
-            <td>{{ emp.workType }}</td>
-            <td>{{ emp.phoneNumber }}</td>
-            <td>{{ emp.adharNumber }}</td>
-            <td>{{ emp.address }}</td>
-            <td><img src="/static/img/{{emp.profile_pic}}" width="40px" height="40px" alt="Profile Picture"></td>
+        </thead>
+        <tbody>
+          {% for emp in employee %}
+          <tr>
+            <td class="id">{{ emp.id }}</td>
+            <td class="name">{{ emp.name }}</td>
+            <td class="date">{{ emp.dob.date() }}</td>
+            <td class="dept">{{ emp.workType }}</td>
+            <td class="phnum">{{ emp.phoneNumber }}</td>
+            <td class="aadhar">{{ emp.adharNumber }}</td>
+            <td class="address">{{ emp.address }}</td>
+            <td class="gender">{{emp.gender}}</td>
             {% for attendance in emp.attendance %}
-            <td>{{ attendance.attendance }}</td>
-            <td>{{ attendance.inTime }}</td>
-            <td>{{ attendance.outTime }}</td>
-            <td>{{ attendance.overtime }}</td>
-            <td>{{ attendance.date.date() }}</td>
-           
+            <td class="wage">{{ attendance.wages_per_Day }}</td>
+            <td class="attend">{{ attendance.attendance }}</td>
+            <td class="date">{{ attendance.date.date() }}</td>
+            <td class="inTime">{{ attendance.inTime }}</td>
+            <td class="outTime">{{ attendance.outTime }}</td>
+            <td class="overtime">{{ attendance.overtime }}</td>
+            <td class="action-btn">
+              <button class="btn btn-danger btn-sm delete-btn">Delete</button>
+              <button class="btn btn-primary btn-sm edit-btn">Edit</button>
+            </td>
             {% endfor %}
-        </tr>
-        {% endfor %}
-        </table>
-
+          </tr>
+          {% endfor %}
+         
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+<div class="module">
+  <form action="" class="editform">
+    <div class="half">
+      <div class="inputField">
+        <label for="empid">EmpId : </label>
+        <input type="text" name="empid" id="empid" readonly>
+      </div>
+      <div class="inputField">
+        <label for="uname">Name : </label>
+        <input type="text" name="uname" id="uname" >
+      </div>
+      <div class="inputField">
+        <label for="dob">DOB : </label>
+        <input type="date" name="dob" id="dob" >
+      </div>
+      <div class="inputField">
+        <label for="worktype">work type : </label>
+        <select name="worktype" id="worktype">
+          <option value="">select </option>
+          <option value="daily">daily </option>
+          <option value="employee">employee </option>
+        </select>
+      </div>
+      <div class="inputField">
+        <label for="attend">attendance : </label>
+        <select name="attend" id="attend">
+          <option value="">select </option>
+          <option value="present">present </option>
+          <option value="absent">Absent </option>
+        </select>
       </div>
     </div>
-  </main>
-
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-  <script src="/static/javascript/script.js"></script>
+   <div class="half">
+    <div class="inputField">
+      <label for="Phnumber">Phone number : </label>
+      <input type="number" name="Phnumber" id="Phnumber" >
+    </div>
+    <div class="inputField">
+      <label for="aadhar">Aadhar No : </label>
+      <input type="tel" name="aadhar" id="aadhar" >
+    </div>
+    <div class="inputField">
+      <label for="address">Address : </label>
+      <textarea name="address" id="address" cols="30" rows="2"></textarea>
+    </div>
+    <div class="inputField">
+      <label for="gender">Gender : </label>
+      <select name="gender" id="gender">
+        <option value="">select </option>
+        <option value="male">male </option>
+        <option value="female">female </option>
+      </select>
+    </div>
+   </div>
+    <button class="btn btn-primary editSubmit" onclick="change() " type="button">Change</button>
+  </form>
+</div>
+<script src="/static/javascript/script.js"></script>
 </body>
-
 </html>
+

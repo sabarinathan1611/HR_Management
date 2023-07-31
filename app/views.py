@@ -10,6 +10,7 @@ views = Blueprint('views', __name__)
 @views.route('/',methods=['POST','GET'])
 @login_required
 def admin():
+    # employee =Employee.query.order_by(Employee.id)
     employee =Employee.query.order_by(Employee.id)
     return render_template('admin.html',employee=employee)
 
@@ -57,4 +58,3 @@ def deleteEmp():
         db.session.commit()
         os.remove(path)
         return redirect(url_for('views.admin'))
-         
