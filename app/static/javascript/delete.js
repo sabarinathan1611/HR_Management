@@ -9,4 +9,3 @@ function deleteEmp(EmpId) {
       
     });
   }
-  

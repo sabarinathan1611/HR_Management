@@ -26,7 +26,7 @@ def send_mail(email, body):
 auth = Blueprint('auth', __name__)
 
 @auth.route('/admin-login',methods=['POST','GET'])
-def login_admin():
+def login():
     try:
         admin = Login_admin.query.filter_by(id=1).first()
         if admin:
@@ -87,3 +87,24 @@ def addemp():
     return render_template('addemp.html')
 
                 
+@auth.route('/attendance',methods=['POST','GET'])
+@login_required
+def attendance():
+    print(current_user)
+    if current_user:
+        if request.method =="POST":
+            emp_id=request.form.get('empid')
+            print(emp_id)
+            wages_per_Day=request.form.get('wages')
+            inTime=request.form.get('inTime')
+            outTime=request.form.get('outTime')
+            shift=request.form.get('shift')
+            overtime=request.form.get('overTime')
+            attendance=request.form.get('attendance')
+            newattendance=Attendance(emp_id=emp_id,wages_per_Day=wages_per_Day,inTime=inTime,outTime=outTime,shift=shift,overtime=overtime,attendance=attendance)
+            db.session.add(newattendance)
+            db.session.commit()
+    else:
+        return redirect(url_for('views.admin'))
+        
+    return render_template('attendance.html')
