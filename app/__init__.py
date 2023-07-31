@@ -50,7 +50,21 @@ def create_database(app):
 
 # Initialize the scheduler
 scheduler = sched.scheduler(time.time, time.sleep)
-
+def count_attendance_and_update_shift(emp_id):
+    # Get the employee's attendance records
+    employee = Employee.query.get(emp_id)
+    if employee:
+        attendance_count = len(employee.attendance)
+        
+        # Update the shift if the attendance count is 6
+        if attendance_count == 6:
+            employee.shift = "New Shift Value"  # Replace "New Shift Value" with the appropriate value
+            db.session.commit()
+        
+        return attendance_count
+    else:
+        return 0
+    
 def count_attendance_and_update_shift_periodic(emp_id):
     # Replace employee_id_to_check with the actual employee ID you want to check
     attendance_count = count_attendance_and_update_shift(emp_id)
