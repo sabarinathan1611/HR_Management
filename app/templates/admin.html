@@ -44,48 +44,42 @@
           <tr>
             <th>id</th><!--0-->
             <th>name</th> <!--1-->
-            <th>dob</th> <!--2-->
             <th>work type</th> <!--3-->
             <th>Phone Number</th> <!--4-->
-            <th>Aadhar No</th> <!--5-->
-            <th>Address</th> <!--6-->
-            <th>Gender</th> <!--7-->
-            <th>wages per Day</th> <!--8-->
-            <th>attendance</th> <!--9-->
-            <th>Date</th> <!--10-->
-            <th>inTime</th> <!--11-->
-            <th>outTime</th> <!--12-->
-            <th>overtime</th> <!--13-->
-            <th>actions</th><!--14-->
+            <th>Wage</th>
+            <th>Attendance</th>
+            <th>Shift</th>
+            <th>Date</th>
+            <th>InTime</th>
+            <th>OutTime</th>
+            <th>Overtime</th>
+            <th>actions</th>
+
             
         </tr>
         </thead>
         <tbody>
-          {% for emp in employee %}
+{%for emp in employee%}
           <tr>
-            <td class="id">{{ emp.id }}</td>
-            <td class="name">{{ emp.name }}</td>
-            <td class="date">{{ emp.dob.date() }}</td>
-            <td class="dept">{{ emp.workType }}</td>
-            <td class="phnum">{{ emp.phoneNumber }}</td>
-            <td class="aadhar">{{ emp.adharNumber }}</td>
-            <td class="address">{{ emp.address }}</td>
-            <td class="gender">{{emp.gender}}</td>
-            {% for attendance in emp.attendance %}
-            <td class="wage">{{ attendance.wages_per_Day }}</td>
-            <td class="attend">{{ attendance.attendance }}</td>
-            <td class="date">{{ attendance.date.date() }}</td>
-            <td class="inTime">{{ attendance.inTime }}</td>
-            <td class="outTime">{{ attendance.outTime }}</td>
-            <td class="overtime">{{ attendance.overtime }}</td>
+            <td class="id">{{emp.emp_id}}</td>
+            <td class="name">{{emp.employee.name}}</td>
+            <td class="workType">{{emp.employee.workType}}</td>
+            <td class="phoneNumber">{{emp.employee.phoneNumber}}</td>
+            <td class="wages_per_Day">{{emp.wages_per_Day}}</td>
+            <td class="attend">{{emp.attendance}}</td>
+            <td class="shift">{{emp.shift}}</td>
+            <td class="shift">{{emp.date.date()}}</td>
+            <td class="Intime">{{emp.inTime}}</td>
+            <td class="outtime">{{emp.outTime}}</td>
+            <td class="overtime">{{emp.overtime}}</td>
             <td class="action-btn">
               <button class="btn btn-danger btn-sm delete-btn">Delete</button>
               <button class="btn btn-primary btn-sm edit-btn">Edit</button>
             </td>
-            {% endfor %}
           </tr>
-          {% endfor %}
-         
+
+
+         {%endfor%}
         </tbody>
       </table>
     </div>

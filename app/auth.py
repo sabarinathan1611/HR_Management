@@ -71,13 +71,15 @@ def addemp():
         wages_per_Day=request.form.get('wages_per_Day')
         gender=request.form.get('gender')
         address=request.form.get('address')
+        email=request.form.get('email')
+        
         print(dob)
         dob_date = datetime.strptime(dob, '%Y-%m-%d').date()
         
         employee=Employee.query.filter_by(id=empid).first()
         print(employee)
         if employee ==None:
-            addemp=Employee(id=empid,name=name,dob=dob_date,adharNumber=adharNumber,address=address,gender=gender,phoneNumber=phoneNumber,workType=workType)
+            addemp=Employee(id=empid,email=email,name=name,dob=dob_date,adharNumber=adharNumber,address=address,gender=gender,phoneNumber=phoneNumber,workType=workType)
             db.session.add(addemp)
             db.session.commit()
             
@@ -101,7 +103,7 @@ def attendance():
             shift=request.form.get('shift')
             overtime=request.form.get('overTime')
             attendance=request.form.get('attendance')
-            newattendance=Attendance(emp_id=emp_id,wages_per_Day=wages_per_Day,inTime=inTime,outTime=outTime,shift=shift,overtime=overtime,attendance=attendance)
+            newattendance=Attendance(emp_id=emp_id,date=datetime.strptime('2023-08-02', '%Y-%m-%d').date(),wages_per_Day=wages_per_Day,inTime=inTime,outTime=outTime,shift=shift,overtime=overtime,attendance=attendance)
             db.session.add(newattendance)
             db.session.commit()
     else:

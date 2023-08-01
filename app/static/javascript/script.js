@@ -45,7 +45,8 @@ navbtns.forEach((btn) => {
       });
     } else if (btn.getAttribute("index") === "1") {
       attends.forEach((atn) => {
-        if (atn.innerHTML.toLowerCase() === "present") {
+        console.log('present'+atn.innerHTML);
+        if (atn.innerHTML.toString().toLowerCase() === "present") {
           atn.parentElement.style.display = "";
         } else {
           atn.parentElement.style.display = "none";
@@ -53,7 +54,8 @@ navbtns.forEach((btn) => {
       });
     } else {
       attends.forEach((atn) => {
-        if (atn.innerHTML.toLowerCase() === "absent") {
+        console.log('absent'+atn.innerHTML);
+        if (atn.innerHTML.toString().toLowerCase() === "absent") {
           atn.parentElement.style.display = "";
         } else {
           atn.parentElement.style.display = "none";

@@ -1,0 +1,267 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.usercontainer{
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
+    background-image: url(/static/img/back2.jpg);
+    background-size: 100%;
+}
+
+.detailsBox{
+    width: 90vw;
+    min-height: 50vh;
+    position: absolute;
+    overflow-x: hidden;
+    display: flex;
+    gap: 25px;
+    align-items: center;
+    justify-content: center;
+    top: 120px;
+    padding: 10px;
+    /* border: 1px solid #000; */
+    flex-wrap: wrap;
+    /* background: #eeeeee; */
+}
+
+.filter{
+    position: absolute;
+    top: 50px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+#filterinput{
+    padding: 10px;
+    border-radius: 3px;
+    border: 2px solid #999;
+    outline: none;
+    width: 250px;
+}
+
+.filter-btn{
+    padding: 7px 20px;
+    border-radius: 5px;
+    border: 2px solid ;
+    outline: none;
+    cursor: pointer;
+}
+
+.active-btn{
+    background: #89f7a1;
+    color: #003a0d;
+}
+
+.ot-btn{
+    color: #5b5d0b;
+    background-color: #f1f4c1;
+}
+
+.leave-btn{
+    color: #420000;
+    background-color: #f4c1c1;
+}
+
+.all{
+    color: #0E2954;
+    background: #a0ccf7a1;
+}
+
+.user{
+    width: 200px;
+    /* border: 1px solid; */
+    height: 280px;
+    border-radius: 3px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    /* background: #fff; */
+    box-shadow: 0px 0px 5px #fff;
+    backdrop-filter: blur(100px);
+    border: 2px solid #969696;
+    color: white;
+}
+
+.user.active{
+    border-radius: 5px;
+    border: 2px solid #5f5f5f;
+    box-shadow: 0px 0px 20px #f5b7b7;
+}
+
+.options{
+    flex-basis: 7%;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.opt{
+    display: flex;
+    flex-direction: column;
+    margin: 10px;
+}
+
+.mid{
+    flex-basis: 30%;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 5px;
+}
+
+.prof{
+    width:  75px;
+    height: 75px;
+    border-radius: 50%;
+    background: #999;
+    overflow: hidden;
+}
+
+.prof img{
+    width:  90%;
+    height: 90%;
+    margin: 2%;
+}
+
+.bottoms{
+    flex-basis: 65%;
+    width: 100%;
+    height: 100%;
+    color: #000;
+}
+.detBox{
+    width: 95%;
+    height:95%;
+    border-radius: 10px 10px 5px 5px;
+    background: #ffffff;
+    margin: 0 auto;
+    border: 1px solid #999;
+}
+
+.dettop{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+}
+
+.dettop span{
+    color: #5f5f5f;
+}
+
+.dettop p{
+    color: #222222;
+    font-size: 14px;
+}
+
+.detbottom{
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    gap: 10px;
+}
+
+.mail {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.indicate{
+    font-size: 13px;
+    padding: 2px 19px;
+    border-radius: 3px;
+    border: 1px solid;
+    text-transform: capitalize;
+}
+
+.indicate.active{
+    color: #003a0d;
+    background-color: #c1f4cc;
+}
+
+.indicate.ot{
+    color: #5b5d0b;
+    background-color: #f1f4c1;
+}
+
+.indicate.leave{
+    color: #420000;
+    background-color: #f4c1c1;
+}
+
+.delete-icon{
+    cursor: pointer;
+    color: #ef2323;
+}
+
+#usercheck{
+    cursor: pointer;
+    accent-color: #45cf63;
+}
+
+.confirmBox{
+    position: absolute;
+    top: -150px;
+    z-index: 100;
+    min-width: 280px;
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+    /* background: transparent; */
+    background: rgb(255, 200, 100);
+    border-radius: 5px;
+    border: 1px solid #000;
+    transition: all .5s ease;
+    padding: 10px;
+}
+
+.btns{
+    display: flex;
+    gap: 40px;
+}
+
+.btn{
+    padding: 10px 20px;
+    margin: 0 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.confirmBox.active{
+    position: fixed;
+    top: 20px;
+}
+
+  
+.cancel-btn {
+    background-color: #ccc;
+    color: #fff;
+}
+  
+.confirm-btn {
+    background-color: #f44336;
+    color: #fff;
+}

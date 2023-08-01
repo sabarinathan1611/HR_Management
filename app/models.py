@@ -17,13 +17,15 @@ class Employee(db.Model,UserMixin):
     date = db.Column(db.DateTime(timezone=True), default=func.now())
     dob = db.Column(db.DateTime(timezone=True))   
     
+    
     workType=db.Column(db.String(150))
+    email=db.Column(db.String(150),unique=True)
     phoneNumber=db.Column(db.Integer)
     adharNumber=db.Column(db.Integer)
     gender = db.Column(db.String(150))
     address=db.Column(db.String(150))
     profile_pic = db.Column(db.String(100000), default='Default/Default.jpeg')
-    attendance = db.relationship('Attendance')
+    attendance = db.relationship('Attendance',backref='employee')
     
 
 class Attendance(db.Model,UserMixin):

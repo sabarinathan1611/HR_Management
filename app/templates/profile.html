@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Details</title>
+    <link rel="stylesheet" href="static/css/profile.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <!-- Add these in the head section of your HTML -->
+    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> -->
+</head>
+<body>
+    <div class="usercontainer">
+        <div class="confirmBox">
+            <div class="text"></div>
+            <div class="btns">
+                <button class="btn cancel-btn cancel"><i class="fas fa-times"></i> Cancel</button>
+                <button class="btn confirm-btn confirm"><i class="fas fa-trash-alt"></i> Confirm</button>
+            </div>
+        </div>
+        <div class="filter">
+            <input type="text" name="filterinput" id="filterinput" placeholder="eg: 0001 or name">
+            <button type="button" class="filter-btn all">All</button>
+            <button type="button" class="filter-btn active-btn">Active</button>
+            <button type="button" class="filter-btn ot-btn">OT</button>
+            <button type="button" class="filter-btn leave-btn">Leave</button>
+        </div>
+        
+        <div class="detailsBox">
+            {%for emp in employee%}
+            <div class="user" index="{{emp.id}}">
+                <div class="options">
+                    <div class="opt"><input type="checkbox" name="usercheck" id="usercheck"></div>
+                    <div class="opt">
+                        {% for attendance in emp.attendance %}
+
+                        {%if attendance.date.date() == current_date%}
+                          <p class="indicate active">
+                            {{ attendance.attendance }}
+                          </p>
+                          {%endif%}
+                        {% endfor %}
+                      </div>
+                    <div class="opt"><i class="del fas fa-trash delete-icon"></i></div>
+                </div>
+                <div class="mid">
+                    <div class="prof">
+                        <img src="/static/img/profile/{{emp.profile_pic}}" alt="">
+                    </div>
+                    <div class="username">{{emp.name}}
+                    
+                    
+                    </div>
+                </div>
+                <div class="bottoms">
+                    <div class="detBox">
+                        <div class="dettop">
+                            <div class="type">
+                                <span>{{emp.workType}}</span> <br>
+                                <p>{{emp.attendance.wages_per_Day}}</p>
+                            </div>
+                            <div class="doj">
+                                <span>Date Hired</span>
+                                <p>{{emp.date.date()}}</p>
+                            </div>
+                        </div>
+                        <div class="detbottom">
+                            <p class="mail"><i class="fas fa-envelope"></i>&nbsp; {{emp.email}}</p>
+                            <p class="phone"><i class="fas fa-phone"></i>&nbsp; {{emp.phoneNumber}}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {%endfor%}
+            <!-- end of details box -->
+        </div>
+        
+
+        <!-- end of conatiner -->
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
