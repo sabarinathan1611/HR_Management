@@ -27,7 +27,7 @@ auth = Blueprint('auth', __name__)
 
 @auth.route('/admin-login',methods=['POST','GET'])
 def login():
-    try:
+    
         admin = Login_admin.query.filter_by(id=1).first()
         if admin:
             if request.method == 'POST':
@@ -51,9 +51,8 @@ def login():
             db.session.commit()
             print('Created Admin!')
         flash("GIII",category='error')
-    except Exception as error:
-        flash(error,category='error')
-    return render_template('login.html')
+ 
+        return render_template('login.html')
 
             
     
@@ -72,6 +71,9 @@ def addemp():
         gender=request.form.get('gender')
         address=request.form.get('address')
         email=request.form.get('email')
+        attendance=request.form.get('attedance')
+        shift=request.form.get('shift')
+        
         
         print(dob)
         dob_date = datetime.strptime(dob, '%Y-%m-%d').date()
@@ -81,6 +83,9 @@ def addemp():
         if employee ==None:
             addemp=Employee(id=empid,email=email,name=name,dob=dob_date,adharNumber=adharNumber,address=address,gender=gender,phoneNumber=phoneNumber,workType=workType)
             db.session.add(addemp)
+            db.session.commit()
+            newattendance = Attendance(emp_id=empid,shift=shift,attedance=attendance)
+            db.session.add(newattendance)
             db.session.commit()
             
         elif employee == True:
