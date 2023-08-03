@@ -158,7 +158,6 @@ function toggleSidebar(event) {
   });
 
 
-<<<<<<< HEAD
 function change(event) {
   var module = document.querySelector(".module");
   module.classList.remove("active");
@@ -166,11 +165,9 @@ function change(event) {
   event.target.click();
 
 }
-=======
 const addbtn = document.querySelector('.addbtn');
 const addformbtn = document.querySelector('.addformbtn');
 const addform = document.querySelector('.addform')
->>>>>>> aabe81c156394a668b730e4e57fbf2ce67fb16b4
 
 addbtn.addEventListener("click",function(){
     addform.classList.add('active');
