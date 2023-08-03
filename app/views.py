@@ -16,22 +16,42 @@ def admin():
     employee =Attendance.query.order_by(Attendance.date)
     return render_template('admin.html',employee=employee)
 
-@views.route('/edit',methods=['POST','GET'])
+@views.route('/edit', methods=['POST', 'GET'])
 @login_required
 def empEdit():
     if request.method == 'POST':
-        empid=request.form.get('empid')
-        name=request.form.get('name')
-        dob=request.form.get('dob')
-        workType=request.form.get('workType')
-        phoneNumber=request.form.get('phoneNumber')
-        adharNumber=request.form.get('adharNumber')
-        wages_per_Day=request.form.get('wages_per_Day')
-        gender=request.form.get('gender')
-        address=request.form.get('address')
-        dob_date = datetime.datetime.strptime(dob, '%Y-%m-%d').date()
- 
-        return redirect(url_for('views.admin'))
+        empid = request.form.get('empid')
+        name = request.form.get('name')
+        dob = request.form.get('dob')
+        workType = request.form.get('workType')
+        phoneNumber = request.form.get('phoneNumber')
+        adharNumber = request.form.get('adharNumber')
+        wages_per_Day = request.form.get('wages_per_Day')
+        gender = request.form.get('gender')
+        address = request.form.get('address')
+        dob_date = datetime.strptime(dob, '%Y-%m-%d').date()
+
+        # Query the database for an employee with the given 'empid'
+        emp = Employee.query.filter_by(id=empid).first()
+
+        if emp:
+            # Update the employee's data with the new information
+            emp.name = name
+            emp.dob = dob_date
+            emp.workType = workType
+            emp.phoneNumber = phoneNumber
+            emp.adharNumber = adharNumber
+            emp.wages_per_Day = wages_per_Day
+            emp.gender = gender
+            emp.address = address
+
+            # Commit the changes to the database
+            db.session.commit()
+        else:
+            flash('Employee not found!', 'error')
+
+        # Redirect the user to the 'admin' page or route.
+    return redirect(url_for('views.admin'))
     
         
 @views.route('/delete-emp')

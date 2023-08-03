@@ -86,11 +86,11 @@
   </div>
 </main>
 <div class="module">
-  <form action="" class="editform">
+  <form action="/edit" method="post" class="editform">
     <div class="half">
       <div class="inputField">
-        <label for="empid">EmpId : </label>
-        <input type="text" name="empid" id="empid" readonly>
+        <!-- <label for="empid">EmpId : </label> -->
+        <input type="hidden" name="empid" id="empid" readonly>
       </div>
       <div class="inputField">
         <label for="uname">Name : </label>
@@ -139,10 +139,11 @@
       </select>
     </div>
    </div>
-    <button class="btn btn-primary editSubmit" onclick="change() " type="button">Change</button>
+    <button class="btn btn-primary editSubmit" onclick="change(event) " type="submit">Change</button>
   </form>
 </div>
 <script src="/static/javascript/script.js"></script>
+<script src="/static/javascript/inspect.js"></script>
 </body>
 </html>
 

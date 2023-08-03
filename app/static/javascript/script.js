@@ -138,9 +138,12 @@ function editmodul(event) {
   document.getElementById("gender").value = gender;
 }
 
-function change() {
+function change(event) {
   var module = document.querySelector(".module");
   module.classList.remove("active");
+  event.target.type = 'submit';
+  event.target.click();
+
 }
 
 edit_btns.forEach((edit) => {
