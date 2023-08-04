@@ -5,6 +5,7 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for
 import json
 import datetime
 from datetime import datetime
+from flask import current_app as app 
 
 views = Blueprint('views', __name__)
 
@@ -57,26 +58,35 @@ def empEdit():
 @views.route('/delete-emp')
 @login_required
 def deleteEmp():
-    empJson=json.loads(request.data)
-    empid=empJson['EmpId']
-    employee= Employee.query.get(empid)
-    attendances=employee.attendance
-    
-    for attendance in attendances:
-        attendanceID=attendance.id
-        empaddtendance=Attendance.query.get(attendanceID)
-        db.session.delete(empaddtendance)
-        db.commit()
-    if employee.profile_pic == 'Default/Default.jpeg':
-
-        return True
-    
-    else:
-        path = app.config['UPLOAD_FOLDER'] + employee.profile_pic
-        employee.profile_pic='Default/Default.jpeg'
+    try:
+        empJson = request.get_json()  # Use 'get_json()' method to get JSON data from request
+        empid = empJson['EmpId']
+        
+        # Retrieve the employee with the given 'EmpId'
+        employee = Employee.query.get(empid)
+        if employee is None:
+            return "Employee not found!", 404
+        
+        # Delete associated attendance records
+        attendances = employee.attendance
+        for attendance in attendances:
+            db.session.delete(attendance)
+        
+        # Check if the employee has a custom profile picture
+        if employee.profile_pic != 'Default/Default.jpeg':
+            path = os.path.join(app.config['UPLOAD_FOLDER'], employee.profile_pic)
+            employee.profile_pic = 'Default/Default.jpeg'
+            os.remove(path)
+        
+        # Commit changes to the database
+        db.session.delete(employee)
         db.session.commit()
-        os.remove(path)
-        return redirect(url_for('views.admin'))
+
+        return "Employee deleted successfully!", 200
+
+    except Exception as e:
+        # Handle any unexpected errors
+        return str(e), 500
     
 @views.route('/profile-view')
 @login_required
@@ -154,7 +164,7 @@ def calculate_Attendance():
     for employee in employees:
         # Get all attendance records for the employee
         attendance_records = Attendance.query.filter_by(emp_id=employee.id).all()
-        shift=Shift_time.quuery.filter_by(shiftType=employee.shift).first()
+        shift=Shift_time.query.filter_by(shiftType=employee.shift).first()
         #to use the current date
 
         for attendance in attendance_records:
@@ -166,23 +176,15 @@ def calculate_Attendance():
             lateBy=calculate_time_difference(inTime,shiftIntime)
             
             if attendance.outTime:
-                earlyGoingBy=calculate_time_difference(inTime,outTime)
+                earlyGoingBy=calculate_time_difference(outTime,shiftOuttime)
                 # Calculate the time duration between inTime and outTime
-                time_worked = calculate_time_difference(outTime,shiftOuttime)
-            
+                time_worked = calculate_time_difference(inTime,outTime)
+                
+                
                 # Calculate the regular 8-hour work duration
                 regular_work_hours = shift.work_Duration
-            
-                # Check if the time worked exceeds the regular work hours
-                if time_worked > regular_work_hours:
-                    # Calculate the overtime hours
-                    overtime_hours = time_worked - regular_work_hours
-
-                    # Convert overtime_hours to a string in HH:MM format
-                    overtime_str = str(overtime_hours)
-                
-                    # Update the overtime column in the Attendance table
-                    attendance.overtime = overtime_str
+                overtime_hours = calculate_time_difference(shiftOuttime,outTime)
+                attendance.overtime = overtime_hours
 
             else:
                 # If there's no outTime, consider the current time as the outTime

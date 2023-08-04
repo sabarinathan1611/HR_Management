@@ -75,6 +75,7 @@ def addemp():
         email = request.form.get('email')
         attendance = request.form.get('attendance')
         shift = request.form.get('shift')
+        designation= request.form.get('designation')
         
         print("Attendance:", attendance)
         print("Shift:", shift)
@@ -99,12 +100,13 @@ def addemp():
                 address=address,
                 gender=gender,
                 phoneNumber=phoneNumber,
-                workType=workType
+                workType=workType,
+                designation=designation
             )
             db.session.add(new_employee)
 
             # Create a new attendance record and add to the database
-            new_attendance = Attendance(emp_id=empid, shift=shift, attendance=attendance)
+            new_attendance = Attendance(emp_id=empid, shift=shift, attendance=attendance,)
             db.session.add(new_attendance)
 
             # Commit changes to the database

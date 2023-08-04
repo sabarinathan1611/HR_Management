@@ -25,6 +25,8 @@ class Employee(db.Model, UserMixin):
     address = db.Column(db.String(150))
     profile_pic = db.Column(db.String(100000), default='Default/Default.jpeg')
     attendance = db.relationship('Attendance', backref='employee')
+    
+    
 class Attendance(db.Model,UserMixin):
     id=db.Column(db.Integer,primary_key=True)
     date = db.Column(db.DateTime(timezone=True), default=func.now())
