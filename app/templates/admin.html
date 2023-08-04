@@ -11,7 +11,91 @@
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-
+<div class="addform">
+    <form action="/add" method="post" class="adduser">
+       <div class="divide">
+        <div class="inputField">
+            <label class="input">
+                <label for="empid" class="label">EMP-ID :</label>
+                <input type="text" name="empid" id="empid" class="userinput">
+            </label>
+        </div>
+        <div class="inputField">
+            <label class="input">
+                <label for="name" class="label">NAME : </label>
+                <input type="text" name="name" id="name" class="userinput">
+            </label>
+        </div>
+        <div class="inputField">
+            <label class="input">
+                <label for="dob" class="label">DOB : </label>
+                <input type="date" name="dob" id="dob" class="userinput">
+            </label>
+        </div>
+        <div class="inputField">
+            <label class="input">
+                <label for="worktype" class="label">WORK-TYPE :</label>
+                <select name="worktype" id="worktype" class="userinput">
+                    <option value="">select</option>
+                    <option value="daily">Daily</option>
+                    <option value="employee">Employee</option>
+                </select>
+            </label>
+        </div>
+        <div class="inputField">
+            <label class="input">
+                <label for="phnumber" class="label">PH-NUMBER :</label>
+                <input type="text" name="phnumber" id="phnumber" class="userinput">
+            </label>
+        </div>
+        <div class="inputField">
+            <label class="input">
+                <label for="aadhar" class="label">AADHAR :</label>
+                <input type="tel" name="aadhar" id="aadhar" class="userinput">
+            </label>
+        </div>
+       </div>
+       <div class="divide">
+        <div class="inputField">
+            <label class="input">
+                <label for="address" class="label">ADDRESS : </label>
+                <textarea name="address" id="address" cols="30" rows="3" class="userinput">
+                </textarea>
+            </label>
+        </div>
+        <div class="inputField">
+            <label class="input">
+                <label for="emial" class="label">E-MAIL : </label>
+                <input type="email" name="email" id="email" class="userinput">
+            </label>
+        </div>
+        <div class="inputField">
+            <label class="input">
+                <label for="attendance" class="label">ATTENDANCE :</label>
+                <select name="attendance" id="attendance" class="userinput">
+                    <option value="">select</option>
+                    <option value="absent">Absent</option>
+                    <option value="present">Present</option>
+                </select>
+            </label>
+        </div>
+        <div class="inputField">
+            <label class="input">
+                <label for="shift" class="label">SHIFT :</label>
+                <input type="text" name="shift" id="shift" class="userinput">
+            </label>
+        </div>
+        <div class="inputField">
+            <label class="input">
+                <label for="gender" class="label">GENDER :</label>
+                    <label ><input type="radio" name="gender" id="gender">MALE</label>
+                    <label ><input type="radio" name="gender" id="gender">FEMALE</label>
+            </label>
+        </div>
+       </div>
+       <button type="submit" class="addformbtn  btn-primary"><i class="fas fa-plus"></i> &nbsp; Add</button>
+    </form>
+</div>
 <nav class="sidebar" id="sidebar">
   <ul class="navbar-nav">
     <li index="0" class="nav-item ">
@@ -22,6 +106,9 @@
     </li>
     <li index="2" class="nav-item">
         <a class="btn  mt-3 btn-danger nav-link" href="#"><i class="fas fa-times"></i> &nbsp; Absent</a>
+    </li>
+    <li index="3" class="">
+        <a class="btn addbtn  mt-3 btn-warning nav-link" href="#"><i class="fas fa-plus"></i> &nbsp; Add</a>
     </li>
   </ul>
 </nav>
@@ -86,11 +173,11 @@
   </div>
 </main>
 <div class="module">
-  <form action="/edit" method="post" class="editform">
+  <form action="" class="editform">
     <div class="half">
       <div class="inputField">
-        <!-- <label for="empid">EmpId : </label> -->
-        <input type="hidden" name="empid" id="empid" readonly>
+        <label for="empid">EmpId : </label>
+        <input type="text" name="empid" id="empid" readonly>
       </div>
       <div class="inputField">
         <label for="uname">Name : </label>
@@ -139,11 +226,9 @@
       </select>
     </div>
    </div>
-    <button class="btn btn-primary editSubmit" onclick="change(event) " type="submit">Change</button>
+    <button class="btn btn-primary editSubmit" onclick="change() " type="button">Change</button>
   </form>
 </div>
 <script src="/static/javascript/script.js"></script>
-<script src="/static/javascript/inspect.js"></script>
 </body>
 </html>
-

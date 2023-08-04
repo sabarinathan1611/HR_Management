@@ -1,190 +1,263 @@
 *{
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}   /* Add your custom styles here */
-body {
-    padding-top: 60px; 
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }   /* Add your custom styles here */
+  body {
+      padding-top: 60px; 
+      display: flex;
+      align-items: center;
+      justify-content: center; /* Adjust this value to account for the fixed top navbar */
+  }
+  
+  /* Sidebar styles */
+  .sidebar {
+  position: fixed;
+  top: 0;
+  left: -250px;
+  height: 100%;
+  width: 250px;
+  padding: 20px;
+  background-color: #333;
+  color: #fff;
+  transition: left 0.3s ease-in-out;
+  z-index: 100;
+  }
+  
+  .sidebar.active{
+    left: 0;
+  }
+  
+  .sidebar a {
+  display: block;
+  color: #fff;
+  padding: 10px;
+  text-decoration: none;
+  }
+  
+  /* Sidebar toggle button styles */
+  .sidebar-toggle-btn {
+  position: absolute;
+  width:  30px;
+  height: 30px;
+  border-radius: 50%;
+  top: 20px;
+  left: 20px;
+  font-size: 20px;
+  color: #fff;
+  cursor: pointer;
+  z-index: 999;
+  background-image: url(/static/img/open.png);
+  background-size: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: left 0.3s ease-in-out;
+  }
+  
+  .sidebar-toggle-btn.active{
+    left: 255px;
+    background-image: url(/static/img/close.jpg);
+    background-size: 100%;
+  }
+  .filters{
+    position: absolute;
+    top: 30px;
+    left: 0;
+    width: 100%;
     display: flex;
     align-items: center;
-    justify-content: center; /* Adjust this value to account for the fixed top navbar */
-}
-
-/* Sidebar styles */
-.sidebar {
-position: fixed;
-top: 0;
-left: -250px;
-height: 100%;
-width: 250px;
-padding: 20px;
-background-color: #333;
-color: #fff;
-transition: left 0.3s ease-in-out;
-z-index: 100;
-}
-
-.sidebar.active{
-  left: 0;
-}
-
-.sidebar a {
-display: block;
-color: #fff;
-padding: 10px;
-text-decoration: none;
-}
-
-/* Sidebar toggle button styles */
-.sidebar-toggle-btn {
-position: absolute;
-width:  30px;
-height: 30px;
-border-radius: 50%;
-top: 20px;
-left: 20px;
-font-size: 20px;
-color: #fff;
-cursor: pointer;
-z-index: 999;
-background-image: url(/static/img/open.png);
-background-size: 100%;
-display: flex;
-align-items: center;
-justify-content: center;
-transition: left 0.3s ease-in-out;
-}
-
-.sidebar-toggle-btn.active{
-  left: 255px;
-  background-image: url(/static/img/close.jpg);
-  background-size: 100%;
-}
-.filters{
+    justify-content: center;
+    /* padding: 7px; */
+    /* border-radius: 5px; */
+    /* border: 2px solid #555; */
+  }
+  input{
+  padding: 5px; 
+  border-radius: 5px;
+  border: 2px solid #555;
+  margin: 5px;
+  }
+  #filter{
+  margin-left: 20px;
+  }
+  
+  .alert{
   position: absolute;
-  top: 30px;
-  left: 0;
+  top: -40px;
+  right: 20px;
+  animation: popdown 5s ease-in forwards;
+  cursor: pointer;
+  }
+  
+  @keyframes popdown {
+  0%{
+    top: -40px;
+    opacity: 0;
+  }10%,20%,30%,40%,50%,60%{
+    top: 20px;
+    opacity: 1;
+  }100%{
+    top: -40px;
+    opacity: 0;
+  }
+  }
+  
+  .action-btn{
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  }
+  
+  .module {
+    position: absolute;
+    z-index: 100;
+    width: 70%;
+    min-height: 70%;
+    padding: 10px;
+    border-radius: 7px;
+    background: #fff;
+    border: 2px solid;
+    top: -661px;
+    /* left: 20px; */
+    display: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .5s ease;
+    opacity: 0;
+  }
+  
+  .module.active{
+  top: 50px;
+  opacity: 1;
+  }
+  
+  
+  .editform{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  }
+  
+  .half{
+  flex-basis: 50%;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  }
+  
+  .editSubmit{
+  position: absolute;
+  bottom: 10px;
+  
+  }
+  
+  .inputField{
   width: 100%;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  /* padding: 7px; */
-  /* border-radius: 5px; */
-  /* border: 2px solid #555; */
-}
-input{
-padding: 5px; 
-border-radius: 5px;
-border: 2px solid #555;
-margin: 5px;
-}
-#filter{
-margin-left: 20px;
-}
-
-.alert{
-position: absolute;
-top: -40px;
-right: 20px;
-animation: popdown 5s ease-in forwards;
-cursor: pointer;
-}
-
-@keyframes popdown {
-0%{
-  top: -40px;
-  opacity: 0;
-}10%,20%,30%,40%,50%,60%{
-  top: 20px;
-  opacity: 1;
-}100%{
-  top: -40px;
-  opacity: 0;
-}
-}
-
-.action-btn{
-display: flex;
-gap: 10px;
-align-items: center;
-justify-content: center;
-width: 100%;
-height: 100%;
-}
-
-.module {
-  position: absolute;
-  z-index: 100;
-  width: 70%;
-  min-height: 70%;
+  gap: 20px;
   padding: 10px;
-  border-radius: 7px;
-  background: #fff;
-  border: 2px solid;
-  top: -661px;
-  /* left: 20px; */
-  display: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all .5s ease;
-  opacity: 0;
+  justify-content: space-evenly;
+  }
+  
+  .editform input, select, textarea{
+  padding: 5px; 
+  border-radius: 5px;
+  border: 2px solid #555;
+  margin: 5px;
+  width: 60%;
+  }
+  
+  .radiobtn{
+  width: 100%;
+  }
+  
+  .row {
+    position: relative;
+    left: -200px;
+    display: flex;
+    align-content: center;
+    /* justify-content: center; */
+    align-items: center;
+    flex-direction: column;
+}
+  
+  .tableClass{
+  margin-left: -100px;
+  }
+
+
+.addform{
+    position: absolute;
+    top: -100%;
+    width: 60%;
+    min-height: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    background: #fff;
+    border: 2px solid #555555 ;
+    border-radius: 5px;
+    transition: all .5s ease-in;
+    opacity: 0;
 }
 
-.module.active{
-top: 50px;
-opacity: 1;
+.addform.active{
+    opacity: 1;
+    top: 30px;
 }
 
-.editform{
-width: 100%;
-height: 100%;
-display: flex;
-align-items: center;
-justify-content: center;
+.adduser{
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
 }
 
-.half{
-flex-basis: 50%;
-width: 100%;
-height: 100%;
-display: flex;
-flex-direction: column;
-align-items: center;
-justify-content: space-evenly;
+.addformbtn{
+    position: absolute;
+    /* bottom: 10px; */
+    padding: 10px;
+    border-radius: 10px;
+    bottom: -20px;
 }
 
-.editSubmit{
-position: absolute;
-bottom: 10px;
+.divide{
+    flex-basis: 50%;
+    /* width: 100%; */
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
 
+.input{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    /* background: #333; */
+}
+
+.userinput{
+    width: 70%;
 }
 
 .inputField{
-width: 100%;
-display: flex;
-gap: 20px;
-padding: 10px;
-justify-content: space-evenly;
-}
-
-.editform input, select, textarea{
-padding: 5px; 
-border-radius: 5px;
-border: 2px solid #555;
-margin: 5px;
-width: 60%;
-}
-
-.radiobtn{
-width: 100%;
-}
-
-.row{
-position: absolute;
-left: 0;
-}
-
-.tableClass{
-margin-left: -100px;
+    width: 100%;
+    /* background: #555; */
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5px;
 }

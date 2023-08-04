@@ -1,7 +1,7 @@
 from flask_login import login_required, login_user, logout_user, current_user
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from werkzeug.security import generate_password_hash, check_password_hash  
-from .models import Login_admin,Employee,Attendance
+from .models import Login_admin,Employee,Attendance,Shift_time
 from . import db
 import datetime
 import sched
@@ -54,44 +54,68 @@ def login():
  
         return render_template('login.html')
 
-            
+@auth.route('/logut',methods=['GET','POST'])    
+def logout():
+    logout_user()
+    return redirect(url_for('auth.login'))
     
 @auth.route('/add',methods=['POST','GET'])
 @login_required
 def addemp():
     if request.method == 'POST':
+        empid = request.form.get('empid')
+        name = request.form.get('name')
+        dob = request.form.get('dob')
+        workType = request.form.get('worktype')
+        phoneNumber = request.form.get('phnumber')
+        adharNumber = request.form.get('aadhar')
+        wages_per_Day = request.form.get('wages_per_Day')
+        gender = request.form.get('gender')
+        address = request.form.get('address')
+        email = request.form.get('email')
+        attendance = request.form.get('attendance')
+        shift = request.form.get('shift')
         
-        empid=request.form.get('empid')
-        name=request.form.get('name')
-        dob=request.form.get('dob')
-        workType=request.form.get('workType')
-        phoneNumber=request.form.get('phoneNumber')
-        adharNumber=request.form.get('adharNumber')
-        wages_per_Day=request.form.get('wages_per_Day')
-        gender=request.form.get('gender')
-        address=request.form.get('address')
-        email=request.form.get('email')
-        attendance=request.form.get('attedance')
-        shift=request.form.get('shift')
-        
-        
+        print("Attendance:", attendance)
+        print("Shift:", shift)
         print(dob)
-        dob_date = datetime.strptime(dob, '%Y-%m-%d').date()
-        
-        employee=Employee.query.filter_by(id=empid).first()
-        print(employee)
-        if employee ==None:
-            addemp=Employee(id=empid,email=email,name=name,dob=dob_date,adharNumber=adharNumber,address=address,gender=gender,phoneNumber=phoneNumber,workType=workType)
-            db.session.add(addemp)
+
+        try:
+            dob_date = datetime.strptime(dob, '%Y-%m-%d').date()
+        except ValueError:
+            flash('Invalid date format for Date of Birth!', 'error')
+            return render_template('addemp.html')
+
+        employee = Employee.query.filter_by(id=empid).first()
+
+        if not employee:
+            # Create a new employee and add to the database
+            new_employee = Employee(
+                id=empid,
+                email=email,
+                name=name,
+                dob=dob_date,
+                adharNumber=adharNumber,
+                address=address,
+                gender=gender,
+                phoneNumber=phoneNumber,
+                workType=workType
+            )
+            db.session.add(new_employee)
+
+            # Create a new attendance record and add to the database
+            new_attendance = Attendance(emp_id=empid, shift=shift, attendance=attendance)
+            db.session.add(new_attendance)
+
+            # Commit changes to the database
             db.session.commit()
-            newattendance = Attendance(emp_id=empid,shift=shift,attedance=attendance)
-            db.session.add(newattendance)
-            db.session.commit()
-            
-        elif employee == True:
-            print("Work")
-            flash("User Alredy Iruku")
-    return render_template('addemp.html')
+
+            flash('Employee added successfully!', 'success')
+        else:
+            # Employee already exists with the given empid
+            flash('Employee with the given ID already exists!', 'error')
+
+    return redirect(url_for('views.admin'))
 
                 
 @auth.route('/attendance',methods=['POST','GET'])

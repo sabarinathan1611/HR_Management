@@ -91,7 +91,24 @@ def profileView():
     current_date = datetime.now().date()
     return render_template('profile.html',employee=employee,current_date=current_date)
 
+def calculate_time_difference(time1_str, time2_str):
+    # Convert time strings to datetime objects
+    time1 = datetime.strptime(time1_str, '%H:%M')
+    time2 = datetime.strptime(time2_str, '%H:%M')
 
+    # Calculate the time difference
+    time_difference = time2 - time1
+
+    # Calculate the total minutes in the time difference
+    total_minutes = time_difference.total_seconds() // 60
+
+    # Calculate hours and remaining minutes
+    hours = total_minutes // 60
+    minutes = total_minutes % 60
+
+    # Format the time difference as H:MM
+    formatted_difference = f"{int(hours)}:{int(minutes):02d}"
+    return formatted_difference
 
 def update_wages_for_present_employees():
     
@@ -130,40 +147,53 @@ def update_wages_for_present_daily_workers():
    
     return db.session.commit()
 
-def calculate_overtime():
+def calculate_Attendance():
     # Assuming Employee is your SQLAlchemy model for employees
     employees = Employee.query.all()
 
     for employee in employees:
         # Get all attendance records for the employee
         attendance_records = Attendance.query.filter_by(emp_id=employee.id).all()
+        shift=Shift_time.quuery.filter_by(shiftType=employee.shift).first()
         #to use the current date
 
         for attendance in attendance_records:
-            in_time = datetime.strptime(attendance.inTime, '%H:%M:%S')
+            inTime=attendance.inTime
+            outTime=attendance.outTime
+            shiftIntime=shift.shiftIntime
+            shiftOuttime=shift.shift_Outtime
+
+            lateBy=calculate_time_difference(inTime,shiftIntime)
             
             if attendance.outTime:
-                out_time = datetime.strptime(attendance.outTime, '%H:%M:%S')
+                earlyGoingBy=calculate_time_difference(inTime,outTime)
+                # Calculate the time duration between inTime and outTime
+                time_worked = calculate_time_difference(outTime,shiftOuttime)
+            
+                # Calculate the regular 8-hour work duration
+                regular_work_hours = shift.work_Duration
+            
+                # Check if the time worked exceeds the regular work hours
+                if time_worked > regular_work_hours:
+                    # Calculate the overtime hours
+                    overtime_hours = time_worked - regular_work_hours
+
+                    # Convert overtime_hours to a string in HH:MM format
+                    overtime_str = str(overtime_hours)
+                
+                    # Update the overtime column in the Attendance table
+                    attendance.overtime = overtime_str
+
             else:
                 # If there's no outTime, consider the current time as the outTime
                 out_time = datetime.now()
             
-            # Calculate the time duration between inTime and outTime
-            time_worked = out_time - in_time
-            
-            # Calculate the regular 8-hour work duration
-            regular_work_hours = timedelta(hours=8)
-            
-            # Check if the time worked exceeds the regular work hours
-            if time_worked > regular_work_hours:
-                # Calculate the overtime hours
-                overtime_hours = time_worked - regular_work_hours
-                
-                # Convert overtime_hours to a string in HH:MM format
-                overtime_str = str(overtime_hours)
-                
-                # Update the overtime column in the Attendance table
-                attendance.overtime = overtime_str
+
 
         # Commit the changes to the database for each employee
         db.session.commit()
+
+
+            
+            
+            
