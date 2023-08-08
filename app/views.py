@@ -1,12 +1,12 @@
 from flask_login import login_required, current_user
 from . import db
-from .models import Employee,Attendance
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from .models import Employee,Attendance,Shift_time
+from flask import Blueprint, render_template, request, flash, redirect, url_for,jsonify
 import json
 import datetime
 from datetime import datetime
-from flask import current_app as app 
 
+import os
 views = Blueprint('views', __name__)
 
 
@@ -14,7 +14,8 @@ views = Blueprint('views', __name__)
 @login_required
 def admin():
     # employee =Employee.query.order_by(Employee.id)
-    employee =Attendance.query.order_by(Attendance.date)
+    employee =Attendance.query.order_by(Attendance.date)   
+    # sihft=Shift_time.query.order_by(Shift_time.id) 
     return render_template('admin.html',employee=employee)
 
 @views.route('/edit', methods=['POST', 'GET'])
@@ -55,38 +56,37 @@ def empEdit():
     return redirect(url_for('views.admin'))
     
         
-@views.route('/delete-emp')
+@views.route('/delete-emp',methods=['DELETE'])
 @login_required
-def deleteEmp():
+def delete_employee():
     try:
-        empJson = request.get_json()  # Use 'get_json()' method to get JSON data from request
-        empid = empJson['EmpId']
-        
-        # Retrieve the employee with the given 'EmpId'
-        employee = Employee.query.get(empid)
+        data = request.get_json()
+        print(data)
+        if not data or 'EmpId' not in data:
+            return jsonify({'error': 'Invalid request data. EmpId is missing.'}), 400
+
+        emp_id = data['EmpId']
+
+        # Check if an employee with the given emp_id exists in the database
+        employee = Employee.query.filter_by(emp_id=emp_id).first()
+
         if employee is None:
-            return "Employee not found!", 404
-        
-        # Delete associated attendance records
-        attendances = employee.attendance
-        for attendance in attendances:
-            db.session.delete(attendance)
-        
-        # Check if the employee has a custom profile picture
-        if employee.profile_pic != 'Default/Default.jpeg':
-            path = os.path.join(app.config['UPLOAD_FOLDER'], employee.profile_pic)
-            employee.profile_pic = 'Default/Default.jpeg'
-            os.remove(path)
-        
-        # Commit changes to the database
+            return jsonify({'error': 'Employee not found.'}), 404
+
+        # If the employee is found, delete the record from the database
         db.session.delete(employee)
         db.session.commit()
 
-        return "Employee deleted successfully!", 200
+        return jsonify({'message': 'Employee deleted successfully.'}), 200
 
     except Exception as e:
-        # Handle any unexpected errors
-        return str(e), 500
+        print(str(e))
+        return jsonify({'error': str(e)}), 500
+
+        return "Employee deleted successfully!", 200
+
+   
+    
     
 @views.route('/profile-view')
 @login_required
@@ -164,38 +164,67 @@ def calculate_Attendance():
     for employee in employees:
         # Get all attendance records for the employee
         attendance_records = Attendance.query.filter_by(emp_id=employee.id).all()
-        shift=Shift_time.query.filter_by(shiftType=employee.shift).first()
-        #to use the current date
+      
 
         for attendance in attendance_records:
-            inTime=attendance.inTime
-            outTime=attendance.outTime
-            shiftIntime=shift.shiftIntime
-            shiftOuttime=shift.shift_Outtime
+            print("SF: ",attendance.shift)
+            shift = Shift_time.query.filter_by(id=1).first()
+            print("SHIFT: ",shift)
+            inTime = attendance.inTime
+            print("IN TIME: ",inTime)
+            shiftIntime = shift.shiftIntime
+            print("SHIFT INTIME:",shiftIntime)
+            shiftOuttime = shift.shift_Outtime
 
-            lateBy=calculate_time_difference(inTime,shiftIntime)
-            
+            # Calculate the lateBy time
+            lateBy = calculate_time_difference(inTime, shiftIntime)
+            attendance.lateBy = lateBy
+
             if attendance.outTime:
-                earlyGoingBy=calculate_time_difference(outTime,shiftOuttime)
-                # Calculate the time duration between inTime and outTime
-                time_worked = calculate_time_difference(inTime,outTime)
-                
-                
-                # Calculate the regular 8-hour work duration
-                regular_work_hours = shift.work_Duration
-                overtime_hours = calculate_time_difference(shiftOuttime,outTime)
-                attendance.overtime = overtime_hours
+                outTime = attendance.outTime
 
+                # Calculate the earlyGoingBy time
+                earlyGoingBy = calculate_time_difference(outTime, shiftOuttime)
+                print("EARLY GOING BY :",earlyGoingBy)
+                attendance.earlyGoingBy = earlyGoingBy
+
+                # Calculate the time duration between inTime and outTime
+                time_worked = calculate_time_difference(inTime, outTime)
+                print("Time Worked: ",time_worked)
+                attendance.TotalDuration = time_worked
+
+                # Calculate the overtime hours
+                overtime_hours = calculate_time_difference(shiftOuttime, outTime)
+                print("OVER TIME: ",overtime_hours)
+                attendance.overtime = overtime_hours
             else:
                 # If there's no outTime, consider the current time as the outTime
-                out_time = datetime.now()
-            
-
+                out_time = datetime.now().strftime("%H:%M")
+                earlyGoingBy = calculate_time_difference(out_time, shiftOuttime)
+                attendance.earlyGoingBy = earlyGoingBy
+                attendance.TotalDuration = calculate_time_difference(inTime, out_time)
+                attendance.overtime = "00:00"
 
         # Commit the changes to the database for each employee
         db.session.commit()
 
 
+@views.route('/adddd',methods=['POST','GET'])
+def addd():
+    
+    calculate_Attendance()
+    return redirect('/')
             
-            
-            
+
+@views.route('/a2',methods=['POST','GET'])
+def ad8d():
+    # new_shift = Shift_time(shiftIntime="10:00",shift_Outtime="5:00",shiftType="Morning")
+    # db.session.add(new_shift)
+    # db.session.commit()
+    emp=Attendance.query.get(1)
+    emp.inTime="09:00"
+    emp.outTime="15:00"
+    db.session.commit()
+    
+
+    return redirect('/')

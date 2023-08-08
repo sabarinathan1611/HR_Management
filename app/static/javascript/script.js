@@ -23,7 +23,8 @@ function toggleSidebar(event) {
       });
     } else {
       ename.forEach((e) => {
-        var nameV = e.innerHTML;
+        value = value.toStrintg().toLowerCase();
+        var nameV = e.innerHTML.toString().toLowerCase();
         if (nameV.includes(value)) {
           e.parentElement.style.display = "";
         } else {
@@ -67,51 +68,51 @@ function toggleSidebar(event) {
   
   // date filter
   
-  var fromDate = document.getElementById("from");
-  var toDate = document.getElementById("to");
+  // var fromDate = document.getElementById("from");
+  // var toDate = document.getElementById("to");
   
   // /////////////////////////////////////////////////////////////////////////////////////////
-  function filterTableByDate() {
-    console.log("called");
-    if (fromDate.value === "" || fromDate.value.length <= 0) {
-      if (document.querySelector(".alert")) {
-        document.querySelector(".alert").remove();
-      }
-      var errorbox = document.createElement("div");
-      errorbox.className = "alert alert-danger";
-      errorbox.setAttribute("role", "alert");
-      errorbox.innerHTML = `<i class="fas fa-exclamation-circle"></i> From date is empty `;
+  // function filterTableByDate() {
+  //   console.log("called");
+  //   if (fromDate.value === "" || fromDate.value.length <= 0) {
+  //     if (document.querySelector(".alert")) {
+  //       document.querySelector(".alert").remove();
+  //     }
+  //     var errorbox = document.createElement("div");
+  //     errorbox.className = "alert alert-danger";
+  //     errorbox.setAttribute("role", "alert");
+  //     errorbox.innerHTML = `<i class="fas fa-exclamation-circle"></i> From date is empty `;
   
-      document.querySelector("body").appendChild(errorbox);
-    } else {
-      const dates = document.querySelectorAll(".date");
-      dates.forEach((date) => {
-        var dates = date.innerHTML[0] + date.innerHTML[1];
-        var fromd = fromDate.value.toString().slice(8, 10);
-        var tod = toDate.value.toString().slice(8, 10);
-        if (
-          parseInt(dates) >= parseInt(fromd) &&
-          parseInt(dates) <= parseInt(tod)
-        ) {
-          var mon = date.innerHTML;
-          mon = mon[3] + mon[4];
-          var fromMon = fromDate.value[5] + fromDate.value[6];
-          var toMon = toDate.value[5] + toDate.value[6];
+  //     document.querySelector("body").appendChild(errorbox);
+  //   } else {
+  //     const dates = document.querySelectorAll(".date");
+  //     dates.forEach((date) => {
+  //       var dates = date.innerHTML[0] + date.innerHTML[1];
+  //       var fromd = fromDate.value.toString().slice(8, 10);
+  //       var tod = toDate.value.toString().slice(8, 10);
+  //       if (
+  //         parseInt(dates) >= parseInt(fromd) &&
+  //         parseInt(dates) <= parseInt(tod)
+  //       ) {
+  //         var mon = date.innerHTML;
+  //         mon = mon[3] + mon[4];
+  //         var fromMon = fromDate.value[5] + fromDate.value[6];
+  //         var toMon = toDate.value[5] + toDate.value[6];
   
-          if (parseInt(mon) >= fromMon && mon <= toMon) {
-            date.parentElement.style.display = "";
-          } else {
-            date.parentElement.style.display = "none";
-          }
-        } else {
-          date.parentElement.style.display = "none";
-        }
-      });
-    }
-  }
+  //         if (parseInt(mon) >= fromMon && mon <= toMon) {
+  //           date.parentElement.style.display = "";
+  //         } else {
+  //           date.parentElement.style.display = "none";
+  //         }
+  //       } else {
+  //         date.parentElement.style.display = "none";
+  //       }
+  //     });
+  //   }
+  // }
   
-  document.getElementById("from").addEventListener("change", filterTableByDate);
-  document.getElementById("to").addEventListener("change", filterTableByDate);
+  // document.getElementById("from").addEventListener("change", filterTableByDate);
+  // document.getElementById("to").addEventListener("change", filterTableByDate);
   
   var edit_btns = document.querySelectorAll(".edit-btn");
   
@@ -148,12 +149,28 @@ function toggleSidebar(event) {
       editmodul(event);
     });
   });
-  
+
+function deleteEmp(EmpId) {
+  // Sending a DELETE request to the server to delete the employee with the specified EmpId.
+  fetch("/delete-emp", {
+    method: "DELETE", // Specifies the HTTP method as DELETE.
+    body: JSON.stringify({ EmpId: EmpId }), // The request body contains the employee ID to be deleted in JSON format.
+  }).then((_res) => {
+    // After the deletion is complete (regardless of success or failure), redirect the user to the home page.
+    window.location.href = "/";
+  });
+}
+
   const delete_btn = document.querySelectorAll(".delete-btn");
   
   delete_btn.forEach((btn) => {
     btn.addEventListener("click", function () {
+      const empId = event.target.dataset.empId; // Assuming you have stored the employee ID as a data attribute (e.g., data-emp-id) on the delete button.
+      console.log(empId);
+      deleteEmp(empId); // Call the deleteEmp function with the employee ID.
       btn.parentElement.parentElement.remove();
+
+      
     });
   });
 

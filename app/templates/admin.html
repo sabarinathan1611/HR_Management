@@ -119,7 +119,7 @@
 
 <main role="main" class="container mt-5">
     <div class="filters">
-        <input placeholder="11-08-2003" type="date" name="from" id="from"> to <input placeholder="15-08-2003" type="date" name="to" id="to">
+
 
         <input type="text" name="filter" id="filter" placeholder="eg: 0001 or vinoth">
     </div>
@@ -137,9 +137,14 @@
             <th>Attendance</th>
             <th>Shift</th>
             <th>Date</th>
+            <th>Shift InTime</th>
+            <th>Shift OutTime</th>
             <th>InTime</th>
             <th>OutTime</th>
             <th>Overtime</th>
+            <th>TotalDuration</th>
+            <th>lateBy</th>
+            <th>earlyGoingBy</th>
             <th>actions</th>
 
             
@@ -147,6 +152,7 @@
         </thead>
         <tbody>
 {%for emp in employee%}
+
           <tr>
             <td class="id">{{emp.emp_id}}</td>
             <td class="name">{{emp.employee.name}}</td>
@@ -156,11 +162,17 @@
             <td class="attend">{{emp.attendance}}</td>
             <td class="shift">{{emp.shift}}</td>
             <td class="shift">{{emp.date.date()}}</td>
+            <td>{{emp.defaultshift.shiftIntime}}</td>
+            <td>{{emp.defaultshift.shift_Outtime}}</td>
             <td class="Intime">{{emp.inTime}}</td>
             <td class="outtime">{{emp.outTime}}</td>
             <td class="overtime">{{emp.overtime}}</td>
+            <td>{{emp.TotalDuration}}</td>
+            <td>{{emp.lateBy}}</td>
+            <td>{{emp.earlyGoingBy}}</td>
+            
             <td class="action-btn">
-              <button class="btn btn-danger btn-sm delete-btn">Delete</button>
+              <button class="btn btn-danger btn-sm delete-btn"  data-emp-id="{{ emp.emp_id }}" >Delete</button>
               <button class="btn btn-primary btn-sm edit-btn">Edit</button>
             </td>
           </tr>

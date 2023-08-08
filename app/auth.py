@@ -4,7 +4,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from .models import Login_admin,Employee,Attendance,Shift_time
 from . import db
 import datetime
-import sched
+from flask import current_app as app 
+
 import time
 from datetime import datetime, timedelta
 
@@ -141,3 +142,6 @@ def attendance():
         return redirect(url_for('views.admin'))
         
     return render_template('attendance.html')
+
+
+

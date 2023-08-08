@@ -23,6 +23,7 @@ class Employee(db.Model, UserMixin):
     adharNumber = db.Column(db.Integer)
     gender = db.Column(db.String(150))
     address = db.Column(db.String(150))
+    mimetype =db.Column(db.String(150))
     profile_pic = db.Column(db.String(100000), default='Default/Default.jpeg')
     attendance = db.relationship('Attendance', backref='employee')
     
@@ -36,8 +37,8 @@ class Attendance(db.Model,UserMixin):
     inTime=db.Column(db.String(150))
     outTime=db.Column(db.String(150))
     overtime=db.Column(db.String(150),default='00:00')
+    defaultshift=db.relationship('Shift_time', backref='shitTime')
     shift=db.Column(db.String(150))
-    
     TotalDuration=db.Column(db.String(150))
     lateBy=db.Column(db.String(150))
     earlyGoingBy=db.Column(db.String(150))
@@ -46,6 +47,7 @@ class Attendance(db.Model,UserMixin):
 
 class Shift_time(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    shift=db.Column(db.Integer, db.ForeignKey('attendance.id'))
     shiftIntime = db.Column(db.String(150))
     shift_Outtime = db.Column(db.String(150))
     shiftType = db.Column(db.String(150))

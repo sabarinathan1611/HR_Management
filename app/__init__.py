@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import  SQLAlchemy
 from flask_login import LoginManager
+import os
 import datetime
 import sched
 import time
@@ -14,6 +15,9 @@ def create_app():
     app.config['SECRET_KEY'] = '#$&^&^WYYDUHS&YWE'
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///{}'.format(DB_NAME)
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS']= False
+    APP_ROOT = os.path.dirname(os.path.abspath(__file__))
+    UPLOAD_FOLDER = os.path.join(APP_ROOT, 'static/img/profile')
+    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
     
     db.init_app(app)
     
