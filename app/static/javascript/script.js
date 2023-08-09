@@ -152,21 +152,28 @@ function toggleSidebar(event) {
 
 function deleteEmp(EmpId) {
   // Sending a DELETE request to the server to delete the employee with the specified EmpId.
+  console.log("emp: ",EmpId);
   fetch("/delete-emp", {
-    method: "DELETE", // Specifies the HTTP method as DELETE.
+    method: "POST", 
+    headers: {
+      "Content-Type": "application/json", // Set the content type to JSON
+    },
     body: JSON.stringify({ EmpId: EmpId }), // The request body contains the employee ID to be deleted in JSON format.
-  }).then((_res) => {
-    // After the deletion is complete (regardless of success or failure), redirect the user to the home page.
-    window.location.href = "/";
-  });
+  }).then(response => response.json())
+  .then(data =>{
+    console.log(data);
+    let msg = data;
+    alert(msg.message);
+  })
 }
 
   const delete_btn = document.querySelectorAll(".delete-btn");
   
   delete_btn.forEach((btn) => {
-    btn.addEventListener("click", function () {
-      const empId = event.target.dataset.empId; // Assuming you have stored the employee ID as a data attribute (e.g., data-emp-id) on the delete button.
-      console.log(empId);
+    btn.addEventListener("click", function (event) {
+      const empId = event.target.getAttribute('data-emp-id'); // Assuming you have stored the employee ID as a data attribute (e.g., data-emp-id) on the delete button.
+      // console.log(empId);
+      // console.log(typeof(empId));
       deleteEmp(empId); // Call the deleteEmp function with the employee ID.
       btn.parentElement.parentElement.remove();
 

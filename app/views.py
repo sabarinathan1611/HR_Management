@@ -56,25 +56,32 @@ def empEdit():
     return redirect(url_for('views.admin'))
     
         
-@views.route('/delete-emp',methods=['DELETE'])
+@views.route('/delete-emp',methods=['POST'])
 @login_required
 def delete_employee():
     try:
         data = request.get_json()
         print(data)
+        
         if not data or 'EmpId' not in data:
             return jsonify({'error': 'Invalid request data. EmpId is missing.'}), 400
 
         emp_id = data['EmpId']
+        
 
         # Check if an employee with the given emp_id exists in the database
-        employee = Employee.query.filter_by(emp_id=emp_id).first()
+        employee = Employee.query.filter_by(id=int(emp_id)).first()
+        
+        attendance=Attendance.query.filter_by(id=int(emp_id)).all()
+        for record in attendance:
+            db.session.delete(record)
 
         if employee is None:
             return jsonify({'error': 'Employee not found.'}), 404
 
         # If the employee is found, delete the record from the database
         db.session.delete(employee)
+        
         db.session.commit()
 
         return jsonify({'message': 'Employee deleted successfully.'}), 200
@@ -83,7 +90,7 @@ def delete_employee():
         print(str(e))
         return jsonify({'error': str(e)}), 500
 
-        return "Employee deleted successfully!", 200
+    return "Employee deleted successfully!", 200
 
    
     
