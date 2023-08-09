@@ -13,6 +13,6 @@ if __name__ == '__main__':
     # Schedule the function to run for the first time
     schedule_next_sunday()
 
-    # Run the scheduler loop
+    
     scheduler.run()
     
