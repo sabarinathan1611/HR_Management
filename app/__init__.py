@@ -2,6 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import  SQLAlchemy
 from flask_login import LoginManager
 import os
+from os import path
 import datetime
 import sched
 import time
@@ -17,7 +18,10 @@ def create_app():
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS']= False
     APP_ROOT = os.path.dirname(os.path.abspath(__file__))
     UPLOAD_FOLDER = os.path.join(APP_ROOT, 'static/img/profile')
+    Excel_FOLDER = os.path.join(APP_ROOT, 'static/excel')
     app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+    app.config['Excel_FOLDER'] = Excel_FOLDER
+    
     
     db.init_app(app)
     

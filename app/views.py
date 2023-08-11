@@ -5,6 +5,8 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for,
 import json
 import datetime
 from datetime import datetime
+import pandas as pd
+from flask import current_app as app
 
 import os
 views = Blueprint('views', __name__)
@@ -230,15 +232,52 @@ def addd():
     return redirect('/')
             
 
-@views.route('/a2',methods=['POST','GET'])
+@views.route('/a2', methods=['POST', 'GET'])
 def ad8d():
-    # new_shift = Shift_time(shiftIntime="06:00",shift_Outtime="14:00",shiftType="8A",work_Duration="08:00")
-    # db.session.add(new_shift)
-    # db.session.commit()
-    emp=Attendance.query.get(2)
-    emp.inTime="08:16"
-    emp.outTime="18:56"
-    db.session.commit()
-    
+    try:
+        file_path = os.path.join(app.config['Excel_FOLDER'], '01-08-23.xls')
+        
+        if os.path.exists(file_path):
+            sheet_names = pd.ExcelFile(file_path).sheet_names
+            
+            with db.session.begin(subtransactions=True):  # Begin session context
+                for sheet_name in sheet_names:
+                    if file_path.lower().endswith('.xlsx'):
+                        df = pd.read_excel(file_path, sheet_name, engine='openpyxl', skiprows=1, header=None)
+                    elif file_path.lower().endswith('.xls'):
+                        df = pd.read_excel(file_path, sheet_name, engine='xlrd', skiprows=1, header=None)
+                    else:
+                        print("Unsupported file format")
+                        return redirect('/')  # Handle unsupported format
+                    
+                    for index, row in df.iterrows():
+                        shift_type = row['Shift']
+                        print(shift_type)
+                        
+                        existing_shift = db.session.query(Shift_time).filter_by(shiftType=shift_type).first()
+                        if not existing_shift:
+                            print("wrk")
+                            shift = Shift_time(
+                                shiftIntime=row['S. InTime'],
+                                shift_Outtime=row['S. OutTime'],
+                                shiftType=row['Shift'],
+                                work_Duration=row['Work Duration']
+                            )
+                            db.session.add(shift)
+                            db.session.commit()  # Commit after each insert
+                            flash("Siuuuuuuuuu")
+            # No need to explicitly commit; the context manager handles it
+
+    except Exception as e:
+        db.session.rollback()  # Rollback in case of error
+        print(f"An error occurred: {e}")
+        # Handle the error, log it, or redirect with an error message
 
     return redirect('/')
+ # new_shift = Shift_time(shiftIntime="06:00",shift_Outtime="14:00",shiftType="8A",work_Duration="08:00")
+    # db.session.add(new_shift)
+    # db.session.commit()
+    # emp=Attendance.query.get(2)
+    # emp.inTime="08:16"
+    # emp.outTime="18:56"
+    # db.session.commit()
