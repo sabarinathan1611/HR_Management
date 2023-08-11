@@ -231,9 +231,8 @@ def addd():
     calculate_Attendance()
     return redirect('/')
             
-
-@views.route('/a2', methods=['POST', 'GET'])
-def ad8d():
+def getshift():
+    
     try:
         file_path = os.path.join(app.config['Excel_FOLDER'], '01-08-23.xls')
         
@@ -243,37 +242,45 @@ def ad8d():
             with db.session.begin(subtransactions=True):  # Begin session context
                 for sheet_name in sheet_names:
                     if file_path.lower().endswith('.xlsx'):
-                        df = pd.read_excel(file_path, sheet_name, engine='openpyxl', skiprows=1, header=None)
+                        df = pd.read_excel(file_path, sheet_name, engine='openpyxl', skiprows=1)
                     elif file_path.lower().endswith('.xls'):
-                        df = pd.read_excel(file_path, sheet_name, engine='xlrd', skiprows=1, header=None)
+                        df = pd.read_excel(file_path, sheet_name, engine='xlrd', skiprows=1)
                     else:
                         print("Unsupported file format")
                         return redirect('/')  # Handle unsupported format
                     
                     for index, row in df.iterrows():
                         shift_type = row['Shift']
-                        print(shift_type)
+                        print("pop: ",shift_type)
                         
                         existing_shift = db.session.query(Shift_time).filter_by(shiftType=shift_type).first()
                         if not existing_shift:
                             print("wrk")
                             shift = Shift_time(
-                                shiftIntime=row['S. InTime'],
-                                shift_Outtime=row['S. OutTime'],
-                                shiftType=row['Shift'],
-                                work_Duration=row['Work Duration']
+                                shiftIntime=str(row['S. InTime']),
+                                shift_Outtime=str(row['S. OutTime']),
+                                shiftType=str(row['Shift']),
+                                work_Duration=str(row['Work Duration'])
                             )
                             db.session.add(shift)
-                            db.session.commit()  # Commit after each insert
+                            
+                        
+                            
+                              # Commit after each insert
                             flash("Siuuuuuuuuu")
+        else: 
+            print("not wrk")
             # No need to explicitly commit; the context manager handles it
 
     except Exception as e:
         db.session.rollback()  # Rollback in case of error
         print(f"An error occurred: {e}")
-        # Handle the error, log it, or redirect with an error message
+    return db.session.commit()
+@views.route('/a2', methods=['POST', 'GET'])
+def ad8d():
+        getshift()
 
-    return redirect('/')
+        return redirect('/')
  # new_shift = Shift_time(shiftIntime="06:00",shift_Outtime="14:00",shiftType="8A",work_Duration="08:00")
     # db.session.add(new_shift)
     # db.session.commit()
