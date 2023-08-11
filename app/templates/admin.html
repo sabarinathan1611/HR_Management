@@ -126,61 +126,56 @@
   <div class="row justify-content-center">
     
     <div class="col-md-8">
-      <table  class="table table-bordered table-hover">
+      <table class="table table-bordered table-hover">
         <thead>
-          <tr>
-            <th>id</th><!--0-->
-            <th>name</th> <!--1-->
-            <th>work type</th> <!--3-->
-            <th>Phone Number</th> <!--4-->
-            <th>Wage</th>
-            <th>Attendance</th>
-            <th>Shift</th>
-            <th>Date</th>
-            <th>Shift InTime</th>
-            <th>Shift OutTime</th>
-            <th>InTime</th>
-            <th>OutTime</th>
-            <th>Overtime</th>
-            <th>TotalDuration</th>
-            <th>lateBy</th>
-            <th>earlyGoingBy</th>
-            <th>actions</th>
-
-            
-        </tr>
+            <tr>
+                <th>id</th><!--0-->
+                <th>name</th> <!--1-->
+                <th>work type</th> <!--2-->
+                <th>Phone Number</th> <!--3-->
+                <!-- <th>Wage</th> -->
+                <th>Attendance</th>
+                <th>Shift</th>
+                <th>Shift InTime</th>
+                <th>Shift OutTime</th>
+                <th>Date</th>
+                <th>InTime</th>
+                <th>OutTime</th>
+                <th>Overtime</th>
+                <th>TotalDuration</th>
+                <th>lateBy</th>
+                <th>earlyGoingBy</th>
+               
+                <th>actions</th>
+            </tr>
         </thead>
         <tbody>
-{%for emp in employee%}
-
-          <tr>
-            <td class="id">{{emp.emp_id}}</td>
-            <td class="name">{{emp.employee.name}}</td>
-            <td class="workType">{{emp.employee.workType}}</td>
-            <td class="phoneNumber">{{emp.employee.phoneNumber}}</td>
-            <td class="wages_per_Day">{{emp.wages_per_Day}}</td>
-            <td class="attend">{{emp.attendance}}</td>
-            <td class="shift">{{emp.shift}}</td>
-            <td class="shift">{{emp.date.date()}}</td>
-            <td>{{emp.defaultshift.shiftIntime}}</td>
-            <td>{{emp.defaultshift.shift_Outtime}}</td>
-            <td class="Intime">{{emp.inTime}}</td>
-            <td class="outtime">{{emp.outTime}}</td>
-            <td class="overtime">{{emp.overtime}}</td>
-            <td>{{emp.TotalDuration}}</td>
-            <td>{{emp.lateBy}}</td>
-            <td>{{emp.earlyGoingBy}}</td>
-            
-            <td class="action-btn">
-              <button class="btn btn-danger btn-sm delete-btn"  data-emp-id="{{ emp.emp_id }}" >Delete</button>
-              <button class="btn btn-primary btn-sm edit-btn">Edit</button>
-            </td>
-          </tr>
-
-
-         {%endfor%}
+            {% for emp in employee %}
+            <tr>
+                <td class="id">{{ emp.emp_id }}</td>
+                <td class="name">{{ emp.employee.name }}</td>
+                <td class="workType">{{ emp.employee.workType }}</td>
+                <td class="phoneNumber">{{ emp.employee.phoneNumber }}</td>
+                <!-- <td class="wages_per_Day">{{ emp.wages_per_Day }}</td> -->
+                <td class="attend">{{ emp.attendance }}</td>
+                <td class="shift">{{ emp.shift }}</td>
+                <td>{{ emp.shiftIntime }}</td>
+                <td>{{ emp.shift_Outtime }}</td>
+                <td>{{ emp.date.date() }}</td>
+                <td class="Intime">{{ emp.inTime }}</td>
+                <td class="outtime">{{ emp.outTime }}</td>
+                <td class="overtime">{{ emp.overtime }}</td>
+                <td>{{ emp.TotalDuration }}</td>
+                <td>{{ emp.lateBy }}</td>
+                <td>{{ emp.earlyGoingBy }}</td>
+                <td class="action-btn">
+                    <button class="btn btn-danger btn-sm delete-btn" data-emp-id="{{ emp.emp_id }}">Delete</button>
+                    <button class="btn btn-primary btn-sm edit-btn">Edit</button>
+                </td>
+            </tr>
+            {% endfor %}
         </tbody>
-      </table>
+    </table>
     </div>
   </div>
 </main>

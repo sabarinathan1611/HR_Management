@@ -193,6 +193,8 @@ def calculate_Attendance():
                 # Calculate the earlyGoingBy time
                 earlyGoingBy = calculate_time_difference(outTime, shiftOuttime)
                 print("EARLY GOING BY :",earlyGoingBy)
+                if "-" in earlyGoingBy:
+                   earlyGoingBy="00:00"
                 attendance.earlyGoingBy = earlyGoingBy
 
                 # Calculate the time duration between inTime and outTime
@@ -203,7 +205,12 @@ def calculate_Attendance():
                 # Calculate the overtime hours
                 overtime_hours = calculate_time_difference(shiftOuttime, outTime)
                 print("OVER TIME: ",overtime_hours)
-                attendance.overtime = overtime_hours
+                if "-" in  overtime_hours:
+                    attendance.overtime = "00:00"
+                else: 
+                    attendance.overtime = overtime_hours
+                    
+               
             else:
                 # If there's no outTime, consider the current time as the outTime
                 out_time = datetime.now().strftime("%H:%M")
@@ -225,12 +232,12 @@ def addd():
 
 @views.route('/a2',methods=['POST','GET'])
 def ad8d():
-    # new_shift = Shift_time(shiftIntime="10:00",shift_Outtime="5:00",shiftType="Morning")
+    # new_shift = Shift_time(shiftIntime="06:00",shift_Outtime="14:00",shiftType="8A",work_Duration="08:00")
     # db.session.add(new_shift)
     # db.session.commit()
-    emp=Attendance.query.get(1)
-    emp.inTime="09:00"
-    emp.outTime="15:00"
+    emp=Attendance.query.get(2)
+    emp.inTime="08:16"
+    emp.outTime="18:56"
     db.session.commit()
     
 
