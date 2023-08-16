@@ -288,3 +288,7 @@ def ad8d():
     # emp.inTime="08:16"
     # emp.outTime="18:56"
     # db.session.commit()
+@views.route('/shift')
+def viewShift():
+    records=Shift_time.query.order_by(Shift_time.id)  
+    return render_template('shift.html',records=records)

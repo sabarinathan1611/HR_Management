@@ -1,11 +1,11 @@
 from flask_login import login_required, login_user, logout_user, current_user
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
-from .models import Login_admin, Employee, Attendance, Shift_time
+from .models import Login_admin, Employee, Attendance, Shift_time,Backup
 from . import db
 import datetime
 from flask import current_app as app
-
+from sqlalchemy.exc import SQLAlchemyError
 import time
 from datetime import datetime, timedelta
 
@@ -131,26 +131,66 @@ def addemp():
 
     return redirect(url_for('views.admin'))
 
-
 @auth.route('/attendance', methods=['POST', 'GET'])
 @login_required
 def attendance():
-    print(current_user)
-    if current_user:
-        if request.method == "POST":
-            emp_id = request.form.get('empid')
-            print(emp_id)
-            wages_per_Day = request.form.get('wages')
-            inTime = request.form.get('inTime')
-            outTime = request.form.get('outTime')
+    if request.method == "POST":
+        emp_id = request.form.get('empid')
+        emp = Employee.query.filter_by(id=emp_id).first()
+        
+        if emp:
+            wages_per_day = request.form.get('wages')
+            in_time = request.form.get('inTime')
+            out_time = request.form.get('outTime')
             shift = request.form.get('shift')
             overtime = request.form.get('overTime')
-            attendance = request.form.get('attendance')
-            newattendance = Attendance(emp_id=emp_id, date=datetime.strptime('2023-08-02', '%Y-%m-%d').date(
-            ), wages_per_Day=wages_per_Day, inTime=inTime, outTime=outTime, shift=shift, overtime=overtime, attendance=attendance)
-            db.session.add(newattendance)
-            db.session.commit()
-    else:
-        return redirect(url_for('views.admin'))
+            attendance_status = request.form.get('attendance')
+            
+            try:
+                attend = Attendance.query.filter_by(emp_id=emp.id).first()
+                if attend:
+                    attend.wages_per_day = wages_per_day
+                    attend.inTime = in_time
+                    attend.shift = shift
+                    attend.outTime = out_time
+                    attend.overtime = overtime
+                    attend.attendance = attendance_status
+                    backup_entry = Backup(
 
+                                emp_id=emp_id,
+                                attendance=attend.attendance,
+                                wages_per_Day=attend.wages_per_day,
+                                inTime=attend.inTime,
+                                outTime=attend.outTime,
+                                overtime=overtime,
+                                shift=shift,
+                                shiftIntime=attend.shiftIntime,
+                                shift_Outtime=attend.shift_Outtime,
+                                TotalDuration=attend.TotalDuration,
+                                lateBy=attend.lateBy,
+                                earlyGoingBy=attend.earlyGoingBy,
+                                punchRecords=attend.punchRecords
+                                )
+    
+    # Add and commit the new backup entry
+                    db.session.add(backup_entry)
+                    db.session.commit()
+                    flash("Attendance updated successfully")
+                else:
+                    flash("Attendance record not found")
+            except SQLAlchemyError as e:
+                db.session.rollback()
+                flash("An error occurred while updating attendance")
+                print("Error:", e)
+        else:
+            flash("Employee not found")
+        
+        return redirect('/')
+    
     return render_template('attendance.html')
+
+# @db.event.listens_for(Attendance, 'after_update')
+# def copy_to_backup_ateend(mapper, connection, target):
+#     # Create a new instance of BackupAteend and populate its attributes
+
+#     db.session.commit()

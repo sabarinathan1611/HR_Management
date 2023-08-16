@@ -54,6 +54,25 @@ class Shift_time(db.Model):
     shiftType = db.Column(db.String(150))
     work_Duration=db.Column(db.String(150))
     
+class Backup(db.Model):
+    id=db.Column(db.Integer,primary_key=True)
+    date = db.Column(db.DateTime(timezone=True), default=func.now())
+    emp_id = db.Column(db.Integer, db.ForeignKey('employee.id'))
+    attendance =db.Column(db.String(150))
+    wages_per_Day=db.Column(db.String(150))
+    inTime=db.Column(db.String(150))
+    outTime=db.Column(db.String(150))
+    overtime=db.Column(db.String(150),default='00:00')
+    
+    shift=db.Column(db.String(150))
+    shiftIntime = db.Column(db.String(150))
+    shift_Outtime = db.Column(db.String(150))
+    TotalDuration=db.Column(db.String(150))
+    lateBy=db.Column(db.String(150))
+    earlyGoingBy=db.Column(db.String(150))
+    punchRecords=db.Column(db.String(150))	
+    
+    
     
     
     

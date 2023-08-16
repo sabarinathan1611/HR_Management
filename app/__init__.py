@@ -33,7 +33,7 @@ def create_app():
     from .views import views
     app.register_blueprint(views,url_prefix='/')
     app.register_blueprint(auth,url_prefix='/')
-    from.models import Login_admin,Employee,Attendance,Shift_time
+    from.models import Login_admin,Employee,Attendance,Shift_time,Backup
     with app.app_context():
         db.create_all()
     login_manager = LoginManager()
