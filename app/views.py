@@ -4,11 +4,12 @@ from .models import Employee,Attendance,Shift_time
 from flask import Blueprint, render_template, request, flash, redirect, url_for,jsonify
 import json
 import datetime
-from datetime import datetime
+
 import pandas as pd
 from flask import current_app as app
-
+from datetime import datetime, timedelta
 import os
+from .funcations import *
 views = Blueprint('views', __name__)
 
 
@@ -110,176 +111,17 @@ def profileView():
     current_date = datetime.now().date()
     return render_template('profile.html',employee=employee,current_date=current_date)
 
-def calculate_time_difference(time1_str, time2_str):
-    # Convert time strings to datetime objects
-    time1 = datetime.strptime(time1_str, '%H:%M')
-    time2 = datetime.strptime(time2_str, '%H:%M')
 
-    # Calculate the time difference
-    time_difference = time2 - time1
-
-    # Calculate the total minutes in the time difference
-    total_minutes = time_difference.total_seconds() // 60
-
-    # Calculate hours and remaining minutes
-    hours = total_minutes // 60
-    minutes = total_minutes % 60
-
-    # Format the time difference as H:MM
-    formatted_difference = f"{int(hours)}:{int(minutes):02d}"
-    return formatted_difference
-
-def update_wages_for_present_employees():
-    
-    current_date = datetime.datetime.now().date()
-
-  
-    employees = Employee.query.filter_by(workType='employee').all()
-
-    for employee in employees:
-        
-        attendance_for_today = Attendance.query.filter_by(emp_id=employee.id, date=current_date).first()
-
-        if attendance_for_today and attendance_for_today.attendance == 'present':
-            # If the employee is present, increase the wages_per_Day by 1 for that day
-            employee.wages_per_Day = str(int(employee.wages_per_Day) + 1)
-
-   
-    return db.session.commit()
-
-
-def update_wages_for_present_daily_workers():
-    
-    current_date = datetime.datetime.now().date()
-
-  
-    employees = Employee.query.filter_by(workType='daily').all()
-
-    for employee in employees:
-        
-        attendance_for_today = Attendance.query.filter_by(emp_id=employee.id, date=current_date).first()
-
-        if attendance_for_today and attendance_for_today.attendance == 'present':
-            # If the employee is present, increase the wages_per_Day by 1 for that day
-            employee.wages_per_Day = str(int(employee.wages_per_Day) + 1)
-
-   
-    return db.session.commit()
-
-def calculate_Attendance():
-    # Assuming Employee is your SQLAlchemy model for employees
-    employees = Employee.query.all()
-
-    for employee in employees:
-        # Get all attendance records for the employee
-        attendance_records = Attendance.query.filter_by(emp_id=employee.id).all()
-      
-
-        for attendance in attendance_records:
-            print("SF: ",attendance.shift)
-            shift = Shift_time.query.filter_by(id=1).first()
-            print("SHIFT: ",shift)
-            inTime = attendance.inTime
-            print("IN TIME: ",inTime)
-            shiftIntime = shift.shiftIntime
-            print("SHIFT INTIME:",shiftIntime)
-            shiftOuttime = shift.shift_Outtime
-
-            # Calculate the lateBy time
-            lateBy = calculate_time_difference(inTime, shiftIntime)
-            attendance.lateBy = lateBy
-
-            if attendance.outTime:
-                outTime = attendance.outTime
-
-                # Calculate the earlyGoingBy time
-                earlyGoingBy = calculate_time_difference(outTime, shiftOuttime)
-                print("EARLY GOING BY :",earlyGoingBy)
-                if "-" in earlyGoingBy:
-                   earlyGoingBy="00:00"
-                attendance.earlyGoingBy = earlyGoingBy
-
-                # Calculate the time duration between inTime and outTime
-                time_worked = calculate_time_difference(inTime, outTime)
-                print("Time Worked: ",time_worked)
-                attendance.TotalDuration = time_worked
-
-                # Calculate the overtime hours
-                overtime_hours = calculate_time_difference(shiftOuttime, outTime)
-                print("OVER TIME: ",overtime_hours)
-                if "-" in  overtime_hours:
-                    attendance.overtime = "00:00"
-                else: 
-                    attendance.overtime = overtime_hours
-                    
-               
-            else:
-                # If there's no outTime, consider the current time as the outTime
-                out_time = datetime.now().strftime("%H:%M")
-                earlyGoingBy = calculate_time_difference(out_time, shiftOuttime)
-                attendance.earlyGoingBy = earlyGoingBy
-                attendance.TotalDuration = calculate_time_difference(inTime, out_time)
-                attendance.overtime = "00:00"
-
-        # Commit the changes to the database for each employee
-        db.session.commit()
-
-
-@views.route('/adddd',methods=['POST','GET'])
-def addd():
+@views.route('/calculate',methods=['POST','GET'])
+def calculate():
     
     calculate_Attendance()
     return redirect('/')
             
-def getshift():
-    
-    try:
-        file_path = os.path.join(app.config['Excel_FOLDER'], '01-08-23.xls')
-        
-        if os.path.exists(file_path):
-            sheet_names = pd.ExcelFile(file_path).sheet_names
-            
-            with db.session.begin(subtransactions=True):  # Begin session context
-                for sheet_name in sheet_names:
-                    if file_path.lower().endswith('.xlsx'):
-                        df = pd.read_excel(file_path, sheet_name, engine='openpyxl', skiprows=1)
-                    elif file_path.lower().endswith('.xls'):
-                        df = pd.read_excel(file_path, sheet_name, engine='xlrd', skiprows=1)
-                    else:
-                        print("Unsupported file format")
-                        return redirect('/')  # Handle unsupported format
-                    
-                    for index, row in df.iterrows():
-                        shift_type = row['Shift']
-                        print("pop: ",shift_type)
-                        
-                        existing_shift = db.session.query(Shift_time).filter_by(shiftType=shift_type).first()
-                        if not existing_shift:
-                            print("wrk")
-                            shift = Shift_time(
-                                shiftIntime=str(row['S. InTime']),
-                                shift_Outtime=str(row['S. OutTime']),
-                                shiftType=str(row['Shift']),
-                                work_Duration=str(row['Work Duration'])
-                            )
-                            db.session.add(shift)
-                            
-                        
-                            
-                              # Commit after each insert
-                            flash("Siuuuuuuuuu")
-        else: 
-            print("not wrk")
-            # No need to explicitly commit; the context manager handles it
 
-    except Exception as e:
-        db.session.rollback()  # Rollback in case of error
-        print(f"An error occurred: {e}")
-    return db.session.commit()
-@views.route('/a2', methods=['POST', 'GET'])
-def ad8d():
+@views.route('/getShift', methods=['POST', 'GET'])
+def getShift():
         getshift()
-
         return redirect('/')
  # new_shift = Shift_time(shiftIntime="06:00",shift_Outtime="14:00",shiftType="8A",work_Duration="08:00")
     # db.session.add(new_shift)
@@ -292,3 +134,5 @@ def ad8d():
 def viewShift():
     records=Shift_time.query.order_by(Shift_time.id)  
     return render_template('shift.html',records=records)
+
+

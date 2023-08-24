@@ -1,18 +1,21 @@
 from app import create_app
-from app import schedule_next_sunday,scheduler
+from app import funcations
 import datetime
 import sched
 import time
 from datetime import datetime, timedelta
+from app import funcations
 
-app= create_app()
-
+app = create_app() 
 
 if __name__ == '__main__':
-    app.run(debug=True,port=5500)
-    # Schedule the function to run for the first time
-    schedule_next_sunday()
+    # Schedule the first task
+    funcations.schedule_next_sunday()
 
-    
-    scheduler.run()
+    # Run the scheduler in a separate thread
+    from threading import Thread
+    scheduler_thread = Thread(target=funcations.scheduler.run)
+    scheduler_thread.start()
+    # Run the Flask app
+    app.run(debug=True, port=5500)
     

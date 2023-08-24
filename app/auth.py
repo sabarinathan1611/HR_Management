@@ -1,28 +1,17 @@
 from flask_login import login_required, login_user, logout_user, current_user
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
-from .models import Login_admin, Employee, Attendance, Shift_time,Backup
+from .models import Login_admin, Employee, Attendance, Shift_time,Backup,LoginEmp
 from . import db
 import datetime
 from flask import current_app as app
 from sqlalchemy.exc import SQLAlchemyError
 import time
 from datetime import datetime, timedelta
+from .funcations import *
 
 
-def send_mail(email, body):
-    sender_email = ""
-    receiver_email = email
-    password = ""
-    message = body
 
-    server = smtplib.SMTP('smtp.gmail.com', 587)
-    server.ehlo()
-    server.starttls()
-    server.login(sender_email, password)
-    server.sendmail(sender_email, receiver_email, message)
-    print('*****Email sent!*****')
-    server.quit()
 
 
 auth = Blueprint('auth', __name__)
@@ -110,6 +99,10 @@ def addemp():
                 designation=designation
             )
             db.session.add(new_employee)
+            new_user = LoginEmp(email=email,
+                                name=name,
+                                password=(generate_password_hash(phoneNumber)))
+            db.session.add(new_user)
             shiftTime = Shift_time.query.filter_by(shiftType=shift).first()
             if not shiftTime:
                 flash("Wrong Shift")
@@ -171,11 +164,16 @@ def attendance():
                                 earlyGoingBy=attend.earlyGoingBy,
                                 punchRecords=attend.punchRecords
                                 )
+                    
     
-    # Add and commit the new backup entry
+# Add and commit the new backup entry
                     db.session.add(backup_entry)
+                    
+                    
                     db.session.commit()
                     flash("Attendance updated successfully")
+                    return redirect('/calculate')
+                    
                 else:
                     flash("Attendance record not found")
             except SQLAlchemyError as e:

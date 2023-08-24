@@ -47,6 +47,15 @@ class Attendance(db.Model,UserMixin):
     punchRecords=db.Column(db.String(150))	
     
 
+
+class LoginEmp(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(150),nullable=False)
+    email=db.Column(db.String(150),unique=True)
+    password = db.Column(db.String(150))
+    date = db.Column(db.DateTime(timezone=True), default=func.now())
+    
+    
 class Shift_time(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     shiftIntime = db.Column(db.String(150))
