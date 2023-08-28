@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appeal For Leave</title>
+    <link rel="stylesheet" href="/static/css/leave.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+        messages %} {% for category, message in messages %} {% if category ==
+        'error' %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    
+          </button>
+        </div>
+        {% else %}
+        <div class="alert alert-success" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+    
+          </button>
+        </div>
+        {% endif %} {% endfor %} {% endif %} {% endwith %}
+    <div class="container">
+        <div class="changeOptContainer">
+            <div class="chnageField">
+                <input type="text" name="uname" id="uname" />
+                <button class="changebtn" onclick="changeUserDet()">change</button>
+            </div>
+        </div>
+        <div class="header">
+            <div class="profile">
+                <img src="https://th.bing.com/th/id/OIP.Yw4exB-_crv1xcdLRQ6hngHaHx?pid=ImgDet&rs=1" alt="user profile" class="user_prof" style=" height: 100%;">
+            </div>
+            <div class="userdet">
+                <div class="userName">
+                    <i class="fas fa-user"></i> Emp Name
+                </div>
+                <div class="menu">
+                    <ul class="menuUL">
+                        <li class="menuLI leaveBtn"> leave</li>
+                        <li class="menuLI logout"><i class="fas fa-sign-out-alt"></i> Logout</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <section class="profileSection active">
+            <div class="divSection">
+                <div class="userProfilePic">
+                    <img src="https://th.bing.com/th/id/OIP.Yw4exB-_crv1xcdLRQ6hngHaHx?pid=ImgDet&rs=1" alt="user_prof pic" class="userProfilePicImg" style=" height: 100%;">
+                </div>
+                <div class="prof_username">
+                    <i class="fas fa-user"></i> Emp Name
+                </div>
+            </div>
+            <div class="divSection blur">
+                <ul class="detailsList">
+                    <li class="detList">
+                        <p class="innerP">Emp Id </p>
+                        <p class="innerP uid nochange">0001</p>
+                    </li>
+
+                    <li class="detList">
+                        <p class="innerP">Emp Name </p>
+                        <p class="innerP uname change">EMP Name</p>
+                    </li>
+
+                    <li class="detList">
+                        <p class="innerP">Emp Mail </p>
+                        <p class="innerP uemail change">emploree@gmail.com</p>
+                    </li>
+
+                    <li class="detList">
+                        <p class="innerP">Emp Phone </p>
+                        <p class="innerP uphone change">8012677919</p>
+                    </li>
+                    
+                    <li class="detList">
+                        <p class="innerP">DOJ </p>
+                        <p class="innerP udoj change">11/08/2020</p>
+                    </li>
+                    <li class="detList">
+                        <p class="innerP">No Of Present </p>
+                        <p class="innerP unop nochange">20 </p>
+                    </li>
+                    <li class="detList">
+                        <p class="innerP">No Of Absent </p>
+                        <p class="innerP unoa nochange">20 </p>
+                    </li>
+                    <li class="detList">
+                        <p class="innerP">Current Shift </p>
+                        <p class="innerP ushift nochange">GS </p>
+                    </li>
+                </ul>
+            </div>
+        </section>
+        <section class="formSection" >
+            <div class="fromContainer">
+                <button class="closeForm">
+                    <i class="fas fa-times"></i>
+                </button>
+                <div class="divFormSection letter">
+                    <img src="/static/img/girlLetter.jpg" alt="lettr img" class="letterImg">
+                </div>
+                <div class="divFormSection fromDiv">
+                    <form class="leave">                    
+                        <div class="inputfield formhead"><h2>Leave Form</h2></div>
+                        <div class="inputfield">
+                            <ul class="leaveUL">
+                                <li class="leaveLi">Name : <span class="leaveName">EmpName</span></li>
+                                <li class="leaveLi">E-mail : <span class="leavemail">example@gmail.com</span></li>
+                            </ul>
+                        </div>
+                        <div class="inputfield">
+                            <label>Reasons :</label>
+                            <div class="radiobtns">
+                                <label class="radInp"> <input type="radio" name="reason" id="medical"> Medical Leave </label>
+                                <label class="radInp"> <input type="radio" name="reason"  id="personal"> personal Leave </label>
+                                <label class="radother"> 
+                                    <input type="radio" name="reason" id="other"> other reason 
+                                    <div class="other" style="display: none;">
+                                        <textarea class="user_input" name="other" id="otherValue" cols="30" rows="5"></textarea>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                        <button class="requestBtn" type="button">Request</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </div>
+    <script src="/static/javascript/leave.js"></script>
+</body>
+</html>

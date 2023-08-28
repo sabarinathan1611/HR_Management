@@ -1,0 +1,436 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.container {
+    width: 100vw;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    overflow-x: hidden;
+}
+
+.header{
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100px;
+    background: #000000d7;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+}
+
+.profile{
+    width:  90px;
+    height: 90px;
+    background: #fff;
+    border-radius: 50%;
+}
+
+
+.userdet{
+    position: absolute;
+    right: 30px;
+    top: 30px;
+    height: 35px;
+    width: 150px;
+    padding: 10px 0;
+    border-radius: 5px;
+    background: #fff;
+    cursor: pointer;
+    transition: all .5s;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 10;
+}
+
+li{
+    list-style: none;
+}
+
+
+.menu{
+    margin-top: 15px;
+    width: 100%;
+}
+
+.menuUl{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+}
+
+.profile, .userProfilePic{
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000000d7;
+}
+
+.menuLI {
+    margin: 10px 5px;
+    width: 100%;
+    padding: 7px;
+    transition: all .5s;
+    background: #fff;
+    color: #000;
+    text-align: center;
+    transition: all .5s;
+    width: 90%;
+    border-bottom: 1px solid #000;
+}
+
+.menuLI:hover{
+    border-radius: 5px;
+    width: 90%;
+    background: #000;
+    color: #fff;
+}
+
+
+.userdet:hover{
+    box-shadow: 0px 0px 10px;
+    height: 140px;
+}
+
+.profileSection{
+    display: none;
+}
+
+.profileSection.active {
+    width: 60%;
+    height: 350px;
+    display: flex;
+    background: url("https://cdn.wallpapersafari.com/55/41/nISvbA.jpg");
+    color: #fff;
+    border-radius: 5px;
+    position: absolute;
+    top: 160px;
+}
+
+.divSection{
+    flex-basis: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+
+}
+
+.userProfilePic{
+    width: 150px;
+    height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.detailsList{
+    width: 60%;
+    height: 90%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+.innerP{
+    flex-basis: 50%;
+    width: 100%;
+}
+
+.blur{
+    backdrop-filter: blur(15px);
+}
+
+.detList{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.closeProf{
+    position: relative; 
+    height: 30px; 
+    width: 30px; 
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    background: #000;
+    color: #fff;
+    margin: 10px;
+}
+
+.formSection{
+    display: none;
+}
+
+.formSection.active {
+display: flex;
+}
+
+.nochange{
+    cursor: not-allowed;
+}
+
+.change{
+    cursor: pointer;
+}
+
+.changeOptContainer{
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    z-index: 20;
+    display: none;
+}
+
+.chnageField{
+    padding: 30px 100px;
+    background: #fff;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap:  20px;
+}
+
+.chnageField input{
+    background: #c7c7c7d7;
+    width: 200px;
+    color: #000;
+    margin-top: 0;
+}
+
+.changebtn{
+    padding: 10px 15px;
+    background: orange;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+}
+
+.uemail{
+  white-space: nowrap;         /* Prevents wrapping to a new line */
+  overflow: hidden;            /* Hides overflow content */
+  text-overflow: ellipsis;     /* Displays ellipsis (...) when text overflows */
+  display: block;
+}
+
+@media screen and (max-width:768px) {
+    .profileSection.active {
+        width: 90%;
+        height: 55%;
+    }
+
+    .detailsList {
+        width: 90%;
+        height: 90%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+    }
+}
+
+@media screen and (max-width:425px) {
+    .profileSection.active {
+    width: 91%;
+    height: 515px;
+    display: flex;
+    flex-direction: column;
+    /* margin-top: 110px; */
+    position: absolute;
+    top: 115px;
+  }
+
+    .detailsList {
+        width: 75%;
+        height: 90%;
+        display: flex;
+    }
+
+    .closeProf {
+        position: absolute;
+        height: 30px;
+        width: 30px;
+        border-radius: 50%;
+        border: none;
+        cursor: pointer;
+        background: #000;
+        color: #fff;
+        margin: 10px;
+    }
+    
+}
+
+/* form css */
+
+.formSection{
+    display: none;
+}
+
+.formSection.active{
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 50px;
+}
+
+.letter{
+    background: #123;
+}
+
+.fromContainer{
+    width: 60%;
+    height: 400px;
+    background: rgb(230, 230, 230);
+    border-radius: 6px;
+    display: flex;
+    overflow: hidden;
+    border: 2px solid #808080;
+    box-shadow: 10px 10px 5px #000;
+}
+
+.letterImg{
+    height: 100%;
+    max-width: 100%;
+}
+
+.divFormSection{
+    flex-basis: 50%;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.divFormSection.fromDiv {
+    background-image: url("https://wallpapercave.com/wp/wp2012408.jpg");
+    background-size: 100%;
+}
+
+.formhead {
+    text-align: center;
+}
+
+.leave {
+    width: 90%;
+    min-height: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+    backdrop-filter: blur(50px);
+    color: #fff;
+    border-radius: 6px;
+    overflow: hidden;
+    padding:10px;
+}
+
+.inputfield {
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+}
+
+.closeForm{
+    cursor: pointer;
+    position: absolute;
+    margin: 10px;
+    background: #000;
+    color: #fff;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: none;
+    z-index: 1;
+}
+
+.leaveLi{
+    margin-top: 10px;
+    list-style: none;
+}
+
+.radiobtns{
+    display: flex;
+    flex-direction: column;
+}
+
+input{
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+}
+
+.radInp{
+    margin: 5px;
+    width: 60%;
+}
+
+.radother{
+    margin: 5px;
+}
+
+.other{
+    margin-top: 10px;
+    /* position: absolute; */
+}
+textarea{
+    width: 200px;
+}
+
+.requestBtn{
+    padding: 7px 15px;
+    border-radius: 5px;
+    border: none;
+    background: #123;
+    color: #fff;
+    cursor: pointer;
+}
+
+@media screen and (max-width:768px) {
+    .formSection.active {
+        position: absolute;
+        top: 50px;
+    }
+
+    .fromContainer {
+        width: 90%;
+    }
+    
+}
+
+@media screen and (max-width:425px) {
+    .divFormSection.letter{
+        display: none;
+    }
+
+    .divFormSection.fromDiv{
+        flex-basis: 100%;
+    }
+}
