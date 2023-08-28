@@ -187,13 +187,7 @@ def schedule_next_sunday():
     next_sunday_midnight = datetime(next_sunday.year, next_sunday.month, next_sunday.day)
     scheduler.enterabs(time.mktime(next_sunday_midnight.timetuple()), 1, run_for_all_employees, ())
 
-
-
-        
-
-
-        
-        
+ 
 
 
 def count_attendance_and_update_shift(emp_id):
@@ -227,3 +221,101 @@ def run_for_all_employees():
 
     # Schedule the function to run again on the next Sunday
     schedule_next_sunday()
+
+
+
+def attend_excel_data(file_path):
+    if os.path.exists(file_path):
+        sheet_names = pd.ExcelFile(file_path).sheet_names
+
+        for sheet_name in sheet_names:
+            df = None
+            if file_path.lower().endswith('.xlsx'):
+                df = pd.read_excel(file_path, sheet_name, engine='openpyxl')
+            elif file_path.lower().endswith('.xls'):
+                df = pd.read_excel(file_path, sheet_name, engine='xlrd')
+            else:
+                print("Unsupported file format")
+                return  # Handle unsupported format
+
+            for index, row in df.iterrows():
+                empid = row['emp_id']
+                print("Processing: ", empid)
+                date=pd.to_datetime(row['date']) if pd.notna(row['date']) else None
+                existing_emp = db.session.query(Employee).filter_by(id=empid).first()
+                if  existing_emp:
+                    
+                    if str(row['intime']) =="00:00" and str(row['outtime'])== "00:00":
+                            
+                            existing_emp.emp_id=empid,
+                            existing_emp.inTime=str(row['intime']),
+                            existing_emp.shift_Outtime=str(row['outtime']),
+                            existing_emp.shiftType=existing_emp.attendances.shift,
+                            existing_emp.attendance='Absent',
+                            existing_emp.date=date
+                        
+                        
+                    else:
+                                      
+                            existing_emp.emp_id=empid,
+                            existing_emp.inTime=str(row['intime']),
+                            existing_emp.shift_Outtime=str(row['outtime']),
+                            existing_emp.shiftType=existing_emp.attendances.shift,
+                            existing_emp.attendance='Present',
+                            existing_emp.date=date
+                        
+                       
+                        
+
+        db.session.commit()
+    else:
+        print("File not found")
+
+
+def addemployee(file_path):
+    if os.path.exists(file_path):
+        sheet_names = pd.ExcelFile(file_path).sheet_names
+        
+
+        for sheet_name in sheet_names:
+            df = None
+            if file_path.lower().endswith('.xlsx'):
+                df = pd.read_excel(file_path, sheet_name, engine='openpyxl')
+            elif file_path.lower().endswith('.xls'):
+                df = pd.read_excel(file_path, sheet_name, engine='xlrd')
+            else:
+                
+                return print("Unsupported file format")  # Handle unsupported format
+            
+            for index, row in df.iterrows():
+                empid = row['emp_id']
+                print("Processing: ", empid)
+                dob = pd.to_datetime(row['dob']) if pd.notna(row['dob']) else None
+
+                existing_emp = db.session.query(Employee).filter_by(id=empid).first()
+                if not existing_emp:
+                    # Create and add a new Employee only if it doesn't exist
+                    new_employee = Employee(
+                        id=empid,  # Assuming emp_id is the primary key
+                        name=row["name"],
+                        dob=dob,
+                        designation=row["designation"],
+                        workType=row["workType"],
+                        email=row["email"],
+                        phoneNumber=row["phoneNumber"],
+                        adharNumber=row["adharNumber"],
+                        gender=row["gender"],
+                        address=row["address"],
+                        shift=row["shift"]
+                    )
+                    db.session.add(new_employee)
+                else:
+                    print(f"Employee with ID {empid} already exists.")
+
+        db.session.commit()
+        print("Data added successfully.")
+    else:
+        print("File not found")
+
+
+

@@ -18,14 +18,15 @@ class Employee(db.Model, UserMixin):
     dob = db.Column(db.DateTime(timezone=True))
     designation = db.Column(db.String(150), nullable=True)
     workType = db.Column(db.String(150))
-    email = db.Column(db.String(150), unique=True)
+    email = db.Column(db.String(150))
     phoneNumber = db.Column(db.Integer)
     adharNumber = db.Column(db.Integer)
     gender = db.Column(db.String(150))
     address = db.Column(db.String(150))
     mimetype =db.Column(db.String(150))
     profile_pic = db.Column(db.String(100000), default='Default/Default.jpeg')
-    attendance = db.relationship('Attendance', backref='employee')
+    attendances = db.relationship('Attendance', back_populates='employee', cascade='all, delete-orphan')
+    shift=db.Column(db.String(150))
     
     
 class Attendance(db.Model,UserMixin):
@@ -37,8 +38,8 @@ class Attendance(db.Model,UserMixin):
     inTime=db.Column(db.String(150))
     outTime=db.Column(db.String(150))
     overtime=db.Column(db.String(150),default='00:00')
+    employee = db.relationship('Employee', back_populates='attendances')
     
-    shift=db.Column(db.String(150))
     shiftIntime = db.Column(db.String(150))
     shift_Outtime = db.Column(db.String(150))
     TotalDuration=db.Column(db.String(150))

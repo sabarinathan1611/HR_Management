@@ -16,6 +16,17 @@ views = Blueprint('views', __name__)
 @views.route('/',methods=['POST','GET'])
 @login_required
 def admin():
+    try:
+        inshift = Shift_time.query.filter_by(id=1).first()
+        if not inshift:
+            file_path = os.path.join(app.config['Excel_FOLDER'], '01-08-23.xls')
+            process_excel_data(file_path)  # Call the data processing function
+        else:
+            print("Shift not found")
+
+    except Exception as e:
+        print("Error occurred:", e)
+        db.session.rollback()  # Rollback in case of error
     
     # employee =Employee.query.order_by(Employee.id)
     employee =Attendance.query.order_by(Attendance.date)   
@@ -120,21 +131,21 @@ def calculate():
     
     return redirect('/')
             
-@views.route('/getshift',methods=['POST','GET'])
-def get_shift():
-    try:
-        inshift = Shift_time.query.filter_by(id=1).first()
-        if not inshift:
-            file_path = os.path.join(app.config['Excel_FOLDER'], '01-08-23.xls')
-            process_excel_data(file_path)  # Call the data processing function
-        else:
-            print("Shift not found")
+# @views.route('/getshift',methods=['POST','GET'])
+# def get_shift():
+#     try:
+#         inshift = Shift_time.query.filter_by(id=1).first()
+#         if not inshift:
+#             file_path = os.path.join(app.config['Excel_FOLDER'], '01-08-23.xls')
+#             process_excel_data(file_path)  # Call the data processing function
+#         else:
+#             print("Shift not found")
 
-    except Exception as e:
-        print("Error occurred:", e)
-        db.session.rollback()  # Rollback in case of error
+#     except Exception as e:
+#         print("Error occurred:", e)
+#         db.session.rollback()  # Rollback in case of error
     
-    return redirect(url_for('views.viewShift'))  # Redirect to viewShift after processing
+#     return redirect(url_for('views.viewShift'))  # Redirect to viewShift after processing
     
  # new_shift = Shift_time(shiftIntime="06:00",shift_Outtime="14:00",shiftType="8A",work_Duration="08:00")
     # db.session.add(new_shift)
@@ -148,5 +159,11 @@ def viewShift():
     
     records=Shift_time.query.order_by(Shift_time.id)  
     return render_template('shift.html',records=records)
+
+@views.route('/attendance')
+def readXl_update_atten():
+
+    
+    return redirect(url_for('views.calculate'))
 
 

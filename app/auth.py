@@ -25,6 +25,8 @@ def login():
         if request.method == 'POST':
             email = request.form.get('email')
             password = request.form.get('password')
+            print("email",email)
+            print("pwd :",password)
 
             dbemail = Login_admin.query.filter_by(email=email).first()
             if dbemail:
@@ -36,14 +38,14 @@ def login():
                 else:
                     flash("Incorrect Password", category='error')
             else:
-                flash("Incorrect Email")
+                flash("Incorrect Email", category='error')
     else:
         addAdmin = Login_admin(name="Admin", email="vsabarinathan1611@gmail.com", phoneNumber="123456789",
                                password="sha256$idRijyfQJjGQ3s7P$cedf4eb4aaaddab35c3423e31ab70bd5f60fb8b871f18e37ebec2359a818b6db")
         db.session.add(addAdmin)
         db.session.commit()
         print('Created Admin!')
-    flash("GIII", category='error')
+   
 
     return render_template('login.html')
 
@@ -126,66 +128,19 @@ def addemp():
 
 @auth.route('/attendance', methods=['POST', 'GET'])
 @login_required
-def attendance():
-    if request.method == "POST":
-        emp_id = request.form.get('empid')
-        emp = Employee.query.filter_by(id=emp_id).first()
+def attendance():    
+    try:
+        excel_file_path = os.path.join(app.config['Excel_FOLDER'], 'employee_data.xlsx')
+        print("EXCEL", excel_file_path)
+        addemployee(excel_file_path)  # Call the data processing function
         
-        if emp:
-            wages_per_day = request.form.get('wages')
-            in_time = request.form.get('inTime')
-            out_time = request.form.get('outTime')
-            shift = request.form.get('shift')
-            overtime = request.form.get('overTime')
-            attendance_status = request.form.get('attendance')
-            
-            try:
-                attend = Attendance.query.filter_by(emp_id=emp.id).first()
-                if attend:
-                    attend.wages_per_day = wages_per_day
-                    attend.inTime = in_time
-                    attend.shift = shift
-                    attend.outTime = out_time
-                    attend.overtime = overtime
-                    attend.attendance = attendance_status
-                    backup_entry = Backup(
-
-                                emp_id=emp_id,
-                                attendance=attend.attendance,
-                                wages_per_Day=attend.wages_per_day,
-                                inTime=attend.inTime,
-                                outTime=attend.outTime,
-                                overtime=overtime,
-                                shift=shift,
-                                shiftIntime=attend.shiftIntime,
-                                shift_Outtime=attend.shift_Outtime,
-                                TotalDuration=attend.TotalDuration,
-                                lateBy=attend.lateBy,
-                                earlyGoingBy=attend.earlyGoingBy,
-                                punchRecords=attend.punchRecords
-                                )
-                    
-    
-# Add and commit the new backup entry
-                    db.session.add(backup_entry)
-                    
-                    
-                    db.session.commit()
-                    flash("Attendance updated successfully")
-                    return redirect('/calculate')
-                    
-                else:
-                    flash("Attendance record not found")
-            except SQLAlchemyError as e:
-                db.session.rollback()
-                flash("An error occurred while updating attendance")
-                print("Error:", e)
-        else:
-            flash("Employee not found")
+        db.session.commit()  # Commit the changes
+        flash("Employee data updated successfully.", "success")  # Provide a success message
         
-        return redirect('/')
-    
-    return render_template('attendance.html')
+    except Exception as e:
+        print("Error occurred:", e)
+        db.session.rollback() 
+        flash("An error occurred while updating employee data.", "error")
 
 # @db.event.listens_for(Attendance, 'after_update')
 # def copy_to_backup_ateend(mapper, connection, target):
