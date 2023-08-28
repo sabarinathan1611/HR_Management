@@ -28,55 +28,38 @@ def send_mail(email, body):
     print('*****Email sent!*****')
     server.quit()
     
-def getshift():
-    
-    try:
-        inshift = Shift_time.query.filter_by(id=1).first()
-        if inshift:
-            file_path = os.path.join(app.config['Excel_FOLDER'], '01-08-23.xls')
-            
-            if os.path.exists(file_path):
-                sheet_names = pd.ExcelFile(file_path).sheet_names
-                
-                with db.session.begin(subtransactions=True):  # Begin session context
-                    for sheet_name in sheet_names:
-                        if file_path.lower().endswith('.xlsx'):
-                            df = pd.read_excel(file_path, sheet_name, engine='openpyxl', skiprows=1)
-                        elif file_path.lower().endswith('.xls'):
-                            df = pd.read_excel(file_path, sheet_name, engine='xlrd', skiprows=1)
-                        else:
-                            print("Unsupported file format")
-                            return redirect('/')  # Handle unsupported format
-                        
-                        for index, row in df.iterrows():
-                            shift_type = row['Shift']
-                            print("pop: ",shift_type)
-                            
-                            existing_shift = db.session.query(Shift_time).filter_by(shiftType=shift_type).first()
-                            if not existing_shift:
-                                print("wrk")
-                                shift = Shift_time(
-                                    shiftIntime=str(row['S. InTime']),
-                                    shift_Outtime=str(row['S. OutTime']),
-                                    shiftType=str(row['Shift']),
-                                    work_Duration=str(row['Work Duration'])
-                                )
-                                db.session.add(shift)
-                                
-                            
-                                
-                                # Commit after each insert
-                                flash("Siuuuuuuuuu")
-            else: 
-                print("not wrk")
-               # No need to explicitly commit; the context manager hand
-        
+def process_excel_data(file_path):
+    if os.path.exists(file_path):
+        sheet_names = pd.ExcelFile(file_path).sheet_names
 
-    except Exception as e:
-        db.session.rollback()  # Rollback in case of error
-        print(f"An error occurred: {e}")
-    return db.session.commit()
+        for sheet_name in sheet_names:
+            df = None
+            if file_path.lower().endswith('.xlsx'):
+                df = pd.read_excel(file_path, sheet_name, engine='openpyxl', skiprows=1)
+            elif file_path.lower().endswith('.xls'):
+                df = pd.read_excel(file_path, sheet_name, engine='xlrd', skiprows=1)
+            else:
+                print("Unsupported file format")
+                return  # Handle unsupported format
 
+            for index, row in df.iterrows():
+                shift_type = row['Shift']
+                print("Processing: ", shift_type)
+
+                existing_shift = db.session.query(Shift_time).filter_by(shiftType=shift_type).first()
+                if not existing_shift:
+                    print("Adding new shift")
+                    shift = Shift_time(
+                        shiftIntime=str(row['S. InTime']),
+                        shift_Outtime=str(row['S. OutTime']),
+                        shiftType=str(row['Shift']),
+                        work_Duration=str(row['Work Duration'])
+                    )
+                    db.session.add(shift)
+
+        db.session.commit()
+    else:
+        print("File not found")
 
 def calculate_Attendance():
     employees = Employee.query.all()
