@@ -126,7 +126,7 @@ def addemp():
 
     return redirect(url_for('views.admin'))
 
-@auth.route('/attendance', methods=['POST', 'GET'])
+@auth.route('/addemp', methods=['POST', 'GET'])
 @login_required
 def attendance():    
     try:
@@ -141,6 +141,7 @@ def attendance():
         print("Error occurred:", e)
         db.session.rollback() 
         flash("An error occurred while updating employee data.", "error")
+    return redirect(url_for('views.admin'))
 
 # @db.event.listens_for(Attendance, 'after_update')
 # def copy_to_backup_ateend(mapper, connection, target):

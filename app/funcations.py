@@ -69,8 +69,8 @@ def calculate_Attendance():
 
         for attendance in attendance_records:
             # Extract attendance information
-            print("SF: ", attendance.shift)
-            shift = Shift_time.query.filter_by(id=1).first()
+            print("SF: ", attendance.employee.shift)
+            shift = Shift_time.query.filter_by(shiftType=attendance.employee.shift).first()
             print("SHIFT: ", shift)
             inTime = attendance.inTime
             print("IN TIME: ", inTime)
@@ -224,52 +224,52 @@ def run_for_all_employees():
 
 
 
-def attend_excel_data(file_path):
-    if os.path.exists(file_path):
-        sheet_names = pd.ExcelFile(file_path).sheet_names
+# def attend_excel_data(file_path):
+#     if os.path.exists(file_path):
+#         sheet_names = pd.ExcelFile(file_path).sheet_names
 
-        for sheet_name in sheet_names:
-            df = None
-            if file_path.lower().endswith('.xlsx'):
-                df = pd.read_excel(file_path, sheet_name, engine='openpyxl')
-            elif file_path.lower().endswith('.xls'):
-                df = pd.read_excel(file_path, sheet_name, engine='xlrd')
-            else:
-                print("Unsupported file format")
-                return  # Handle unsupported format
+#         for sheet_name in sheet_names:
+#             df = None
+#             if file_path.lower().endswith('.xlsx'):
+#                 df = pd.read_excel(file_path, sheet_name, engine='openpyxl')
+#             elif file_path.lower().endswith('.xls'):
+#                 df = pd.read_excel(file_path, sheet_name, engine='xlrd')
+#             else:
+#                 print("Unsupported file format")
+#                 return  # Handle unsupported format
 
-            for index, row in df.iterrows():
-                empid = row['emp_id']
-                print("Processing: ", empid)
-                date=pd.to_datetime(row['date']) if pd.notna(row['date']) else None
-                existing_emp = db.session.query(Employee).filter_by(id=empid).first()
-                if  existing_emp:
+#             for index, row in df.iterrows():
+#                 empid = row['emp_id']
+#                 print("Processing: ", empid)
+#                 date=pd.to_datetime(row['date']) if pd.notna(row['date']) else None
+#                 existing_emp = db.session.query(Employee).filter_by(id=empid).first()
+#                 if  existing_emp:
                     
-                    if str(row['intime']) =="00:00" and str(row['outtime'])== "00:00":
+#                     if str(row['intime']) =="00:00" and str(row['outtime'])== "00:00":
                             
-                            existing_emp.emp_id=empid,
-                            existing_emp.inTime=str(row['intime']),
-                            existing_emp.shift_Outtime=str(row['outtime']),
-                            existing_emp.shiftType=existing_emp.attendances.shift,
-                            existing_emp.attendance='Absent',
-                            existing_emp.date=date
+#                             existing_emp.emp_id=empid,
+#                             existing_emp.inTime=str(row['intime']),
+#                             existing_emp.shift_Outtime=str(row['outtime']),
+#                             existing_emp.shiftType=existing_emp.attendances.shift,
+#                             existing_emp.attendance='Absent',
+#                             existing_emp.date=date
                         
                         
-                    else:
+#                     else:
                                       
-                            existing_emp.emp_id=empid,
-                            existing_emp.inTime=str(row['intime']),
-                            existing_emp.shift_Outtime=str(row['outtime']),
-                            existing_emp.shiftType=existing_emp.attendances.shift,
-                            existing_emp.attendance='Present',
-                            existing_emp.date=date
+#                             existing_emp.emp_id=empid,
+#                             existing_emp.inTime=str(row['intime']),
+#                             existing_emp.shift_Outtime=str(row['outtime']),
+#                             existing_emp.shiftType=existing_emp.attendances.shift,
+#                             existing_emp.attendance='Present',
+#                             existing_emp.date=date
                         
                        
                         
 
-        db.session.commit()
-    else:
-        print("File not found")
+      
+#     else:
+#         print("File not found")
 
 
 def addemployee(file_path):
@@ -317,5 +317,51 @@ def addemployee(file_path):
     else:
         print("File not found")
 
+
+
+def attend_excel_data(file_path):
+    if os.path.exists(file_path):
+        sheet_names = pd.ExcelFile(file_path).sheet_names
+
+        for sheet_name in sheet_names:
+            df = None
+            if file_path.lower().endswith('.xlsx'):
+                df = pd.read_excel(file_path, sheet_name, engine='openpyxl')
+            elif file_path.lower().endswith('.xls'):
+                df = pd.read_excel(file_path, sheet_name, engine='xlrd')
+            else:
+                print("Unsupported file format")
+                return  # Handle unsupported format
+
+            for index, row in df.iterrows():
+                empid = row['emp_id']
+                print("Processing: ", empid)
+                date = pd.to_datetime(row['date']) if pd.notna(row['date']) else None
+                existing_emp = db.session.query(Employee).filter_by(id=empid).first()
+                if existing_emp:
+                    attendance_status = 'Absent' if str(row['intime']) == "00:00" and str(row['outtime']) == "00:00" else 'Present'
+                    shift_type = None
+                  
+                        # Assuming you want to access the first attendance record's shift
+                    shift_type = existing_emp.shift
+                    shitfTime=  Shift_time.query.filter_by(shiftType=existing_emp.shift).first()
+                    attendance = Attendance(
+                        emp_id=empid,
+                        inTime=str(row['intime']),
+                        outTime=str(row['outtime']),
+                        shiftType=shift_type,
+                        attendance=attendance_status,
+                        date=date,
+                        shiftIntime=shitfTime.shiftIntime,
+                        shift_Outtime=shitfTime.shift_Outtime,
+                        
+                        
+                        
+                    )
+                    db.session.add(attendance)
+
+        db.session.commit()
+    else:
+        print("File not found")
 
 
