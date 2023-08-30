@@ -90,6 +90,7 @@ def calculate_Attendance():
 
                 # Calculate the earlyGoingBy time
                 earlyGoingBy = calculate_time_difference(shiftOuttime, outTime)
+                print("lol:::   >>>>>>",earlyGoingBy)
                 if "-" in earlyGoingBy:
                     attendance.earlyGoingBy = "00:00"
                 else:
@@ -122,13 +123,18 @@ def calculate_time_difference(time1_str, time2_str):
     # Convert time strings to datetime objects
     time1 = datetime.strptime(time1_str, '%H:%M')
     time2 = datetime.strptime(time2_str, '%H:%M')
+    if time2 > time1:
+        time_difference = time2 - time1
+    else:
+        time_difference = datetime.combine(datetime.min, time2.time()) - datetime.combine(datetime.min, time1.time())
+
     # Find the minimum and maximum time
     # min_time = min(time1, time2)
     # max_time = max(time1, time2)
 
   
     # Calculate the time difference
-    time_difference = time1-time2
+    # time_difference = time1-time2
 
     # Calculate the total minutes in the time difference
     total_minutes = time_difference.total_seconds() // 60
@@ -136,10 +142,14 @@ def calculate_time_difference(time1_str, time2_str):
     # Calculate hours and remaining minutes
     hours = total_minutes // 60
     minutes = total_minutes % 60
-
+    
+   
     # Format the time difference as H:MM
     formatted_difference = f"{int(hours)}:{int(minutes):02d}"
     return formatted_difference
+
+
+
 def update_wages_for_present_employees():
     
     current_date = datetime.datetime.now().date()
