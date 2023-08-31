@@ -128,6 +128,11 @@ def profileView():
 def calculate():
     
     calculate_Attendance()
+    # lol=Shift_time.query.filter_by(id=5).first()
+    # lol.shiftIntime="14:00"
+    # lol.shift_Outtime="22:00"
+    # db.session.commit()
+    # print(lol.shift_Outtime)
     
     return redirect('/')
             

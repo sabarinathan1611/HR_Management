@@ -4,7 +4,7 @@ import datetime
 import sched
 import time
 from datetime import datetime, timedelta
-from app import funcations
+
 
 app = create_app() 
 

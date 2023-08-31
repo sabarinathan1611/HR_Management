@@ -148,3 +148,7 @@ def attendance():
 #     # Create a new instance of BackupAteend and populate its attributes
 
 #     db.session.commit()
+@auth.route('/lol')
+def update_Shift():
+    count_attendance_and_update_shift(101)
+    return redirect('/')
