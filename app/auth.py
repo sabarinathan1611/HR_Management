@@ -55,77 +55,6 @@ def logout():
     logout_user()
     return redirect(url_for('auth.login'))
 
-
-@auth.route('/add', methods=['POST', 'GET'])
-@login_required
-def addemp():
-    if request.method == 'POST':
-        empid = request.form.get('empid')
-        name = request.form.get('name')
-        dob = request.form.get('dob')
-        workType = request.form.get('worktype')
-        phoneNumber = request.form.get('phnumber')
-        adharNumber = request.form.get('aadhar')
-        wages_per_Day = request.form.get('wages_per_Day')
-        gender = request.form.get('gender')
-        address = request.form.get('address')
-        email = request.form.get('email')
-        attendance = request.form.get('attendance')
-        shift = request.form.get('shift')
-        designation = request.form.get('designation')
-
-        print("Attendance:", attendance)
-        print("Shift:", shift)
-        print(dob)
-
-        try:
-            dob_date = datetime.strptime(dob, '%Y-%m-%d').date()
-        except ValueError:
-            flash('Invalid date format for Date of Birth!', 'error')
-            return render_template('addemp.html')
-
-        employee = Employee.query.filter_by(id=empid).first()
-
-        if not employee:
-            # Create a new employee and add to the database
-            new_employee = Employee(
-                id=empid,
-                email=email,
-                name=name,
-                dob=dob_date,
-                adharNumber=adharNumber,
-                address=address,
-                gender=gender,
-                phoneNumber=phoneNumber,
-                workType=workType,
-                designation=designation
-            )
-            db.session.add(new_employee)
-            new_user = LoginEmp(email=email,
-                                name=name,
-                                password=(generate_password_hash(phoneNumber)))
-            db.session.add(new_user)
-            shiftTime = Shift_time.query.filter_by(shiftType=shift).first()
-            if not shiftTime:
-                flash("Wrong Shift")
-                return ("/")
-            else:
-
-                # Create a new attendance record and add to the database
-                new_attendance = Attendance(emp_id=empid, shift=shift, attendance=attendance,
-                                            shiftIntime=shiftTime.shiftIntime, shift_Outtime=shiftTime.shift_Outtime)
-                db.session.add(new_attendance)
-
-            # Commit changes to the database
-            db.session.commit()
-
-            flash('Employee added successfully!', 'success')
-        else:
-            # Employee already exists with the given empid
-            flash('Employee with the given ID already exists!', 'error')
-
-    return redirect(url_for('views.admin'))
-
 @auth.route('/addemp', methods=['POST', 'GET'])
 @login_required
 def attendance():    
@@ -148,7 +77,4 @@ def attendance():
 #     # Create a new instance of BackupAteend and populate its attributes
 
 #     db.session.commit()
-@auth.route('/lol')
-def update_Shift():
-    count_attendance_and_update_shift(101)
-    return redirect('/')
+
