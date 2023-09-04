@@ -72,12 +72,3 @@ def attendance():
         flash("An error occurred while updating employee data.", "error")
     return redirect(url_for('views.admin'))
 
-<<<<<<< HEAD
-=======
-# @db.event.listens_for(Attendance, 'after_update')
-# def copy_to_backup_ateend(mapper, connection, target):
-#     # Create a new instance of BackupAteend and populate its attributes
-
-#     db.session.commit()
-
->>>>>>> a599377c0a85cc112c33a36e447aecaf4a6140fc
