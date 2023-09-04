@@ -35,33 +35,22 @@ This project is an Employee Attendance Management System built using the Flask w
     python -m venv venv
 
 4. **Activate the Virtual Environment:**
-    **On Windows:** 
+
+    .On Windows:
     ```bash
     venv\Scripts\activate
+    ```
+    .On macOS and Linux:
+
+    ```bash
+    source venv/bin/activate
+5. **Install the Required Dependencies:**
+```bash
+pip install -r requirements.txt
+6.**Start the Flask Application:**
+```bash
+flask run
     
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
