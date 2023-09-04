@@ -23,5 +23,45 @@ This project is an Employee Attendance Management System built using the Flask w
 1. Clone this repository:
 
    ```bash
-   git clone https://github.com/yourusername/attendance-management-flask.git
+   git clone https://github.com/sabarinathan1611/HR_Management.git
 
+2. **Navigate to the Project Directory:**
+
+   ```bash
+    cd HR_Management
+
+3. **Create a Virtual Environment (Optional but Recommended):**
+    ```bash
+    python -m venv venv
+
+4. **Activate the Virtual Environment:**
+    **On Windows:** 
+    ```bash
+    venv\Scripts\activate
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
