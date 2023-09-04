@@ -32,7 +32,7 @@ def login():
             if dbemail:
                 if check_password_hash(dbemail.password, password):
                     login_user(dbemail, remember=True)
-                    redirect(url_for('views.admin'))
+             
                     return redirect(url_for('views.admin'))
 
                 else:
@@ -143,12 +143,3 @@ def attendance():
         flash("An error occurred while updating employee data.", "error")
     return redirect(url_for('views.admin'))
 
-# @db.event.listens_for(Attendance, 'after_update')
-# def copy_to_backup_ateend(mapper, connection, target):
-#     # Create a new instance of BackupAteend and populate its attributes
-
-#     db.session.commit()
-@auth.route('/lol')
-def update_Shift():
-    count_attendance_and_update_shift(101)
-    return redirect('/')

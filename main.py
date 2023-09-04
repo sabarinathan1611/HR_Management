@@ -10,7 +10,7 @@ app = create_app()
 
 if __name__ == '__main__':
     # Schedule the first task
-    # funcations.schedule_next_sunday()
+   
 
     # Run the scheduler in a separate thread
     # from threading import Thread

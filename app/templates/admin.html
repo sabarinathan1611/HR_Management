@@ -173,9 +173,9 @@
               {%endif%}
               <td>{{ emp.TotalDuration }}</td>
               {%if not "-" in lateBy %}
-              <td>00:00</td>
-              {%else%}
               <td>{{ emp.lateBy }}</td>
+              {%else%}
+              <td>00:00</td>
               {%endif%}
               <td>{{ emp.earlyGoingBy }}</td>
               <td class="action-btn">
