@@ -63,6 +63,7 @@ def process_excel_data(file_path):
     else:
         print("File not found")
 
+
 def calculate_Attendance(chunk_size=100):
     total_employees = Employee.query.count()
     total_chunks = (total_employees + chunk_size - 1) // chunk_size
@@ -115,7 +116,6 @@ def calculate_Attendance(chunk_size=100):
         db.session.commit()
 
 
-
 def calculate_time_difference(time1_str, time2_str):
     # Convert time strings to datetime objects (without seconds)
     time_format = '%H:%M'
@@ -137,7 +137,7 @@ def calculate_time_difference(time1_str, time2_str):
 
     formatted_difference = f"{int(total_hours)}:{int(minutes):02d}"
     return formatted_difference
-
+    
 def update_wages_for_present_employees():
     
     current_date = datetime.datetime.now().date()

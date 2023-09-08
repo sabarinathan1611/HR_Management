@@ -178,7 +178,7 @@ def readXl_update_atten():
         db.session.rollback()  # Rollback in case of error    
     return redirect(url_for('views.calculate'))
 
-@views.route('/backup')
+@views.route('/backup', methods=['POST', 'GET'])
 def backup_data():
             
 
