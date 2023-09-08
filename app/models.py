@@ -73,17 +73,13 @@ class Backup(db.Model):
     inTime=db.Column(db.String(150))
     outTime=db.Column(db.String(150))
     overtime=db.Column(db.String(150),default='00:00')
-    
-    shift=db.Column(db.String(150))
+    shiftType=db.Column(db.String(150))
     shiftIntime = db.Column(db.String(150))
     shift_Outtime = db.Column(db.String(150))
     TotalDuration=db.Column(db.String(150))
     lateBy=db.Column(db.String(150))
     earlyGoingBy=db.Column(db.String(150))
     punchRecords=db.Column(db.String(150))	
-    
-    
-    
     
     
     

@@ -1,6 +1,6 @@
 from flask_login import login_required, current_user
 from . import db
-from .models import Employee,Attendance,Shift_time
+from .models import Employee,Attendance,Shift_time,Backup
 from flask import Blueprint, render_template, request, flash, redirect, url_for,jsonify
 import json
 import datetime
@@ -19,7 +19,7 @@ def admin():
     try:
         inshift = Shift_time.query.filter_by(id=1).first()
         if not inshift:
-            file_path = os.path.join(app.config['Excel_FOLDER'], '01-08-23.xls')
+            file_path = os.path.join(app.config['EXCEL_FOLDER'], '01-08-23.xls')  # Use correct case 'EXCEL_FOLDER'
             process_excel_data(file_path)  # Call the data processing function
         else:
             print("Shift not found")
@@ -27,6 +27,7 @@ def admin():
     except Exception as e:
         print("Error occurred:", e)
         db.session.rollback()  # Rollback in case of error
+
     
     # employee =Employee.query.order_by(Employee.id)
     employee =Attendance.query.order_by(Attendance.id)   
@@ -168,18 +169,50 @@ def viewShift():
 @views.route('/attendance')
 def readXl_update_atten():
     try:
-        excel_file_path = os.path.join(app.config['Excel_FOLDER'], 'duplicate_data_updated.xlsx')
-        print("EXCEL", excel_file_path)
-        attend_excel_data(excel_file_path)  # Call the data processing function
-        
-        db.session.commit()  # Commit the changes
-        flash("Employee data updated successfully.", "success")  # Provide a success message
-        
+            file_path = os.path.join(app.config['EXCEL_FOLDER'], 'attendance.xlsx')  # Use correct case 'EXCEL_FOLDER'
+            attend_excel_data(file_path)  # Call the data processing function
+       
+
     except Exception as e:
         print("Error occurred:", e)
-        db.session.rollback() 
-        flash("An error occurred while updating employee data.", "error")
-    
+        db.session.rollback()  # Rollback in case of error    
     return redirect(url_for('views.calculate'))
 
+@views.route('/backup')
+def backup_data():
+            
 
+    # Retrieve all records from the Attendance table
+    attendance_records = Attendance.query.all()
+
+    # Create new Backup objects and copy data from Attendance records
+    backup_records = []
+    for attendance_record in attendance_records:
+        backup_record = Backup(
+            date=attendance_record.date,
+            emp_id=attendance_record.emp_id,
+            attendance=attendance_record.attendance,
+            wages_per_Day=attendance_record.wages_per_Day,
+            inTime=attendance_record.inTime,
+            outTime=attendance_record.outTime,
+            overtime=attendance_record.overtime,
+            shiftType=attendance_record.shiftType,
+            shiftIntime=attendance_record.shiftIntime,
+            shift_Outtime=attendance_record.shift_Outtime,
+            TotalDuration=attendance_record.TotalDuration,
+            lateBy=attendance_record.lateBy,
+            earlyGoingBy=attendance_record.earlyGoingBy,
+            punchRecords=attendance_record.punchRecords
+        )
+        backup_records.append(backup_record)
+
+    # Add the new Backup records to the database
+    db.session.bulk_save_objects(backup_records)
+
+    # Delete the records from the Attendance table
+    for attendance_record in attendance_records:
+        db.session.delete(attendance_record)
+
+    # Commit the changes to the database
+    db.session.commit()
+    return redirect(url_for('views.admin'))

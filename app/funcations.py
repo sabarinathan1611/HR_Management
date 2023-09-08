@@ -11,6 +11,7 @@ import sched
 import schedule
 import time
 from datetime import datetime, timedelta
+from sqlalchemy import text 
 
 import pandas as pd
 scheduler = sched.scheduler(time.time, time.sleep)
@@ -308,7 +309,7 @@ def addemployee(file_path):
                 print("Processing: ", empid)
                 dob = pd.to_datetime(row['dob']) if pd.notna(row['dob']) else None
 
-                existing_emp = db.session.query(Employee).filter_by(id=empid).first()
+                existing_emp = db.session.query(Employee).filter_by(email=empid).first()
                 if not existing_emp:
                     data_to_insert.append({
                         'id': empid,
@@ -353,7 +354,7 @@ def attend_excel_data(file_path):
             for index, row in df.iterrows():
                 empid = row['emp_id']
                 print("Processing: ", empid)
-                date = pd.to_datetime(row['date']) if pd.notna(row['date']) else None
+                # date =datetime.date.today()
                 emp = db.session.query(Employee).filter_by(id=empid).first()
                 
                 attendance_status = 'Absent' if str(row['intime']) == "00:00" and str(row['outtime']) == "00:00" else 'Present'
@@ -368,7 +369,7 @@ def attend_excel_data(file_path):
                     outTime=str(row['outtime']),
                     shiftType=shift_type,
                     attendance=attendance_status,
-                    date=date,
+                    # date=date,
                     shiftIntime=shitfTime.shiftIntime,
                     shift_Outtime=shitfTime.shift_Outtime,
                     
@@ -382,11 +383,10 @@ def attend_excel_data(file_path):
 
 def delete_all_employees():
     try:
-        db.session.query(Employee).delete()
+        db.session.query(Attendance).delete()
         db.session.commit()
         print("All employee data deleted successfully.")
     except Exception as e:
         db.session.rollback()
         print("An error occurred:", str(e))
         
-

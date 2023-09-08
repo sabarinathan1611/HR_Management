@@ -3,3 +3,5 @@ flask_sqlalchemy
 flask_login
 pandas
 schedule
+xlrd
+openpyxl

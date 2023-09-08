@@ -59,16 +59,12 @@ def logout():
 @login_required
 def attendance():    
     try:
-        excel_file_path = os.path.join(app.config['Excel_FOLDER'], 'employee_data.xlsx')
-        print("EXCEL", excel_file_path)
-        addemployee(excel_file_path)  # Call the data processing function
-        
-        db.session.commit()  # Commit the changes
-        flash("Employee data updated successfully.", "success")  # Provide a success message
-        
+
+            file_path = os.path.join(app.config['EXCEL_FOLDER'], 'employee_data.xlsx')  # Use correct case 'EXCEL_FOLDER'
+            addemployee(file_path)  # Call the data processing function
+       
+
     except Exception as e:
         print("Error occurred:", e)
-        db.session.rollback() 
-        flash("An error occurred while updating employee data.", "error")
+        db.session.rollback()  # Rollback in case of error
     return redirect(url_for('views.admin'))
-

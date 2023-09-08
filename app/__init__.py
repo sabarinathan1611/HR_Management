@@ -21,9 +21,10 @@ def create_app():
     # Define paths for file uploads
     APP_ROOT = os.path.dirname(os.path.abspath(__file__))
     UPLOAD_FOLDER = os.path.join(APP_ROOT, 'static/img/profile')
-    EXCEL_FOLDER = os.path.join(APP_ROOT, 'static/excel')
-    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-    app.config['EXCEL_FOLDER'] = EXCEL_FOLDER
+    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER 
+    Excel_FOLDER = os.path.join(APP_ROOT, 'static/excel')  # Change this to Excel_FOLDER
+    app.config['EXCEL_FOLDER'] = Excel_FOLDER
+    
     
     # Initialize SQLAlchemy with the app
     db.init_app(app)
