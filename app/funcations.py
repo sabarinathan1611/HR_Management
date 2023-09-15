@@ -88,7 +88,6 @@ def calculate_Attendance(chunk_size=100):
                     outTime = attendance.outTime
 
                     # Calculate the earlyGoingBy time
-                    #
                     earlyGoingBy = calculate_time_difference(outTime, shiftOuttime)
                     if "-" in earlyGoingBy:
                         attendance.earlyGoingBy = "00:00"
@@ -96,7 +95,7 @@ def calculate_Attendance(chunk_size=100):
                         attendance.earlyGoingBy = earlyGoingBy
 
                     # Calculate the time duration between inTime and outTime
-                    time_worked = calculate_time_difference( inTime,outTime)
+                    time_worked = calculate_time_difference(inTime, outTime)
                     if "-" in time_worked:
                         attendance.TotalDuration = "00:00"
                     else:
@@ -107,14 +106,14 @@ def calculate_Attendance(chunk_size=100):
                     attendance.overtime = overtime_hours
                 else:
                     out_time = datetime.now().strftime("%H:%M")
-                    earlyGoingBy = calculate_time_difference(out_time, shiftOuttime)
-                    attendance.earlyGoingBy = earlyGoingBy
-                    attendance.TotalDuration = calculate_time_difference(inTime, out_time)
-                    attendance.overtime = "00:00"
+                    if out_time != "00:00":  # Check for "00:00" here
+                        earlyGoingBy = calculate_time_difference(out_time, shiftOuttime)
+                        attendance.earlyGoingBy = earlyGoingBy
+                        attendance.TotalDuration = calculate_time_difference(inTime, out_time)
+                        attendance.overtime = "00:00"
             
             # Commit the changes for each attendance record
-        db.session.commit()
-
+            db.session.commit()
 
 def calculate_time_difference(time1_str, time2_str):
     # Convert time strings to datetime objects (without seconds)
@@ -372,9 +371,6 @@ def attend_excel_data(file_path):
                     # date=date,
                     shiftIntime=shitfTime.shiftIntime,
                     shift_Outtime=shitfTime.shift_Outtime,
-                    
-                    
-                    
                 )
                 db.session.add(attendance)
         db.session.commit()

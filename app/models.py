@@ -9,8 +9,16 @@ class Login_admin(db.Model, UserMixin):
     email=db.Column(db.String(150),unique=True)
     password = db.Column(db.String(150))
     phoneNumber=db.Column(db.Integer)
+    designation = db.Column(db.String(150), nullable=True)
     date = db.Column(db.DateTime(timezone=True), default=func.now())
-   
+class Emp_login():
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.DateTime(timezone=True), default=func.now())
+    email = db.Column(db.String(150))
+    password = db.Column(db.String(150))
+    emp_id = db.Column(db.Integer, db.ForeignKey('employee.id'))
+    employee = db.relationship('Employee', backref='login', uselist=False)
+
 class Employee(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150), nullable=False)
@@ -25,6 +33,7 @@ class Employee(db.Model, UserMixin):
     address = db.Column(db.String(150))
     mimetype =db.Column(db.String(150))
     profile_pic = db.Column(db.String(100000), default='Default/Default.jpeg')
+    
     attendances = db.relationship('Attendance', back_populates='employee', cascade='all, delete-orphan')
     shift=db.Column(db.String(150))
     

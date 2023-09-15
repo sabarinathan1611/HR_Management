@@ -1,7 +1,7 @@
 from flask_login import login_required, login_user, logout_user, current_user
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
-from .models import Login_admin, Employee, Attendance, Shift_time,Backup,LoginEmp
+from .models import Login_admin, Employee, Attendance, Shift_time,Backup,LoginEmp,Emp_login
 from . import db
 import datetime
 from flask import current_app as app
@@ -19,35 +19,52 @@ auth = Blueprint('auth', __name__)
 
 @auth.route('/admin-login', methods=['POST', 'GET'])
 def login():
-
     admin = Login_admin.query.filter_by(id=1).first()
     if admin:
         if request.method == 'POST':
             email = request.form.get('email')
             password = request.form.get('password')
-            print("email",email)
-            print("pwd :",password)
+            print("email", email)
+            print("pwd:", password)
 
             dbemail = Login_admin.query.filter_by(email=email).first()
             if dbemail:
                 if check_password_hash(dbemail.password, password):
                     login_user(dbemail, remember=True)
-             
                     return redirect(url_for('views.admin'))
-
                 else:
                     flash("Incorrect Password", category='error')
             else:
                 flash("Incorrect Email", category='error')
     else:
         addAdmin = Login_admin(name="Admin", email="vsabarinathan1611@gmail.com", phoneNumber="123456789",
-                               password="sha256$idRijyfQJjGQ3s7P$cedf4eb4aaaddab35c3423e31ab70bd5f60fb8b871f18e37ebec2359a818b6db")
+                               password="sha256$idRijyfQJjGQ3s7P$cedf4eb4aaaddab35c3423e31ab70bd5f60fb8b871f18e37ebec2359a818b6db", designation="HR")
         db.session.add(addAdmin)
         db.session.commit()
         print('Created Admin!')
-   
 
     return render_template('login.html')
+
+
+@auth.route('/login', methods=['POST', 'GET'])
+def emp_login():
+    if request.method == 'POST':
+        emp_id = request.form.get('emp_id')
+        password = request.form.get('password')
+        print("emp_id", emp_id)
+        print("pwd:", password)
+
+        dbemp = Login_admin.query.filter_by(emp_id=emp_id).first()
+        if dbemp:
+            if check_password_hash(dbemp.password, password):
+                login_user(dbemp, remember=True)
+                return redirect(url_for('views.dashboard'))
+            else:
+                flash("Incorrect Password", category='error')
+        else:
+            flash("Incorrect Employee ID", category='error')
+
+    return render_template('emp_login.html')
 
 
 @auth.route('/logout', methods=['GET', 'POST'])

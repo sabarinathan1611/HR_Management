@@ -5,3 +5,4 @@ pandas
 schedule
 xlrd
 openpyxl
+flask_socketio

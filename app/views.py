@@ -4,13 +4,18 @@ from .models import Employee,Attendance,Shift_time,Backup
 from flask import Blueprint, render_template, request, flash, redirect, url_for,jsonify
 import json
 import datetime
-
+from flask import session
 import pandas as pd
 from flask import current_app as app
 from datetime import datetime, timedelta
 import os
 from .funcations import *
 views = Blueprint('views', __name__)
+
+@app.before_first_request  
+def make_session_permanent():
+    session.permanent = True
+    app.permanent_session_lifetime = timedelta(hours=3)
 
 
 @views.route('/',methods=['POST','GET'])
@@ -216,3 +221,8 @@ def backup_data():
     # Commit the changes to the database
     db.session.commit()
     return redirect(url_for('views.admin'))
+
+
+@views.route('dashboard',methods=['POST','GET'])
+def dashboard():
+    return render_template('dashboard.html')
