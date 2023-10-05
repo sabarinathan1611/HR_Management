@@ -85,3 +85,28 @@ def attendance():
         print("Error occurred:", e)
         db.session.rollback()  # Rollback in case of error
     return redirect(url_for('views.admin'))
+
+
+@auth.route('/signup',methods=['POST','GET'])
+def signup():
+    if request.method == 'POST':
+        # Get user input from the form
+        email = request.form['email']
+        password = request.form['password']
+        emp_id = request.form['emp_id']  # Assuming you have a form field for emp_id
+
+        # Check if a user with the same email already exists
+        existing_user = Emp_login.query.filter_by(email=email).first()
+        if existing_user:
+            flash('Email already exists. Please choose a different email.')
+        else:
+            # Create a new Emp_login object and add it to the database
+            new_login = Emp_login(email=email, password=password, emp_id=emp_id)
+            db.session.add(new_login)
+            db.session.commit()
+
+            # Redirect to a success page or perform any other necessary actions
+            return redirect(url_for('signup_success'))
+
+    # Render the signup form for GET requests
+    return render_template('signup.html')

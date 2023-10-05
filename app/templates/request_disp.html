@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Leave Requests</title>
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="static/css/notify.css">
+    <link rel="stylesheet" href="static/css/late_disp.css">
+    <script src="https://cdn.socket.io/4.7.2/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+    
+    <script>
+        const socket = io();
+        function removeNotify(event) {
+            if (event.target.parentElement && event.target.parentElement.classList.contains("notification")) {
+                event.target.parentElement.classList.add("done");
+                event.target.parentElement.classList.remove("active");
+            } else {
+                event.target.classList.add("done");
+                event.target.classList.remove("active");
+            }
+    
+            setTimeout(() => {
+                if (event.target.parentElement && event.target.parentElement.classList.contains("notification")) {
+                    event.target.parentElement.remove()
+                } else {
+                    event.target.remove();
+                }
+            }, 500);
+        }
+    </script>
+</head>
+<body>
+    <form action='/del_db' method='post'>
+        <button type='submit' style="right:250px; top:20px; padding: 7px 14px;border-radius: 5px;border: none;background: #025e02;color: #ffffff;cursor: pointer;position: fixed;text-transform: capitalize;"> Delete Database </button>
+    </form>
+    <div class="container">
+        <div class="sidemenu">
+            <ul class="sidemenuList">
+                <li class="btn btn-primary btnlist leave"> 
+                    leave table 
+                </li>
+                <li class="btn btn-dark btnlist late">
+                    late table
+                </li>
+                <li class="btn btn-warning btnlist attendance">
+                    attendance table
+                </li>
+            </ul>
+        </div>
+
+        <div class="notifyContainer">
+            <div class="options">
+                <button class="clear">clear All</button>
+            </div>
+            <ul class="innerNotification">
+            </ul>
+        </div>
+    </div>
+    <script src="notify.js"></script>
+    <div class="container mt-4">
+        <table class="table table-striped table-bordered leavetable"  id='leave_table'>
+            <thead class="thead-dark">
+                <tr>
+                    <td colspan='10' style='text-align: center; text-transform: capitalize;'>Leave Table</td>
+                </tr>
+                <tr>
+                    <th>Emp ID</th>
+                    <th>Name</th>
+                    <th>Reason</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Status</th>
+                    <th>HOD Status</th>
+                    <th>Approved By</th>
+                    <th>HR Status</th>
+                    <th>Action</th>
+                </tr>
+                {% for leave_permission in leave_permission %}
+                    <tr style="background-color: #fbfb9d;">
+                        <td>{{leave_permission.emp_id}}</td>
+                        <td>{{leave_permission.emp_name}}</td>
+                        <td>{{leave_permission.reason}}</td>
+                        <td>{{leave_permission.from_date}}</td>
+                        <td>{{leave_permission.to_date}}</td>
+                        <td class="status">{{leave_permission.status}}</td>
+                        <td>{{leave_permission.hod_approval}}</td>
+                        <td>{{leave_permission.approved_by}}</td>
+                        <td>{{leave_permission.hr_approval}}</td>
+                        <td><button class="btn btn-sm btn-primary leavetable" name='approve' onclick="Leave_Approve({{leave_permission.emp_id}})" id='approve'>Approve</button>
+                        <button class="btn btn-sm btn-danger leavetable" name='decline' onclick="Leave_Decline({{leave_permission.emp_id}})" id='decline'>Decline</button></td>
+                       
+                    </tr>
+                {% endfor %}
+            </thead>
+            <tbody>
+            
+            </tbody>
+        </table>
+        <script>
+            socket.on('leave', function (leave_permission) {
+                var tbody = document.getElementById('leave_table');
+                tbody.innerHTML += `
+                    <tr style="background-color: #fbfb9d;">
+                    <td>${leave_permission.emp_id}</td>
+                    <td>${leave_permission.emp_name}</td>
+                    <td>${leave_permission.reason}</td>
+                    <td>${leave_permission.from_date}</td>
+                    <td>${leave_permission.to_date}</td>
+                    <td class="status">${leave_permission.status}</td>
+                    <td>${leave_permission.hod_approval}</td>
+                    <td>${leave_permission.approved_by}</td>
+                    <td>${leave_permission.hr_approval}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary leavetable" name='approve' onclick="Leave_Approve(${leave_permission.emp_id})" id='approve'>Approve</button>
+                        <button class="btn btn-sm btn-danger leavetable" name='decline' onclick="Leave_Decline(${leave_permission.emp_id})" id='decline'>Decline</button>
+                    </td>
+                    </tr>
+                `;
+                const currentTime = new Date().toLocaleTimeString();
+
+                var newNotification = document.createElement("div");
+                newNotification.classList.add('notification');
+        
+                var notifyMsg = document.createElement("div");
+                notifyMsg.classList.add('notifyMsg');
+                notifyMsg.innerText = `Leave \nEMP ID: ${leave_permission.emp_id}`;
+        
+                var notifyTime = document.createElement("div");
+                notifyTime.classList.add('notifyTime');
+                notifyTime.innerText = `${currentTime}`;
+        
+                newNotification.appendChild(notifyMsg);
+                newNotification.appendChild(notifyTime);
+        
+                newNotification.addEventListener('click', function (event) {
+                    removeNotify(event);
+                });
+                        
+                setTimeout(() => {
+                    newNotification.classList.add('active');
+                }, 200);
+
+                document.querySelector(".innerNotification").appendChild(newNotification);
+                fetch("/add_leave_notification", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ 
+                        message: `Leave\nEMP ID: ${leave_permission.emp_id}` 
+                    }),
+                }).then((_res) => {
+                    console.log("notifyMsg and notifyTime sent to the server");
+                });                
+            });
+        </script>
+        <script>
+            function Leave_Approve(userId){
+                fetch("/leave_approve", {
+                  method: "POST",
+                  body: JSON.stringify({ userId: userId }),
+                }).then((_res) => {
+                  window.location.href = "/request_disp";
+                  
+                });
+            } 
+              function Leave_Decline(userId){
+                fetch("/leave_decline", {
+                  method: "POST",
+                  body: JSON.stringify({ userId: userId }),
+                }).then((_res) => {
+                  window.location.href = "/request_disp";
+                  
+                });
+            }
+              socket.on('leave_hr_approval_update', function(data) {
+                const userId = data.userId;
+                const hrApproval = data.hr_approval;
+        
+                document.getElementById('hr-approval-' + userId).textContent = hrApproval;
+            });
+        </script>
+        
+    </div>
+    <div class="container mt-4">
+        <table class="table table-striped table-bordered latetable" id='late_table' style="display:none;">
+            <thead class="thead-dark">
+                <tr>
+                    <td colspan='10' style='text-align: center; text-transform: capitalize;'>Late Table</td>
+                </tr>
+                <tr>
+                    <th>Emp ID</th>
+                    <th>Name</th>
+                    <th>Reason</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Status</th>
+                    <th>HOD Status</th>
+                    <th>Approved By</th>
+                    <th>HR Status</th>
+                    <th>Action</th>
+                </tr>
+                {% for late_permission in late_permission %}
+                    <tr style="background-color: #fbfb9d;">
+                        <td>{{late_permission.emp_id}}</td>
+                        <td>{{late_permission.emp_name}}</td>
+                        <td>{{late_permission.reason}}</td>
+                        <td>{{late_permission.from_time}}</td>
+                        <td>{{late_permission.to_time}}</td>
+                        <td class="status">{{late_permission.status}}</td>
+                        <td>{{late_permission.hod_approval}}</td>
+                        <td>{{late_permission.approved_by}}</td>
+                        <td>{{late_permission.hr_approval}}</td>
+                        <td><button class="btn btn-sm btn-primary latetable" name='approve' onclick="Late_Approve({{late_permission.emp_id}})" id='approve'>Approve</button>
+                        <button class="btn btn-sm btn-danger latetable" name='decline' onclick="Late_Decline({{late_permission.emp_id}})" id='decline'>Decline</button></td>
+                       
+                    </tr>
+                {% endfor %}
+            </thead>
+            <tbody>
+          
+            </tbody>
+        </table>
+
+        <script>
+            socket.on('late', function (late_permission) {
+                console.log('Received late_permission:', late_permission.emp_id);
+                var tbody = document.getElementById('late_table');
+                tbody.innerHTML += `
+                    <tr style="background-color: #fbfb9d;" >
+                    <td>${late_permission.emp_id}</td>
+                    <td>${late_permission.emp_name}</td>
+                    <td>${late_permission.reason}</td>
+                    <td>${late_permission.from_time}</td>
+                    <td>${late_permission.to_time}</td>
+                    <td class="status">${late_permission.status}</td>
+                    <td>${late_permission.hod_approval}</td>
+                    <td>${late_permission.approved_by}</td>
+                    <td>${late_permission.hr_approval}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary latetable" name='approve' onclick="Late_Approve(${late_permission.emp_id})" id='approve'>Approve</button>
+                        <button class="btn btn-sm btn-danger latetable" name='decline' onclick="Late_Decline(${late_permission.emp_id})" id='decline'>Decline</button>
+                    </td>
+                    </tr>
+                `;
+                const currentTime = new Date().toLocaleTimeString();
+
+                var newNotification = document.createElement("div");
+                newNotification.classList.add('notification');
+        
+                var notifyMsg = document.createElement("div");
+                notifyMsg.classList.add('notifyMsg');
+                notifyMsg.innerText = `Late \nEMP ID: ${late_permission.emp_id}`;
+        
+                var notifyTime = document.createElement("div");
+                notifyTime.classList.add('notifyTime');
+                notifyTime.innerText = `${currentTime}`;
+        
+                newNotification.appendChild(notifyMsg);
+                newNotification.appendChild(notifyTime);
+        
+                newNotification.addEventListener('click', function (event) {
+                    removeNotify(event);
+                });
+        
+                setTimeout(() => {
+                    newNotification.classList.add('active');
+                }, 200);
+        
+                document.querySelector(".innerNotification").appendChild(newNotification);
+                fetch("/add_late_notification", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ 
+                        message: `Leave\nEMP ID: ${leave_permission.emp_id}` 
+                    }),
+                }).then((_res) => {
+                    console.log("notifyMsg and notifyTime sent to the server");
+                });
+            });
+            </script>
+    </div>
+
+            <script src="static/js/status.js"></script>
+    <script>
+        function Late_Approve(userId){
+            fetch("/late_approve", {
+              method: "POST",
+              body: JSON.stringify({ userId: userId }),
+            }).then((_res) => {
+              window.location.href = "/request_disp";
+              
+            });
+        } 
+          function Late_Decline(userId){
+            fetch("/late_decline", {
+              method: "POST",
+              body: JSON.stringify({ userId: userId }),
+            }).then((_res) => {
+              window.location.href = "/request_disp";
+              
+            });
+        }
+          socket.on('late_hr_approval_update', function(data) {
+            const userId = data.userId;
+            const hrApproval = data.hr_approval;
+    
+            document.getElementById('hr-approval-' + userId).textContent = hrApproval;
+        });
+    </script>
+
+    <div class="container mt-4">
+       
+        <table class="table table-striped table-bordered attendancetable" style="display: none;">
+            <!-- <h2>Employee Late Requests</h2> -->
+            <thead class="thead-dark">
+                <tr>
+                    <th>Emp ID</th>
+                    <th>Name</th>
+                    <th>Status</th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Sample data rows -->
+                <tr>
+                    <td>001</td>
+                    <td>John Doe</td>
+                    <td>Absent</td>
+                    
+                </tr>
+                <tr>
+                    <td>002</td>
+                    <td>Jane Smith</td>
+                    <td>Present</td>
+                    
+                </tr>
+                <tr>
+                    <td>003</td>
+                    <td>Jane </td>
+                    <td>Present</td>
+                    
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <form action='/excel_data' method='post'>
+        <button type='submit'> Excel Data </button>
+    </form>
+    <script src="static/js/notify.js"></script> 
+    <script src="static/js/btn.js"></script> 
+</body>
+</html>
+

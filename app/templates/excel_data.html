@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Excel Data</title>
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-5">Excel Data</h1>
+        <table class="table table-bordered mt-4 attendancetable">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Emp id</th>
+                    <th>Name</th>
+                    <th> 1 </th>
+                    <th> 2 </th>
+                    <th> 3 </th>
+                    <th> 4 </th>
+                    <th> 5 </th>
+                    <th> 6 </th>
+                    <th> 7 </th>
+                    <th> 8 </th>
+                    <th> 9 </th>
+                    <th> 10 </th>
+                    <th> 11 </th>
+                    <th> 12 </th>
+                    <th> 13 </th>
+                    <th> 14 </th>
+                    <th> 15 </th>
+                    <th> 16 </th>
+                    <th> 17 </th>
+                    <th> 18 </th>
+                    <th> 19 </th>
+                    <th> 20 </th>
+                    <th> 21 </th>
+                    <th> 22 </th>
+                    <th> 23 </th>
+                    <th> 24 </th>
+                    <th> 25 </th>
+                    <th> 26 </th>
+                    <th> 27 </th>
+                    <th> 28 </th>
+                    <th> 29 </th>
+                    <th> 30 </th>
+                    <th> 31 </th> 
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in data %}
+                <tr>
+                    <td>{{ row['E.ID'] }}</td>
+                    <td>{{ row['NAME'] }}</td>
+                    <td>{{ row[' 1 '] }}</td>
+                    <td>{{ row[' 2 '] }}</td>
+                    <td>{{ row[' 3 '] }}</td>
+                    <td>{{ row[' 4 '] }}</td>
+                    <td>{{ row[' 5 '] }}</td>
+                    <td>{{ row[' 6 '] }}</td>
+                    <td>{{ row[' 7 '] }}</td>
+                    <td>{{ row[' 8 '] }}</td>
+                    <td>{{ row[' 9 '] }}</td>
+                    <td>{{ row[' 10 '] }}</td>
+                    <td>{{ row[' 11 '] }}</td>
+                    <td>{{ row[' 12 '] }}</td>
+                    <td>{{ row[' 13 '] }}</td>
+                    <td>{{ row[' 14 '] }}</td>
+                    <td>{{ row[' 15 '] }}</td>
+                    <td>{{ row[' 16 '] }}</td>
+                    <td>{{ row[' 17 '] }}</td>
+                    <td>{{ row[' 18 '] }}</td>
+                    <td>{{ row[' 19 '] }}</td>
+                    <td>{{ row[' 20 '] }}</td>
+                    <td>{{ row[' 21 '] }}</td>
+                    <td>{{ row[' 22 '] }}</td>
+                    <td>{{ row[' 23 '] }}</td>
+                    <td>{{ row[' 24 '] }}</td>
+                    <td>{{ row[' 25 '] }}</td>
+                    <td>{{ row[' 26 '] }}</td>
+                    <td>{{ row[' 27 '] }}</td>
+                    <td>{{ row[' 28 '] }}</td>
+                    <td>{{ row[' 29 '] }}</td>
+                    <td>{{ row[' 30 '] }}</td>
+                    <td>{{ row[' 31 '] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Include Bootstrap JS and jQuery (optional) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
