@@ -1,6 +1,6 @@
 from flask_login import login_required, current_user
 from . import db
-from .models import Employee,Attendance,Shift_time,Backup, late, leave,notification,userr
+from .models import Employee,Attendance,Shift_time,Backup, late, leave,notification,NewShift
 from flask import Blueprint, render_template, request, flash, redirect, url_for,jsonify
 import json
 import datetime
@@ -11,11 +11,15 @@ from datetime import datetime, timedelta
 import os
 from .funcations import *
 from .sms import send_sms
+from werkzeug.utils import secure_filename
 
+import csv
 from sqlalchemy import desc
 
 views = Blueprint('views', __name__)
-
+ALLOWED_EXTENSIONS = {'csv'}
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 from flask_socketio import emit
 from app import socketio
 @views.route('/',methods=['POST','GET'])
@@ -372,3 +376,85 @@ def handle_leaveform_callback(leaveDet):
 
 
 
+@views.route('/upload_csv',methods=['POST','GET'])
+def upload_csv():
+    if request.method == 'POST':
+        if 'csvFile' not in request.files:
+            return "No file part"
+
+        file = request.files['csvFile']
+
+        if file.filename == '':
+            return "No selected file"
+
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            print(filename)
+            file.save(os.path.join(app.config['EXCEL_FOLDER'], filename))
+           
+            # Create a new database record with file name and current datetime
+            now = datetime.now()
+            current_time = now.strftime("%Y-%m-%d %H:%M:%S")
+            data = NewShift(
+                name_date_day=f"File Uploaded on {current_time}",
+                filename=filename  # Add the filename to the database
+            )
+            db.session.add(data)
+            db.session.commit()
+           
+            return "File uploaded successfully"
+        else:
+            return "File not allowed"
+
+    # If the request method is GET, render the upload form
+    return render_template('upload_csv.html')
+
+
+@views.route('/process_csv', methods=['POST','GET'])
+def process_csv():
+    # Query the database to get the latest uploaded record
+    latest_data = NewShift.query.order_by(desc(NewShift.id)).first()
+    
+    if not latest_data:
+        return "No files have been uploaded yet."
+    
+    latest_filename = latest_data.filename
+    csv_filepath = os.path.join(app.config['EXCEL_FOLDER'], latest_filename)
+
+    with open(csv_filepath, 'r') as csv_file:
+        csv_reader = csv.reader(csv_file)
+
+        # Skip the first row containing headers
+        next(csv_reader)  # Skip the first row
+
+        # Read the second row which contains the days of the week (Monday to Friday)
+        days_of_week = next(csv_reader)[2:]  # Assuming the first two columns are E.ID and Employee Name
+
+        for row in csv_reader:  # Reading the employee's data rows
+            employee_id = row[0]
+            employee_name = row[1]
+            shifts = row[2:]
+
+            # Combine the days of the week with the shifts
+            combined_shifts = days_of_week + shifts
+
+            # Here you can process the employee data and store it in the database
+            data_entry = NewShift(
+                name_date_day=employee_name,
+            )
+
+            # Map the combined shifts to corresponding day columns dynamically
+            for day_num, shift in enumerate(combined_shifts, start=1):
+                setattr(data_entry, f"day_{day_num}", shift)
+
+            db.session.add(data_entry)
+
+        db.session.commit()
+
+    return f"CSV data from {latest_filename} processed and stored in the database."
+
+@views.route('/del_csv')
+def del_csv():
+    db.session.query(user).delete()
+    db.session.commit()
+    return redirect(url_for('upload_csv'))

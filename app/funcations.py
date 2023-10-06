@@ -386,3 +386,4 @@ def delete_all_employees():
         db.session.rollback()
         print("An error occurred:", str(e))
         
+

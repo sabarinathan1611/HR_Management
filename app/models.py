@@ -73,6 +73,7 @@ class Shift_time(db.Model):
     shiftType = db.Column(db.String(150))
     work_Duration=db.Column(db.String(150))
     
+    
 class Backup(db.Model):
     id=db.Column(db.Integer,primary_key=True)
     date = db.Column(db.DateTime(timezone=True), default=func.now())
@@ -94,43 +95,19 @@ class Backup(db.Model):
     
     
     
-
-class userr(db.Model, UserMixin):
-    id=db.Column(db.Integer,primary_key=True)
-    emp_id=db.Column(db.Integer)
-    name=db.Column(db.String(30))
-    one=db.Column(db.String(30))
-    two=db.Column(db.String(30))
-    three=db.Column(db.String(30))
-    four=db.Column(db.String(30))
-    five=db.Column(db.String(30))
-    six=db.Column(db.String(30))
-    seven=db.Column(db.String(30))
-    eight=db.Column(db.String(30))
-    nine=db.Column(db.String(30))
-    ten=db.Column(db.String(30))
-    eleven=db.Column(db.String(30))
-    twelve=db.Column(db.String(30))
-    thirteen=db.Column(db.String(30))
-    fourteen=db.Column(db.String(30))
-    fifteen=db.Column(db.String(30))
-    sixteen=db.Column(db.String(30))
-    seventeen=db.Column(db.String(30))
-    eighteen=db.Column(db.String(30))
-    nineteen=db.Column(db.String(30))
-    twenty=db.Column(db.String(30))
-    tw_one=db.Column(db.String(30))
-    tw_two=db.Column(db.String(30))
-    tw_three=db.Column(db.String(30))
-    tw_four=db.Column(db.String(30))
-    tw_five=db.Column(db.String(30))
-    tw_six=db.Column(db.String(30))
-    tw_seven=db.Column(db.String(30))
-    tw_eight=db.Column(db.String(30))
-    tw_nine=db.Column(db.String(30))
-    thirty=db.Column(db.String(30))
-    th_one=db.Column(db.String(30))
-
+class NewShift(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name_date_day = db.Column(db.String(255))
+    filename=db.Column(db.String(255))
+    
+    # Define columns for days 1 through 31
+    for day_num in range(1, 32):
+        locals()[f"day_{day_num}"] = db.Column(db.String(255))
+    monday = db.Column(db.String(255))
+    tuesday = db.Column(db.String(255))
+    wednesday = db.Column(db.String(255))
+    thursday = db.Column(db.String(255))
+    friday = db.Column(db.String(255))
     
 class notification(db.Model):
     id = db.Column(db.Integer, primary_key=True)
