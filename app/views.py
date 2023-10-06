@@ -392,15 +392,15 @@ def upload_csv():
             print(filename)
             file.save(os.path.join(app.config['EXCEL_FOLDER'], filename))
            
-            # Create a new database record with file name and current datetime
-            now = datetime.now()
-            current_time = now.strftime("%Y-%m-%d %H:%M:%S")
-            data = NewShift(
-                name_date_day=f"File Uploaded on {current_time}",
-                filename=filename  # Add the filename to the database
-            )
-            db.session.add(data)
-            db.session.commit()
+            # # Create a new database record with file name and current datetime
+            # now = datetime.now()
+            # current_time = now.strftime("%Y-%m-%d %H:%M:%S")
+            # data = NewShift(
+            #     name_date_day=f"File Uploaded on {current_time}",
+            #     filename=filename  # Add the filename to the database
+            # )
+            # db.session.add(data)
+            # db.session.commit()
            
             return "File uploaded successfully"
         else:
