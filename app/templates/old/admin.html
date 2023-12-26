@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Page</title>
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <!-- Font Awesome CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link rel="stylesheet" href="/static/css/style.css" />
+  </head>
+
+  <body>
+    <div class="addform">
+      <form action="/add" method="post" class="adduser">
+        <div class="divide">
+          <div class="inputField">
+            <label class="input">
+              <label for="empid" class="label">EMP-ID :</label>
+              <input type="text" name="empid" id="empid" class="userinput" />
+            </label>
+          </div>
+          <div class="inputField">
+            <label class="input">
+              <label for="name" class="label">NAME : </label>
+              <input type="text" name="name" id="name" class="userinput" />
+            </label>
+          </div>
+          <div class="inputField">
+            <label class="input">
+              <label for="dob" class="label">DOB : </label>
+              <input type="date" name="dob" id="dob" class="userinput" />
+            </label>
+          </div>
+          <div class="inputField">
+            <label class="input">
+              <label for="worktype" class="label">WORK-TYPE :</label>
+              <select name="worktype" id="worktype" class="userinput">
+                <option value="">select</option>
+                <option value="daily">Daily</option>
+                <option value="employee">Employee</option>
+              </select>
+            </label>
+          </div>
+          <div class="inputField">
+            <label class="input">
+              <label for="phnumber" class="label">PH-NUMBER :</label>
+              <input
+                type="text"
+                name="phnumber"
+                id="phnumber"
+                class="userinput"
+              />
+            </label>
+          </div>
+          <div class="inputField">
+            <label class="input">
+              <label for="aadhar" class="label">AADHAR :</label>
+              <input type="tel" name="aadhar" id="aadhar" class="userinput" />
+            </label>
+          </div>
+        </div>
+        <div class="divide">
+          <div class="inputField">
+            <label class="input">
+              <label for="address" class="label">ADDRESS : </label>
+              <textarea
+                name="address"
+                id="address"
+                cols="30"
+                rows="3"
+                class="userinput"
+              >
+              </textarea>
+            </label>
+          </div>
+          <div class="inputField">
+            <label class="input">
+              <label for="emial" class="label">E-MAIL : </label>
+              <input type="email" name="email" id="email" class="userinput" />
+            </label>
+          </div>
+          <div class="inputField">
+            <label class="input">
+              <label for="attendance" class="label">ATTENDANCE :</label>
+              <select name="attendance" id="attendance" class="userinput">
+                <option value="">select</option>
+                <option value="absent">Absent</option>
+                <option value="present">Present</option>
+              </select>
+            </label>
+          </div>
+          <div class="inputField">
+            <label class="input">
+              <label for="shift" class="label">SHIFT :</label>
+              <input type="text" name="shift" id="shift" class="userinput" />
+            </label>
+          </div>
+          <div class="inputField">
+            <label class="input">
+              <label for="gender" class="label">GENDER :</label>
+              <label
+                ><input type="radio" name="gender" id="gender" />MALE</label
+              >
+              <label
+                ><input type="radio" name="gender" id="gender" />FEMALE</label
+              >
+            </label>
+          </div>
+        </div>
+        <button type="submit" class="addformbtn btn-primary">
+          <i class="fas fa-plus"></i> &nbsp; Add
+        </button>
+      </form>
+    </div>
+    <nav class="sidebar" id="sidebar">
+      <ul class="navbar-nav">
+        <li index="0" class="nav-item">
+          <a class="btn mt-3 btn-primary nav-link" href="#"
+            ><i class="fas fa-users"></i> &nbsp; All</a
+          >
+        </li>
+        <li index="1" class="nav-item">
+          <a class="btn mt-3 btn-success nav-link" href="#"
+            ><i class="fas fa-check"></i> &nbsp; Present</a
+          >
+        </li>
+        <li index="2" class="nav-item">
+          <a class="btn mt-3 btn-danger nav-link" href="#"
+            ><i class="fas fa-times"></i> &nbsp; Absent</a
+          >
+        </li>
+        <li index="3" class="">
+          <a class="btn addbtn mt-3 btn-warning nav-link" href="#"
+            ><i class="fas fa-plus"></i> &nbsp; Add</a
+          >
+        </li>
+      </ul>
+    </nav>
+
+    <div
+      id="menubtn"
+      class="sidebar-toggle-btn"
+      onclick="toggleSidebar()"
+    ></div>
+
+    <main role="main" class="container mt-5">
+      <div class="filters">
+        <input
+          type="text"
+          name="filter"
+          id="filter"
+          placeholder="eg: 0001 or vinoth"
+        />
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-md-8">
+          <table class="table table-bordered table-hover">
+            <thead>
+              <tr>
+                <th>id</th>
+                <!--0-->
+                <th>name</th>
+                <!--1-->
+                <th>work type</th>
+                <!--2-->
+                <th>Phone Number</th>
+                <!--3-->
+                <!-- <th>Wage</th> -->
+                <th>Attendance</th>
+                <th>Shift</th>
+                <th>Shift InTime</th>
+                <th>Shift OutTime</th>
+                <th>Date</th>
+                <th>InTime</th>
+                <th>OutTime</th>
+                <th>Overtime</th>
+                <th>TotalDuration</th>
+                <th>lateBy</th>
+                <th>earlyGoingBy</th>
+
+                <th>actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for emp in employee %}
+              <tr>
+                <td class="id">{{ emp.emp_id }}</td>
+                <td class="name">{{ emp.employee.name }}</td>
+                <td class="workType">{{ emp.employee.workType }}</td>
+                <td class="phoneNumber">{{ emp.employee.phoneNumber }}</td>
+                <!-- <td class="wages_per_Day">{{ emp.wages_per_Day }}</td> -->
+                <td class="attend">{{ emp.attendance }}</td>
+                <td class="shift">{{ emp.shiftType }}</td>
+                <td>{{ emp.shiftIntime }}</td>
+                <td>{{ emp.shift_Outtime }}</td>
+                <td>{{ emp.date.date() }}</td>
+                <td class="Intime">{{ emp.inTime }}</td>
+                <td class="outtime">{{ emp.outTime }}</td>
+                {%if "-" in emp.overtime %}
+                <td class="overtime">00:00</td>
+                {%else%}
+                <td class="overtime">{{ emp.overtime }}</td>
+                {%endif%}
+                <td>{{ emp.TotalDuration }}</td>
+                {%if not "-" in lateBy %}
+                <td>{{ emp.lateBy }}</td>
+                {%else%}
+                <td>00:00</td>
+                {%endif%}
+                <td>{{ emp.earlyGoingBy }}</td>
+                <td class="action-btn">
+                  <button
+                    class="btn btn-danger btn-sm delete-btn"
+                    data-emp-id="{{ emp.emp_id }}"
+                  >
+                    Delete
+                  </button>
+                  <button class="btn btn-primary btn-sm edit-btn">Edit</button>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+    <div class="module">
+      <form action="" class="editform">
+        <div class="half">
+          <div class="inputField">
+            <label for="empid">EmpId : </label>
+            <input type="text" name="empid" id="empid" readonly />
+          </div>
+          <div class="inputField">
+            <label for="uname">Name : </label>
+            <input type="text" name="uname" id="uname" />
+          </div>
+          <div class="inputField">
+            <label for="dob">DOB : </label>
+            <input type="date" name="dob" id="dob" />
+          </div>
+          <div class="inputField">
+            <label for="worktype">work type : </label>
+            <select name="worktype" id="worktype">
+              <option value="">select</option>
+              <option value="daily">daily</option>
+              <option value="employee">employee</option>
+            </select>
+          </div>
+          <div class="inputField">
+            <label for="attend">attendance : </label>
+            <select name="attend" id="attend">
+              <option value="">select</option>
+              <option value="present">present</option>
+              <option value="absent">Absent</option>
+            </select>
+          </div>
+        </div>
+        <div class="half">
+          <div class="inputField">
+            <label for="Phnumber">Phone number : </label>
+            <input type="number" name="Phnumber" id="Phnumber" />
+          </div>
+          <div class="inputField">
+            <label for="aadhar">Aadhar No : </label>
+            <input type="tel" name="aadhar" id="aadhar" />
+          </div>
+          <div class="inputField">
+            <label for="address">Address : </label>
+            <textarea name="address" id="address" cols="30" rows="2"></textarea>
+          </div>
+          <div class="inputField">
+            <label for="gender">Gender : </label>
+            <select name="gender" id="gender">
+              <option value="">select</option>
+              <option value="male">male</option>
+              <option value="female">female</option>
+            </select>
+          </div>
+        </div>
+        <button
+          class="btn btn-primary editSubmit"
+          onclick="change() "
+          type="button"
+        >
+          Change
+        </button>
+      </form>
+    </div>
+    <script src="/static/js/script.js"></script>
+  </body>
+</html>

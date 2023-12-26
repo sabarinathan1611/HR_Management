@@ -1,30 +1,37 @@
 console.log(`"_leave.js connected..!_"`);
 
 const profileSection = document.querySelector('.profileSection');
-const closeForm = document.querySelectorAll('.closeForm');
+const closeForm = document.querySelector('.closeForm');
 const leaveBtn = document.querySelector('.leaveBtn');
-const lateBtn = document.querySelector('.lateBtn');
 
-leaveBtn.addEventListener('click',function(){
-    document.querySelector('.leave_section').classList.add('active');
-    document.querySelector('.late_section').classList.remove('active');
-    profileSection.classList.remove('active');
-});
+const otherRadioInputs = document.querySelectorAll('input[type="radio"]');
+const otherTextArea = document.querySelector('.other');
+const otherOption = document.getElementById("other");
 
-lateBtn.addEventListener('click',function(){
-    document.querySelector('.leave_section').classList.remove('active');
-    document.querySelector('.late_section').classList.add('active');
-    profileSection.classList.remove('active');
-});
-
-closeForm.forEach(close => {
-    close.addEventListener('click',function(){
-        close.parentElement.parentElement.classList.remove('active');
-        profileSection.classList.add('active');
-        document.querySelector('.leave').reset();
+// textarea enable and disable function..
+otherRadioInputs.forEach(radio => {
+    radio.addEventListener('click',function(){
+        if (otherOption.checked == true) {
+            otherTextArea.style.display = 'flex';
+        }else{
+            otherTextArea.style.display = 'none';
+        }
     })
 });
 
+
+
+leaveBtn.addEventListener('click',function(){
+    document.querySelector('.formSection').classList.add('active');
+    profileSection.classList.remove('active');
+});
+
+
+closeForm.addEventListener('click',function(){
+    document.querySelector('.formSection').classList.remove('active');
+    profileSection.classList.add('active');
+    document.querySelector('.leave').reset();
+});
 
 const user_input = document.querySelectorAll('.user_input');
 

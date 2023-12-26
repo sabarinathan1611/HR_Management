@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload CSV File</title>
+    <title>Upload Attendance File</title>
     <!-- Include Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
 
 <div class="container mt-5">
-    <h1 class="mb-4">Upload CSV File</h1>
-    <form method="POST" action="/upload_csv" enctype="multipart/form-data">
+    <h1 class="mb-4">Upload Attendance File</h1>
+    <form method="POST" action="/attendance_upload" enctype="multipart/form-data">
         <div class="form-group">
-            <label for="csvFile">Choose a CSV File:</label>
-            <input type="file" class="form-control-file" id="csvFile" name="csvFile" accept=".csv" required>
+            <label for="attendance">Choose a Excel File:</label>
+            <input type="file" class="form-control-file" id="attendance" name="attendance" accept=".xlsx,.xls" required>
         </div>
         <button type="submit" class="btn btn-primary">Upload</button>
     </form>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Appeal For Leave</title>
+        <link rel="stylesheet" href="static/css/leave.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    </head>
+    <body>
+        <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+        <script src="https://cdn.socket.io/4.7.2/socket.io.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+                
+        <script type="text/javascript" charset="utf-8">
+            
+        </script>
+        <div class="container">
+            <div class="changeOptContainer">
+                <div class="chnageField">
+                    <input type="text" name="uname" id="uname" />
+                    <button class="changebtn" onclick="changeUserDet()">change</button>
+                </div>
+            </div>
+            <div class="header">
+                <div class="profile">
+                    <img src="https://th.bing.com/th/id/OIP.Yw4exB-_crv1xcdLRQ6hngHaHx?pid=ImgDet&rs=1" alt="user profile" class="user_prof" style=" height: 100%;">
+                </div>
+                <div class="userdet">
+                    <div class="userName">
+                        <i class="fas fa-user"></i> {{name}}
+                    </div>
+                    <div class="menu">
+                        <ul class="menuUL">
+                            <li class="menuLI leaveBtn"> leave</li>
+                            <li class="menuLI lateBtn"> late</li>
+                            <a href="../"><li class="menuLI logout"><i class="fas fa-sign-out-alt"></i> Logout</li></a>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <section class="profileSection active">
+                <div class="divSection">
+                    <div class="userProfilePic">
+                        <img src="https://th.bing.com/th/id/OIP.Yw4exB-_crv1xcdLRQ6hngHaHx?pid=ImgDet&rs=1" alt="user_prof pic" class="userProfilePicImg" style=" height: 100%;">
+                    </div>
+                    <div class="prof_username">
+                        <i class="fas fa-user"></i> {{name}}
+                    </div>
+                </div>
+                <div class="divSection blur">
+                    <ul class="detailsList">
+                        <li class="detList">
+                            <p class="innerP">Emp Id </p>
+                            <p class="innerP uid nochange">{{emp_id}}</p>
+                        </li>
+    
+                        <li class="detList">
+                            <p class="innerP">Emp Name </p>
+                            <p class="innerP uname change">{{name}}</p>
+                        </li>
+    
+                        <li class="detList">
+                            <p class="innerP">Emp Mail </p>
+                            <p class="innerP uemail change">{{email}}</p>
+                        </li>
+    
+                        <li class="detList">
+                            <p class="innerP">Emp Phone </p>
+                            <p class="innerP uphone change">8012677919</p>
+                        </li>
+                        
+                        <li class="detList">
+                            <p class="innerP">DOB </p>
+                            <p class="innerP udoj change">11/08/2020</p>
+                        </li>
+                        <li class="detList">
+                            <p class="innerP">No Of Present </p>
+                            <p class="innerP unop nochange">20 </p>
+                        </li>
+                        <li class="detList">
+                            <p class="innerP">No Of Absent </p>
+                            <p class="innerP unoa nochange">20 </p>
+                        </li>
+                        <li class="detList">
+                            <p class="innerP">Current Shift </p>
+                            <p class="innerP ushift nochange">GS </p>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+            <section class="formSection leave_section " >
+                <div class="fromContainer">
+                    <button class="closeForm">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <div class="divFormSection letter">
+                        <img src="static/img/girlLetter.jpg" alt="lettr img" class="letterImg">
+                    </div>
+                    <div class="divFormSection fromDiv">
+                        <form class="leave" method="post">                    
+                            <div class="inputfield formhead"><h2>Leave Form</h2></div>
+                            <div class="inputfield">
+                                <ul class="leaveUL">
+                                    <li class="leaveLi">Name : <span class="leaveName">{{name}}</span></li>
+                                    <li class="leaveLi">E-mail : <span class="leavemail">{{email}}</span></li>
+                                </ul>
+                            </div>
+                            <div class="inputfield">
+                                <label>Reasons :</label>
+                                <input type="text" name="leave_reason" id="leave_reason">
+                            </div>
+                            <div class="inputfield">
+                                <label>From :</label>
+                                <input type="date" name="from_date" id="from_date">
+                                <label>To</label>
+                                <input type="date" name="to_date" id="to_date">
+                            </div>
+                            <button class="requestBtn leavesubmit" type="submit">Request</button>
+                        </form>
+                    </div>
+                    <div class="tag">
+                        balance : {{leave_balance}}
+                    </div>
+                </div>
+                <script>
+                    
+                </script>
+            </section>
+            <section class="formSection late_section " >
+                <div class="fromContainer">
+                    
+                    <button class="closeForm">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <div class="divFormSection letter">
+                        <img src="static/img/girlLetter.jpg" alt="lettr img" class="letterImg">
+                    </div>
+                    <div class="divFormSection fromDiv">
+                        <form class="leave" method="post">                    
+                            <div class="inputfield formhead"><h2>Late Form</h2></div>
+                            <div class="inputfield">
+                                <ul class="leaveUL">
+                                    <li class="leaveLi">Name : <span class="leaveName">{{name}}</span></li>
+                                    <li class="leaveLi">E-mail : <span class="leavemail">{{email}}</span></li>
+                                </ul>
+                            </div>
+                            <div class="inputfield">
+                                <label>Reasons :</label>
+                                <input type="text" name="late_reason" id="late_reason">
+                            </div>
+                            <div class="inputfield">
+                                <label>From :</label>
+                                <input type="time" name="from_time" id="from_time">
+                                <label>To</label>
+                                <input type="time" name="to_time" id="to_time">
+                            </div>
+                            <button class="requestBtn latesubmit" type="submit">Request</button>
+                        </form>
+    
+                    </div>
+                    <div class="tag">
+                        balance : {{late_balance}}
+                    </div>
+                </div>
+                <script>
+                    
+                </script>
+            </section>
+        </div>
+        <script src="static/js/req_form.js"></script>
+        <script src="static/js/leave.js"></script>
+    </body>
+    </html>

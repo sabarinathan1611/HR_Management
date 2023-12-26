@@ -1,0 +1,152 @@
+.frame-header{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 15px;
+    background: #800080;
+    color: #fff;
+    border-radius: 3px;
+}
+
+.frame-details{
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.frame-name{
+    font-family: sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+}
+
+.frame-search{
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.frame-search input{
+    padding: 7px;
+    border-radius: 4px;
+    border: 2px solid #fff;
+}
+
+.frame-search input:focus{
+    border: 1px dashed #030303;
+    outline: none;
+    box-shadow: 0px 0px 10px #000;
+}
+
+.download{
+    width:  37px;
+    height: 37px;
+    border-radius: 50%;
+    background: #fff;
+    color: #800080;
+    font-size: 20px;
+    border: 2px solid #fff;
+    cursor: pointer;
+    transition: all .3s;
+}
+
+.download:hover{
+    background: #800080;
+    color: #fff;
+    border: 2px solid #ffffff;
+    box-shadow: 0px 0px 5px #ffffff;
+}
+
+.attendance-table,.today-attendance-table{
+    width: 100%;
+    max-height: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.attendance-table .thead, .today-attendance-table thead{
+    padding: 5px 0;
+    background: #313131;
+    color: #fff;
+}
+
+td,th{
+    min-width: 30px;
+    text-align: center;
+    padding: 5px 0;
+}
+
+.today-attendance-table thead tr th{
+    min-width: 85px;
+}
+
+.today-attendance-table .tableBody td{
+    border-right: 2px solid #ddd;
+}
+
+.today-attendance-table td{
+    text-align: left;
+    padding: 6px;
+}
+
+.attendance-table tr{
+    border-bottom: 2px solid #3d3d3d;
+}
+
+tr:nth-child(even){
+    background: #e7e7e7;
+}
+
+.fas.fa-check-circle{
+    color: green;
+}
+
+.fas.fa-times-circle{
+    color: red;
+}
+
+.frame-body{
+    max-width: 100%;
+    overflow-x: scroll;
+}
+
+.btn-container{
+    margin-top: 10px;
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    gap: 10px;
+    width: 100%;
+    background: #fff;
+    border-radius: 5px;
+}
+
+.tag-btn{
+    padding: 10px;
+    border-radius: 7px;
+    border: 2px solid;
+    background: #2E4F4F;
+    color: #fff;
+    cursor: pointer;
+    transition: all .5s;
+    outline: none;
+}
+
+.tag-btn:hover{
+    box-shadow: 0px 0px 10px #000;
+}
+
+.tag-btn.active, .tag-btn:focus{
+    box-shadow: 0px 0px 10px #000;
+    background: #fff;
+    color: #2E4F4F;
+}
+
+a{
+    text-decoration: none;
+}

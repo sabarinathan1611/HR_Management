@@ -11,23 +11,27 @@ class Login_admin(db.Model, UserMixin):
     phoneNumber=db.Column(db.Integer)
     designation = db.Column(db.String(150), nullable=True)
     date = db.Column(db.DateTime(timezone=True), default=func.now())
-class Emp_login():
+
+class Emp_login(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.DateTime(timezone=True), default=func.now())
     email = db.Column(db.String(150))
+    name = db.Column(db.String(150), nullable=False)
     password = db.Column(db.String(150))
-    emp_id = db.Column(db.Integer, db.ForeignKey('employee.id'))
-    employee = db.relationship('Employee', backref='login', uselist=False)
+    emp_id = db.Column(db.Integer)
+    late_balance = db.Column(db.Integer, default=20)
+    leave_balance = db.Column(db.Integer, default=20)
 
 class Employee(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
+    emp_id = db.Column(db.Integer)
     name = db.Column(db.String(150), nullable=False)
     date = db.Column(db.DateTime(timezone=True), default=func.now())
     dob = db.Column(db.DateTime(timezone=True))
     designation = db.Column(db.String(150), nullable=True)
     workType = db.Column(db.String(150))
     email = db.Column(db.String(150))
-    phoneNumber = db.Column(db.Integer)
+    phoneNumber = db.Column(db.String(150))
     adharNumber = db.Column(db.Integer)
     gender = db.Column(db.String(150))
     address = db.Column(db.String(150))

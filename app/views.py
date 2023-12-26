@@ -1,17 +1,18 @@
-from flask_login import login_required, current_user
+from flask_login import login_required, current_user,login_user
 from . import db
-from .models import Employee,Attendance,Shift_time,Backup, late, leave,notification,NewShift
-from flask import Blueprint, render_template, request, flash, redirect, url_for,jsonify
+from .models import Employee,Attendance,Shift_time,Backup, late, leave,notification,NewShift,Emp_login
+from flask import Blueprint, render_template, request, flash, redirect, url_for,jsonify,session
 import json
 import datetime
-from flask import session
 import pandas as pd
 from flask import current_app as app
 from datetime import datetime, timedelta
 import os
+from werkzeug.security import generate_password_hash, check_password_hash
 from .funcations import *
-from .sms import send_sms
 from werkzeug.utils import secure_filename
+from sqlalchemy.exc import SQLAlchemyError
+
 
 import csv
 from sqlalchemy import desc
@@ -40,14 +41,16 @@ def admin():
     
     # employee =Employee.query.order_by(Employee.id)
     employee =Attendance.query.order_by(Attendance.id)   
+    late_permission=late.query.order_by(late.date).all()
+    leave_permission=leave.query.order_by(leave.date).all()
     # sihft=Shift_time.query.order_by(Shift_time.id) 
-    return render_template('admin.html',employee=employee)
+    return render_template('admin.html',employee=employee,late_permission=late_permission,leave_permission=leave_permission)
 
 @views.route('/edit', methods=['POST', 'GET'])
 @login_required
 def empEdit():
     if request.method == 'POST':
-        empid = request.form.get('empid')
+        empid = session.get('emp_id')
         name = request.form.get('name')
         dob = request.form.get('dob')
         workType = request.form.get('workType')
@@ -319,9 +322,10 @@ def leave_decline():
         emit('leave_hr_approval_update', {'userId': userID, 'hr_approval': user.hr_approval}, broadcast=True)
 
 @socketio.on('late')
+@login_required
 def handle_lateform_callback(lateDet):
-    emp_id=lateDet['emp_id']
-    emp_name=lateDet['emp_name']
+    emp_id=session.get('emp_id')
+    emp_name=session.get('name')
     reason=lateDet['reason']
     from_time=lateDet['from_time']
     to_time=lateDet['to_time']
@@ -329,7 +333,36 @@ def handle_lateform_callback(lateDet):
     hod_approval='Pending'
     approved_by='Hod Name'
     hr_approval='Pending'
+
+    user=Emp_login.query.filter_by(emp_id=emp_id).first()
+    if user:
+        user.late_balance -= 1
+        email=user.email
+        late_balance=user.late_balance
+        db.session.commit()
+    
+    else:
+        print(f"Employee with emp_id {emp_id} not found.")
+    user=Emp_login.query.filter_by(emp_id=emp_id).first()
+    if user:
+        email=user.email
+        try:
+            sub=" You Have Taken Late Permission "
+            body=" You Have Taken Late permission \n And You Have {} Late balance \n Have a Great Day".format(late_balance)
+            send_mail(email, sub, body)
+        except:
+            print("Mail Not Sent")
+
     try:
+        user=Employee.query.filter_by(emp_id=emp_id).first()
+        phone=user.phoneNumber
+        body=" You Have Taken Late permission \n And You Have {} Late balance \n Have a Great Day".format(late_balance)
+        send_sms(phone,body)
+    except:
+        print("Sms Not Sent")
+
+    try:
+        print(reason)
         new_request=late(emp_id=emp_id,emp_name=emp_name,reason=reason,from_time=from_time,to_time=to_time,status=status,hod_approval=hod_approval,approved_by=approved_by,hr_approval=hr_approval)
         db.session.add(new_request)
         db.session.commit()
@@ -344,7 +377,6 @@ def handle_lateform_callback(lateDet):
         print(f"An error occurred: {str(e)}")
 
 
-
 @views.route('/request_disp')
 def request_disp():
     late_permission=late.query.order_by(late.date).all()
@@ -353,8 +385,8 @@ def request_disp():
 
 @socketio.on('leave')
 def handle_leaveform_callback(leaveDet):
-    emp_id=leaveDet['emp_id']
-    emp_name=leaveDet['emp_name']
+    emp_id=session.get('emp_id')
+    emp_name=session.get('name')
     reason=leaveDet['reason']
     from_date=leaveDet['from_date']
     to_date=leaveDet['to_date']
@@ -362,6 +394,35 @@ def handle_leaveform_callback(leaveDet):
     hod_approval='Pending'
     approved_by='Hod Name'
     hr_approval='Pending'
+
+    user=Emp_login.query.filter_by(emp_id=emp_id).first()
+    if user:
+        user.leave_balance -= 1
+        email=user.email
+        leave_balance=user.leave_balance
+        db.session.commit()
+    else:
+        print(f"Employee with emp_id {emp_id} not found.")
+    user=Emp_login.query.filter_by(emp_id=emp_id).first()
+    if user:
+        email=user.email
+        try:
+            sub=" You Have Taken Leave "
+            body=" You Have Taken Leave \n And You Have {} Leave balance \n Have a Great Day".format(leave_balance)
+            send_mail(email, sub, body)
+        except:
+            print("Mail Not Sent")
+
+        try:
+            user=Employee.query.filter_by(emp_id=emp_id).first()
+            phone=user.phoneNumber
+            phone="+91"+phone
+            print(type(phone))
+            body=" You Have Taken leave permission \n And You Have {} leave balance \n Have a Great Day".format(leave_balance)
+            send_sms([phone],body)
+        except:
+            print("Sms Not Sent")
+
     try:
         new_request=leave(emp_id=emp_id,emp_name=emp_name,reason=reason,from_date=from_date,to_date=to_date,status=status,hod_approval=hod_approval,approved_by=approved_by,hr_approval=hr_approval)
         db.session.add(new_request)
@@ -370,43 +431,42 @@ def handle_leaveform_callback(leaveDet):
         print(all_leaveData)
         emit('leave', all_leaveData, broadcast=True)
 
-
     except Exception as e:
         print(f"An error occurred: {str(e)}")
 
-
+@views.route('/upload_csv_page',methods=['POST','GET'])
+def upload_csv_page():
+    return render_template("upload_csv.html")
 
 @views.route('/upload_csv',methods=['POST','GET'])
 def upload_csv():
     if request.method == 'POST':
         if 'csvFile' not in request.files:
             return "No file part"
-
+            
         file = request.files['csvFile']
-
         if file.filename == '':
             return "No selected file"
-
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             print(filename)
-            file.save(os.path.join(app.config['EXCEL_FOLDER'], filename))
-           
-            # # Create a new database record with file name and current datetime
-            # now = datetime.now()
-            # current_time = now.strftime("%Y-%m-%d %H:%M:%S")
-            # data = NewShift(
-            #     name_date_day=f"File Uploaded on {current_time}",
-            #     filename=filename  # Add the filename to the database
-            # )
-            # db.session.add(data)
-            # db.session.commit()
-           
-            return "File uploaded successfully"
+            file_path=os.path.join(app.config['EXCEL_FOLDER'], filename)
+            file.save(file_path)
+            process_csv_file(file_path)
+                # # Create a new database record with file name and current datetime
+                # now = datetime.now()
+                # current_time = now.strftime("%Y-%m-%d %H:%M:%S")
+                # data = NewShift(
+                #     name_date_day=f"File Uploaded on {current_time}",
+                #     filename=filename  # Add the filename to the database
+                # )
+                # db.session.add(data)
+                # db.session.commit()
+            
+            return redirect(url_for('views.process_csv'))
         else:
             return "File not allowed"
-
-    # If the request method is GET, render the upload form
+    # I the request method is GET, render the upload form
     return render_template('upload_csv.html')
 
 
@@ -455,6 +515,132 @@ def process_csv():
 
 @views.route('/del_csv')
 def del_csv():
-    db.session.query(user).delete()
+    db.session.query(NewShift).delete()
     db.session.commit()
     return redirect(url_for('upload_csv'))
+
+def process_csv_file(file_path):
+    with open(file_path, mode='r') as file:
+        csv_reader = csv.reader(file)
+        next(csv_reader)  # Skip the header row
+
+        for row in csv_reader:
+            employee_id, employee_name, *shifts = row
+
+            # Create a new NewShift instance and set its attributes
+            new_shift_entry = NewShift(
+                name_date_day=employee_name,
+                filename=file_path,
+                monday=shifts[0],
+                tuesday=shifts[1],
+                wednesday=shifts[2],
+                thursday=shifts[3],
+                friday=shifts[4]
+            )
+
+            # Set the day_* attributes dynamically
+            for day_num, shift in enumerate(shifts[5:], start=1):
+                setattr(new_shift_entry, f"day_{day_num}", shift)
+
+            # Add the new entry to the database session
+            db.session.add(new_shift_entry)
+
+        # Commit the changes to the database
+        db.session.commit()
+
+@views.route("/emp_login_page")
+def emp_login_page():
+    return render_template("emp_log.html")
+
+@views.route("/emp_login",methods=['POST','GET'])
+def emp_login():
+    if request.method == 'POST':
+        emp_id = request.form.get('emp_id') # Get the emp_id from the form
+        password = request.form.get('password')  # Get the password from the form
+
+        # Store the email and password in session variables
+        
+        user = Emp_login.query.filter_by(emp_id=emp_id).first()
+        if user:
+            if user.password == password:
+                login_user(user, remember=True)
+                session['emp_id'] = emp_id
+                session['password'] = password
+                session['name'] = user.name
+                session['email'] = user.email
+                session['leave_balance']=user.leave_balance
+                session['late_balance']=user.late_balance
+                return redirect(url_for('views.user_dashboard'))
+            else:
+                flash("Incorrect Password", category='error')
+        else:
+            flash("Incorrect Employee ID", category='error')
+    return render_template("emp_log.html")
+
+@views.route("/user_dashboard",methods=['POST','GET'])
+def user_dashboard():
+    emp_id = session.get('emp_id')
+    email = session.get('email')
+    name = session.get('name')
+    user = Emp_login.query.filter_by(emp_id=emp_id).first()
+    leave_balance = user.leave_balance
+    late_balance = user.late_balance
+    return render_template("emp_req_choice.html",emp_id=emp_id,email=email,name=name,late_balance=late_balance,leave_balance=leave_balance)
+
+@views.route("/attendance_upload_page",methods=['POST','GET'])
+def attendance_upload_page():
+    return render_template('upload_attendance.html')
+
+@views.route("/attendance_upload",methods=['POST','GET'])
+def upload_attendance():
+    if(request.method=='POST'):
+        file=request.files['attendance']
+        filename = secure_filename(file.filename)
+        print(filename)
+        file_path=os.path.join(app.config['EXCEL_FOLDER'], filename)
+        file.save(file_path)
+        process_excel_data(file_path)
+        return redirect(url_for('views.calculate'))
+
+    else:
+        return redirect(url_for('views.attendance_upload_page'))
+
+@views.route("/attendance_table")
+@login_required
+def attendance_table():
+    late_permission=late.query.order_by(late.date).all()
+    leave_permission=leave.query.order_by(leave.date).all()
+    return render_template("admin.html",late_permission=late_permission,leave_permission=leave_permission)
+
+@views.route("/late_table/<user>")
+@login_required
+def late_table():
+    late_permission=late.query.order_by(late.date).all()
+    return render_template("late_table.html",late_permission=late_permission)
+
+@views.route("/leave_table")
+@login_required
+def leave_table(): 
+    leave_permission=leave.query.order_by(leave.date).all()
+    return render_template("leave_table.html",leave_permission=leave_permission)
+
+@views.route("/today_attendance")
+@login_required
+def today_attendance():
+    return render_template("admin.html")
+
+@views.route("/yesterday_attendance")
+@login_required
+def yesterday_attendance():
+    return render_template("admin.html")
+
+@views.route("/month_attendance")
+@login_required
+def month_attendance():
+    return render_template("month_attendance.html")
+
+@views.route("/last_month_attendance")
+@login_required
+def last_month_attendance():
+    return render_template("month_attendance.html")
+

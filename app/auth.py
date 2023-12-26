@@ -1,7 +1,7 @@
 from flask_login import login_required, login_user, logout_user, current_user
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
-from .models import Login_admin, Employee, Attendance, Shift_time,Backup,LoginEmp,Emp_login
+from .models import Login_admin,Employee, Attendance, Shift_time,Backup,LoginEmp,Emp_login
 from . import db
 import datetime
 from flask import current_app as app
@@ -12,10 +12,7 @@ from .funcations import *
 
 
 
-
-
 auth = Blueprint('auth', __name__)
-
 
 @auth.route('/admin-login', methods=['POST', 'GET'])
 def login():
@@ -24,8 +21,6 @@ def login():
         if request.method == 'POST':
             email = request.form.get('email')
             password = request.form.get('password')
-            print("email", email)
-            print("pwd:", password)
 
             dbemail = Login_admin.query.filter_by(email=email).first()
             if dbemail:
@@ -37,17 +32,21 @@ def login():
             else:
                 flash("Incorrect Email", category='error')
     else:
-        addAdmin = Login_admin(name="Admin", email="vsabarinathan1611@gmail.com", phoneNumber="123456789",
-                               password="sha256$idRijyfQJjGQ3s7P$cedf4eb4aaaddab35c3423e31ab70bd5f60fb8b871f18e37ebec2359a818b6db", designation="HR")
+        # Assuming you're using Flask's generate_password_hash to hash passwords during registration
+        addAdmin = Login_admin(
+            name="Admin",
+            email="vsabarinathan1611@gmail.com",
+            phoneNumber="123456789",
+            password=generate_password_hash("admin"),
+            designation="HR"
+        )
         db.session.add(addAdmin)
         db.session.commit()
         print('Created Admin!')
 
     return render_template('login.html')
-
-
 @auth.route('/login', methods=['POST', 'GET'])
-def emp_login():
+def admin_login():
     if request.method == 'POST':
         emp_id = request.form.get('emp_id')
         password = request.form.get('password')
@@ -94,19 +93,20 @@ def signup():
         email = request.form['email']
         password = request.form['password']
         emp_id = request.form['emp_id']  # Assuming you have a form field for emp_id
-
+        name = request.form['name']
         # Check if a user with the same email already exists
         existing_user = Emp_login.query.filter_by(email=email).first()
         if existing_user:
             flash('Email already exists. Please choose a different email.')
         else:
             # Create a new Emp_login object and add it to the database
-            new_login = Emp_login(email=email, password=password, emp_id=emp_id)
+            new_login = Emp_login(email=email, password=password, emp_id=emp_id, name=name)
             db.session.add(new_login)
             db.session.commit()
 
             # Redirect to a success page or perform any other necessary actions
-            return redirect(url_for('signup_success'))
+            return redirect(url_for('views.emp_login_page'))
 
     # Render the signup form for GET requests
     return render_template('signup.html')
+

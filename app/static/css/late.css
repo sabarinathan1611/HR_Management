@@ -1,0 +1,35 @@
+.table{
+    max-width: 100%;
+    padding: 5px;
+    overflow-x: scroll;
+    margin-top: 10px;
+    background: #fff;
+    border-radius: 5px;
+}
+
+.late-table-section{
+    margin-top: 10px;
+}
+
+table{
+    border-collapse: collapse;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+table thead{
+    background: #585858;
+    color: #fff;
+}
+
+td,th{
+    min-width: 75px;
+}
+
+td{
+    border-bottom: 2px dashed #585858;
+}
+
+.fas.fa-eye{
+    color: blue;
+}

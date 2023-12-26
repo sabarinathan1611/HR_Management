@@ -3,32 +3,59 @@ import smtplib
 import os
 from flask import current_app as app
 from flask import  flash,redirect
-from .models import Employee, Attendance, Shift_time
+from .models import Attendance, Shift_time, Employee
 from . import db
 from os import path
 import datetime
 import sched
+from twilio.rest import Client
 import schedule
 import time
 from datetime import datetime, timedelta
 from sqlalchemy import text 
+from email.mime.text import MIMEText
 
 import pandas as pd
 scheduler = sched.scheduler(time.time, time.sleep)
 
-def send_mail(email, body):
-    sender_email = ""
+def send_mail(email, subject, body):
+    sender_email = "kklimited1013@gmail.com"
     receiver_email = email
-    password = ""
-    message = body
+    password = "hmupzeoeftrbzmkl"  # Use an App Password or enable Less Secure Apps
 
-    server = smtplib.SMTP('smtp.gmail.com', 587)
-    server.ehlo()
-    server.starttls()
-    server.login(sender_email, password)
-    server.sendmail(sender_email, receiver_email, message)
-    print('*****Email sent!*****')
-    server.quit()
+    # Create the email message
+    message = MIMEText(body)
+    message['From'] = sender_email
+    message['To'] = receiver_email
+    message['Subject'] = subject
+
+    try:
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.ehlo()
+        server.starttls()
+        server.login(sender_email, password)
+        server.sendmail(sender_email, receiver_email, message.as_string())
+        print('Email sent successfully!')
+        server.quit()
+    except Exception as e:
+        print(f'An error occurred: {str(e)}')
+
+
+def send_sms(numbers_to_message, message_body):
+    account_sid = 'ACb1f8718e01bcc3eacf727272ff3a7b2b'
+    auth_token = 'e89d5fb009283196464e6ed7faf8bd88'
+    client = Client(account_sid, auth_token)
+
+    from_phone_number = '+18023289660'
+
+    for number in numbers_to_message:
+        message = client.messages.create(
+            from_=from_phone_number,
+            body=message_body,
+            to=number
+        )
+
+        print(f"Message SID for {number}: {message.sid}")
     
 def process_excel_data(file_path):
     if os.path.exists(file_path):
@@ -59,7 +86,17 @@ def process_excel_data(file_path):
                     )
                     db.session.add(shift)
 
+                    attendance = Attendance(
+                        
+                        shiftIntime=str(row['S. InTime']),
+                        shift_Outtime=str(row['S. OutTime']),
+                        shiftType=str(row['Shift']),
+                        work_Duration=str(row['Work Duration'])
+                    )
+                    db.session.add(attendance)
+
         db.session.commit()
+        
     else:
         print("File not found")
 

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HR login</title>
+    <title>EMP login</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="static/css/login.css">
@@ -35,12 +35,12 @@
         </div>
         {% endif %} {% endfor %} {% endif %} {% endwith %}
 <div class="page">
-    <form action="/admin-login" method="post" class="form">
-        <div class="head"><h1>HR login</h1></div>
+    <form action="/emp_login" method="post" class="form">
+        <div class="head"><h1> Employee Login</h1></div>
         <div class="error"></div>
         <div class="form-group">
-            <label for="username"><i class="fas fa-user"></i> </label>
-            <input type="email" name="email" class="form-control" id="username" placeholder="Enter your Email">
+            <label for="emp_id"><i class="fas fa-user"></i></label>
+            <input type="number" class="form-control" name="emp_id" id="emp_id" placeholder="Enter your Employee ID">
         </div>
         <div class="form-group">
             <label for="password"><i class="fas fa-lock"></i></label>

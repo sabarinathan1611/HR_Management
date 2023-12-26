@@ -1,0 +1,19 @@
+venv/
+env/
+__pycache__/
+
+# IDE files
+.vscode/
+*.pyc
+
+# Editor directories
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# OS-generated files
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
