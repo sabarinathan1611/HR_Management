@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KKL - Project</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/attendance.css') }}">
+    <script src="https://cdn.socket.io/4.7.2/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.3.2/html2canvas.min.js"></script>
+</head>
+<body>
+    <nav class="nav-bar">
+        <div class="toogle-sidebar">
+            <i class="fas fa-bars"></i>
+        </div>
+        <ul class="options">
+            <li class="option notification-menu">
+                <span class="notification-icon">
+                    <i class="fas fa-bell"></i>
+                     Notifications
+                </span>
+                <ul class="notification-list">
+                    <li class="notifications">
+                        <span class="user-name">Employee 1</span>
+                        <div class="message-subject"></div>
+                    </li>
+                    <li class="notifications">
+                        <span class="user-name">Employee 1</span>
+                        <div class="message-subject">Late Notification</div>
+                    </li>
+                    <li class="notifications">
+                        <span class="user-name">Employee 1</span>
+                        <div class="message-subject">Late Notification</div>
+                    </li>
+                    <li class="notifications">
+                        <span class="user-name">Employee 1</span>
+                        <div class="message-subject">Late Notification</div>
+                    </li>
+                    <li class="notifications">
+                        <span class="user-name">Employee 1</span>
+                        <div class="message-subject">Late Notification</div>
+                    </li>
+                </ul>
+            </li>
+            <li class="option logout">
+                <span>
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </span>
+            </li>
+        </ul>
+    </nav>
+    <aside class="sidebar">
+        <ul class="side-menu">
+            <li class="menu-option active">
+                <span class="icon">
+                    <i class="far fa-calendar-check"></i>
+                </span>
+                <p class="menu-name">Attendance</p>
+            </li>
+            <li class="menu-option">
+                <span class="icon">
+                    <i class="far fa-clock"></i> 
+                </span>
+                <p class="menu-name">Late table</p>
+            </li>
+            <li class="menu-option">
+                <span class="icon">
+                    <i class="fas fa-calendar-plus"></i>
+                </span>
+                <p class="menu-name">Leave table</p>
+            </li>
+            <li class="menu-option" style="display: none;">
+                <span class="icon">
+                    <i class="fas fa-clock"></i>
+                </span>
+                <p class="menu-name">Shift List</p>
+            </li>
+        </ul>
+    </aside>
+
+    <section class="notification-model">
+        <div class="inner-model">
+            <div class="model-nav">
+                <button class="model-close" onclick="window.location.href='/late_table';">
+                    <i class="fas fa-times-circle"></i>
+                </button>
+            </div>
+            <div class="model-body">
+                <div class="model-profile">
+                    <div class="profile-left">
+                        <div class="user-image">
+                            <img src="{{ url_for('static', filename='img/student-male.jpg') }}" alt="">
+                        </div>
+                        <div class="user-details">
+                            <h1 class="user-name">John Doe</h1>
+                            <h1 class="user-name">#0001</h1>
+                        </div>
+                    </div>
+                    <div class="profile-right">
+                     <ul class="personal-details">
+                        <li class="detail-head">User Name's Details</li>
+                        <li class="detail"><strong><i class="fas fa-user"></i> Emp Name : </strong>{{late_details.emp_name}}</la></li>
+                        <li class="detail"><strong><i class="fas fa-id-card"></i> Emp Id :</strong> {{late_details.emp_id}}</li>
+                        <li class="detail"><strong><i class="fas fa-briefcase"></i> Shift :</strong> A</li>
+                        <li class="detail">
+                            <i class="fas fa-calendar-plus"></i>
+                            <strong>Leave Request Available :</strong> <span class="availLeave">{{late_details.leave_balance}}</span>
+                        </li>
+                        <li class="detail">
+                            <i class="fas fa-clock"></i> 
+                            <strong>Late Request Available :</strong> <span class="availLate">{{late_details.late_balance}}</span></li>
+                        <li class="detail">
+                            <i class="fas fa-phone-alt"></i> 
+                            <strong>Contact No :</strong> <span class="availLate">{{late_details.ph_number}}</span></li>
+                        <li class="detail">
+                            <i class="fas fa-location"></i> 
+                            <strong>Address :</strong>
+                            <span class="availLate">
+                                123 Maple Street
+                                Apartment 4B
+                                Springfield, IL 62704
+                                United States
+                            </span>
+                        </li>
+                     </ul>
+                     <div class="model-message">
+                        <div class="message-header">
+                            <p class="message-subject"><i class="fas fa-calendar-plus"></i> Late Request</p>
+                            <div class="message-details">
+                                <p class="message-time"><i class="fas fa-clock"></i> 11:00 AM</p>
+                                ~
+                                <p class="message-date"><i class="fas fa-calendar"></i> 11/08/2023 Mon</p>
+                            </div>
+                        </div>
+                        <div class="message-body">
+                            <p class="messsage">
+                                {{late_details.reason}}
+                            </p>
+                            <p class="messsage">
+                                {{late_details.reason}}
+                            </p>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="model-footer">
+                <a class="model-btn print-btn">
+                    <i class="fas fa-print"></i> 
+                    <span class="btn-text">Print</span>
+                </a>
+                <a class="model-btn download-btn">
+                    <i class="fas fa-download"></i>
+                    <span class="btn-text">Download</span>
+                </a>
+                <button class="model-btn print-btn latetable approve hr-approval-" name='approve' onclick="Late_Approve({{late_details.emp_id}})" id='approve'>
+                    <i class="fas fa-check-circle"></i>
+                    <span class="btn-text">Approve</span>
+                </button>
+                <button class="model-btn download-btn latetable decline" name='decline' onclick="Late_Decline({{late_details.emp_id}})" id='decline'>
+                    <i class="fas fa-times-circle"></i>
+                    <span class="btn-text">Deny</span>
+                </button>
+            </div>
+        </div>
+
+        <script>
+            const socket = io();
+            function Late_Approve(userId){
+                fetch("/late_approve", {
+                  method: "POST",
+                  body: JSON.stringify({ userId: userId }),
+                }).then((_res) => {
+                    let url=window.location.href
+                  window.location.href = "/late_req_profile";
+                });
+            } 
+              function Late_Decline(userId){
+                fetch("/late_decline", {
+                  method: "POST",
+                  body: JSON.stringify({ userId: userId }),
+                }).then((_res) => {
+                  window.location.href = "/late_req_profile";
+                });
+            }
+            socket.on('late_hr_approval_update', function(data) {
+                console.log("late details socket");
+                const userId = data.userId;
+                const hrApproval = data.hr_approval;
+                if (hrApproval=='Approved'){
+                    document.getElementById('approve').textContent = hrApproval;
+                }
+                if (hrApproval=='Declined'){
+                    document.getElementById('decline').textContent = hrApproval;
+                }
+            });
+        </script>
+
+    </section>
+
+    <script src="static/js/script.js"></script>
+</body>
+</html>

@@ -8,7 +8,6 @@ class Login_admin(db.Model, UserMixin):
     name = db.Column(db.String(150),nullable=False)
     email=db.Column(db.String(150),unique=True)
     password = db.Column(db.String(150))
-    phoneNumber=db.Column(db.Integer)
     designation = db.Column(db.String(150), nullable=True)
     date = db.Column(db.DateTime(timezone=True), default=func.now())
 
@@ -19,6 +18,8 @@ class Emp_login(db.Model, UserMixin):
     name = db.Column(db.String(150), nullable=False)
     password = db.Column(db.String(150))
     emp_id = db.Column(db.Integer)
+    phoneNumber=db.Column(db.Integer)   #newly added
+    role =db.Column(db.String(150), nullable=False)
     late_balance = db.Column(db.Integer, default=20)
     leave_balance = db.Column(db.Integer, default=20)
 

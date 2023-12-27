@@ -8,7 +8,7 @@ from . import db
 from os import path
 import datetime
 import sched
-from twilio.rest import Client
+#from twilio.rest import Client
 import schedule
 import time
 from datetime import datetime, timedelta

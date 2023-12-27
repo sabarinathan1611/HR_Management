@@ -1,7 +1,7 @@
 from flask_login import login_required, login_user, logout_user, current_user
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask import Blueprint, render_template, request, flash, redirect, url_for,session
 from werkzeug.security import generate_password_hash, check_password_hash
-from .models import Login_admin,Employee, Attendance, Shift_time,Backup,LoginEmp,Emp_login
+from .models import Employee,Attendance,Shift_time,Backup, late, leave,notification,NewShift,Emp_login
 from . import db
 import datetime
 from flask import current_app as app
@@ -14,57 +14,78 @@ from .funcations import *
 
 auth = Blueprint('auth', __name__)
 
-@auth.route('/admin-login', methods=['POST', 'GET'])
+@auth.route('/admin-login', methods=['POST', 'GET'])       # this is the overall login ....
 def login():
-    admin = Login_admin.query.filter_by(id=1).first()
+    admin = Emp_login.query.filter_by(id=1).first()
     if admin:
         if request.method == 'POST':
             email = request.form.get('email')
             password = request.form.get('password')
 
-            dbemail = Login_admin.query.filter_by(email=email).first()
+            dbemail = Emp_login.query.filter_by(email=email).first()
             if dbemail:
                 if check_password_hash(dbemail.password, password):
                     login_user(dbemail, remember=True)
-                    return redirect(url_for('views.admin'))
+
+                    if dbemail.role == "admin":
+                        employee =Attendance.query.order_by(Attendance.id)   
+                        late_permission=late.query.order_by(late.date).all()
+                        leave_permission=leave.query.order_by(leave.date).all()
+                        return render_template('admin.html',employee=employee,late_permission=late_permission,leave_permission=leave_permission)
+
+                        #return redirect(url_for('views.admin'))
+
+                    elif dbemail.role == "employee":
+                        session['emp_id'] = dbemail.emp_id
+                        session['name'] = dbemail.name
+                        session['email'] = email
+                        session['leave_balance']=dbemail.leave_balance
+                        session['late_balance']=dbemail.late_balance
+                        return redirect(url_for('views.user_dashboard'))
+                        #return redirect(url_for('views.emp_login'))
+                    
                 else:
                     flash("Incorrect Password", category='error')
             else:
                 flash("Incorrect Email", category='error')
     else:
         # Assuming you're using Flask's generate_password_hash to hash passwords during registration
-        addAdmin = Login_admin(
+        addAdmin = Emp_login(
             name="Admin",
             email="vsabarinathan1611@gmail.com",
             phoneNumber="123456789",
             password=generate_password_hash("admin"),
-            designation="HR"
+            role="admin",
         )
         db.session.add(addAdmin)
         db.session.commit()
         print('Created Admin!')
 
     return render_template('login.html')
+# @auth.route('/login', methods=['POST', 'GET'])
+# def admin_login():
+#     if request.method == 'POST':
+#         emp_id = request.form.get('emp_id')
+#         password = request.form.get('password')
+#         print("emp_id", emp_id)
+#         print("pwd:", password)
+
+#         dbemp = Login_admin.query.filter_by(emp_id=emp_id).first()
+#         if dbemp:
+#             if check_password_hash(dbemp.password, password):
+#                 login_user(dbemp, remember=True)
+#                 return redirect(url_for('views.dashboard'))
+#             else:
+#                 flash("Incorrect Password", category='error')
+#         else:
+#             flash("Incorrect Employee ID", category='error')
+
+#     return render_template('emp_login.html')
+
 @auth.route('/login', methods=['POST', 'GET'])
 def admin_login():
-    if request.method == 'POST':
-        emp_id = request.form.get('emp_id')
-        password = request.form.get('password')
-        print("emp_id", emp_id)
-        print("pwd:", password)
-
-        dbemp = Login_admin.query.filter_by(emp_id=emp_id).first()
-        if dbemp:
-            if check_password_hash(dbemp.password, password):
-                login_user(dbemp, remember=True)
-                return redirect(url_for('views.dashboard'))
-            else:
-                flash("Incorrect Password", category='error')
-        else:
-            flash("Incorrect Employee ID", category='error')
-
-    return render_template('emp_login.html')
-
+    session.clear()
+    return render_template("login.html")
 
 @auth.route('/logout', methods=['GET', 'POST'])
 def logout():
@@ -94,18 +115,20 @@ def signup():
         password = request.form['password']
         emp_id = request.form['emp_id']  # Assuming you have a form field for emp_id
         name = request.form['name']
+        ph_number = request.form['ph_number']
+        role = request.form['role']
         # Check if a user with the same email already exists
         existing_user = Emp_login.query.filter_by(email=email).first()
         if existing_user:
             flash('Email already exists. Please choose a different email.')
         else:
             # Create a new Emp_login object and add it to the database
-            new_login = Emp_login(email=email, password=password, emp_id=emp_id, name=name)
+            new_login = Emp_login(email=email, password=generate_password_hash(password), role=role,phoneNumber=ph_number, emp_id=emp_id, name=name)
             db.session.add(new_login)
             db.session.commit()
 
             # Redirect to a success page or perform any other necessary actions
-            return redirect(url_for('views.emp_login_page'))
+            return render_template("login.html")
 
     # Render the signup form for GET requests
     return render_template('signup.html')
