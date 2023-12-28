@@ -60,7 +60,7 @@ def send_sms(numbers_to_message, message_body):
 def process_excel_data(file_path):
     if os.path.exists(file_path):
         sheet_names = pd.ExcelFile(file_path).sheet_names
-
+        print("FILE:  ",sheet_names)
         for sheet_name in sheet_names:
             df = None
             if file_path.lower().endswith('.xlsx'):
@@ -72,7 +72,7 @@ def process_excel_data(file_path):
                 return  # Handle unsupported format
 
             for index, row in df.iterrows():
-                shift_type = row['Shift']
+                shift_type = str(row['Shift'])
                 print("Processing: ", shift_type)
 
                 existing_shift = db.session.query(Shift_time).filter_by(shiftType=shift_type).first()
@@ -87,7 +87,6 @@ def process_excel_data(file_path):
                     db.session.add(shift)
 
                     attendance = Attendance(
-                        
                         shiftIntime=str(row['S. InTime']),
                         shift_Outtime=str(row['S. OutTime']),
                         shiftType=str(row['Shift']),

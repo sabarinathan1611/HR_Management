@@ -105,22 +105,6 @@
             </div>
         </header>
         
-        <menu class="table-menu" style="display: flex;">
-            <ul class="btn-container">
-                <a href="/today_attendance" class="tag-btn click active">Today Attendance</a>
-                <a href="/yesterday_attendance" class="tag-btn click">Yesterday Attendance</a>
-                <a href="/month_attendance" class="tag-btn click">This Month Attendance</a>
-                <a href="/last_month_attendance" class="tag-btn click">Last Month Attendance</a>
-                <select name="shift" id="shift" class="tag-btn">
-                    <option value="">Select Shift Name</option>
-                    <option value="">ALL ~ Shift</option>
-                    <option value="A">A ~ Shift</option>
-                    <option value="B">B ~ Shift</option>
-                    <option value="C">C ~ Shift</option>
-                </select>
-            </ul>
-        </menu>
-
         <link rel="stylesheet" href="static/css/late.css">
 
         <section class="leave-table-section">
@@ -167,7 +151,13 @@
                                     {{leave_permission.reason}}
                                 </td>
                                 <td>
-                                    <i class="fas fa-eye"></i>
+                                    <a href="{{ url_for('views.leave_req_profile',
+                                     emp_id=leave_permission.emp_id,
+                                     emp_name=leave_permission.emp_name,
+                                     from_date=leave_permission.from_date,
+                                     to_date=leave_permission.to_date,
+                                     reason=leave_permission.reason,
+                                     req_id=leave_permission.id )}}"><i class="fas fa-eye"></i></a>
                                 </td>
                             </tr>
                         {% endfor %}
@@ -189,38 +179,6 @@
                                 `;
                             });
                         </script>
-                        <tr>
-                            <td>#0001</td>
-                            <td>John Doe</td>
-                            <td>11/08/2003</td>
-                            <td>11:55 PM</td>
-                            <td>12/12/2024</td>
-                            <td>12/12/2024</td>
-                            <td>Traffic</td>
-                            <td>
-                                I have stuck in heavy traffic and unable the reach the office on time,
-                                So kindly approve my leave request and allow me to continue my work 
-                            </td>
-                            <td>
-                                <i class="fas fa-eye"></i>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>#0002</td>
-                            <td>Doe</td>
-                            <td>11/08/2003</td>
-                            <td>11:55 PM</td>
-                            <td>12/12/2024</td>
-                            <td>12/12/2024</td>
-                            <td>Break down</td>
-                            <td>
-                                My bike was breakdown and unable the reach the office on time,
-                                So kindly approve my leave request and allow me to continue my work 
-                            </td>
-                            <td>
-                                <i class="fas fa-eye"></i>
-                            </td>
-                        </tr>
                     </tbody>
                 </table>
             </div>

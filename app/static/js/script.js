@@ -1,4 +1,5 @@
 let date = new Date()
+console.log("script.js connected");
 
 let currentDate = date.getDate();
 let currentMonth = date.getMonth();

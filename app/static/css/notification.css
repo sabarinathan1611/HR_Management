@@ -1,0 +1,177 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.notification-container{
+    width: 100vw;
+    height: 100vh;
+    background: #ddd;
+    padding: 15px;
+}
+
+.notification-btn{
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0px 0px 10px #9d9d9d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    cursor: pointer;
+}
+
+.notification-btn.active{
+    animation: .3s bell ease-in forwards;
+    transform: rotate(0);
+}
+
+.notification-btn:hover{
+    box-shadow: 0px 0px 10px #00aaff;
+}
+
+@keyframes bell {
+    0%{
+        transform: rotate(-15deg);
+    }25%{
+        transform: rotate(15deg);
+    }50%{
+        transform: rotate(-15deg);
+    }75%{
+        transform: rotate(15deg);
+    }90%{
+        transform: rotate(-15deg);
+    }100%{
+        transform: rotate(0deg);
+    }
+}
+
+.icon{
+    position: relative;
+    width:  50px;
+    height: 50px;
+}
+
+img{
+    max-width: 100%;
+}
+
+.notify-count{
+    position: absolute;
+    right: -4px;
+    top:   -4px;
+    width:  27px;
+    height: 27px;
+    border-radius: 50%;
+    background: rgb(255, 34, 34);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    color: #fff;
+}
+
+.notifications{
+    margin: 10px;
+    padding: 10px;
+    background: #fff;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px #9d9d9d;
+    max-width: 320px;
+    display: flex;
+    gap: 5px;
+    flex-direction: column;
+    max-height: 500px;
+    overflow-y: scroll;
+    display: none;
+    border: 2px solid #676767;
+}
+
+.notifications.active{
+    display: flex;
+    animation: .4s pop-up ease-in forwards;
+}
+
+@keyframes pop-up {
+    0%{
+        margin-top: 100px;
+        opacity: 0;
+    }100%{
+        opacity: 1;
+        margin-top: 20px;
+    }
+}
+
+.notification-box{
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    position: relative;
+    max-height: 100px;
+    height: 70px;
+   border: 1px solid #9d9d9d;
+   border-radius: 5px;
+   padding: 5px;
+}
+
+.profile{
+    width:  50px;
+    height: 50px;
+    border-radius: 50%;
+    background: #ececec;
+    position: absolute;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.notification-details{
+    position: relative;
+    margin-left: 60px;
+}
+
+.notification-user-name{
+    color: #3e3e3e;
+    font-size: 18px;
+    font-family: sans-serif;
+    margin-top: 3px;
+}
+
+.notification-message{
+    font-size: 14px;
+    white-space: nowrap;         /* Prevents text from wrapping */
+    overflow: hidden;            /* Hides overflowed content */
+    text-overflow: ellipsis;     /* Displays an ellipsis (...) to represent overflow */
+    max-width: 220px;   
+}
+
+/* For Webkit browsers (Chrome, Safari) */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #676767;
+    border-radius: 10px;
+}
+
+.add-notification{
+    position: absolute;
+    left: 100px;
+    top: 30px;
+}
+
+.add{
+    padding: 10px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    border: none;
+    background: #00aaff;
+    color: #fff;
+    text-transform: capitalize;
+}

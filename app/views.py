@@ -146,8 +146,9 @@ def calculate():
     # lol.shift_Outtime="22:00"
     # db.session.commit()
     # print(lol.shift_Outtime)
+    attendance=Attendance.query.all()
     
-    return redirect('/')
+    return render_template("admin.html",attendance=attendance)
             
 # @views.route('/getshift',methods=['POST','GET'])
 # def get_shift():
@@ -260,66 +261,6 @@ def handle_connect():
 @socketio.on('disconnect')
 def handle_disconnect():
     print('Client disconnected')    
-
-@views.route('/late_approve',methods=['POST','GET'])
-def late_approve():
-    user = json.loads(request.data)
-    userID = user['userId']
-    user = late.query.filter_by(emp_id=userID).first()
-    print(" USER : ",user)
-    current_user='hr'
-    if current_user=='hr':
-        user.hr_approval='Approved'
-        user.status='Approved'
-        db.session.commit()
-        print("Hr Approval ", user.hr_approval)
-        print("Status ", user.status)
-        emit('late_hr_approval_update', {'userId': userID, 'hr_approval': user.hr_approval}, broadcast=True)
-
-@views.route('/leave_approve',methods=['POST','GET'])
-def leave_approve():
-    user = json.loads(request.data)
-    userID = user['userId']
-    user = leave.query.filter_by(emp_id=userID).first()
-    print(" USER : ",user)
-    current_user='hr'
-    if current_user=='hr':
-        user.hr_approval='Approved'
-        user.status='Approved'
-        db.session.commit()
-        print("Hr Approval ", user.hr_approval)
-        print("Status ", user.status)
-        emit('leave_hr_approval_update', {'userId': userID, 'hr_approval': user.hr_approval}, broadcast=True)
-
-@views.route('/late_decline',methods=['POST','GET'])
-def late_decline():
-    user = json.loads(request.data)
-    userID = user['userId']
-    user = late.query.filter_by(emp_id=userID).first()
-    print(" USER : ",user)
-    current_user='hr'
-    if current_user=='hr':
-        user.hr_approval='Declined'
-        user.status='Declined'
-        db.session.commit()
-        print("Hr Approval ", user.hr_approval)
-        print("Status ", user.status)
-        emit('late_hr_approval_update', {'userId': userID, 'hr_approval': user.hr_approval}, broadcast=True)
-
-@views.route('/leave_decline',methods=['POST','GET'])
-def leave_decline():
-    user = json.loads(request.data)
-    userID = user['userId']
-    user = leave.query.filter_by(emp_id=userID).first()
-    print(" USER : ",user)
-    current_user='hr'
-    if current_user=='hr':
-        user.hr_approval='Declined'
-        user.status='Declined'
-        db.session.commit()
-        print("Hr Approval ", user.hr_approval)
-        print("Status ", user.status)
-        emit('leave_hr_approval_update', {'userId': userID, 'hr_approval': user.hr_approval}, broadcast=True)
 
 @socketio.on('late')
 @login_required
@@ -595,13 +536,14 @@ def attendance_upload_page():
 
 @views.route("/attendance_upload",methods=['POST','GET'])
 def upload_attendance():
-    if(request.method=='POST'):
+    if request.method=='POST':
         file=request.files['attendance']
         filename = secure_filename(file.filename)
         print(filename)
         file_path=os.path.join(app.config['EXCEL_FOLDER'], filename)
         file.save(file_path)
         process_excel_data(file_path)
+        print("SUccess ")
         return redirect(url_for('views.calculate'))
 
     else:
@@ -646,15 +588,162 @@ def month_attendance():
 def last_month_attendance():
     return render_template("month_attendance.html")
 
-@views.route('/late_req_profile/<int:emp_id>/<string:emp_name>/<string:from_time>/<string:to_time>/<string:reason>')
-def late_req_profile(emp_id, emp_name, from_time, to_time, reason):
+@views.route('/late_req_profile/<int:emp_id>/<string:emp_name>/<string:from_time>/<string:to_time>/<string:reason>/<int:req_id>')
+def late_req_profile(emp_id, emp_name, from_time, to_time, reason,req_id):
     user = Emp_login.query.order_by(Emp_login.date.desc()).first()
+    user_late=late.query.filter_by(id=req_id).first()
     late_details={
         'late_balance':user.late_balance,
         'leave_balance':user.leave_balance,
+        'approval':user_late.hr_approval,
+        'from_time':from_time,
+        'to_time':to_time,
+        'approved_by':user_late.approved_by,
         'ph_number':user.phoneNumber,
+        'id':user.id,
         'reason':reason,
         'emp_id':emp_id,
         'emp_name':emp_name
     }
+    session['late_details']=late_details
     return render_template("late_req_profile.html",late_details=late_details)#,late_permission_dict=late_permission_dict
+
+@views.route('/leave_req_profile/<int:emp_id>/<string:emp_name>/<string:from_date>/<string:to_date>/<string:reason>/<int:req_id>')
+def leave_req_profile(emp_id, emp_name, from_date, to_date, reason,req_id):
+    user = Emp_login.query.order_by(Emp_login.date.desc()).first()
+    user_leave=leave.query.filter_by(id=req_id).first()
+    leave_details={
+        'leave_balance':user.leave_balance,
+        'leave_balance':user.leave_balance,
+        'approval':user_leave.hr_approval,
+        'approved_by':user_leave.approved_by,
+        'from_date':from_date,
+        'to_date':to_date,
+        'ph_number':user.phoneNumber,
+        'id':user.id,
+        'reason':reason,
+        'emp_id':emp_id,
+        'emp_name':emp_name
+    }
+    session['leave_details']=leave_details
+    return render_template("leave_req_profile.html",leave_details=leave_details)#,late_permission_dict=late_permission_dict
+
+# @views.route('/late_req_approve',methods=['POST','GET'])
+# def late_req_approve():
+#     late_details=session.get('late_details')
+#     return render_template("late_req_profile.html",late_details=late_details)
+
+# @views.route('/late_req_decline',methods=['POST','GET'])
+# def late_req_decline():
+#     late_details=session.get('late_details')
+#     return render_template("late_req_profile.html",late_details=late_details)
+
+# @views.route('/leave_approve',methods=['POST','GET'])
+# def leave_approve():
+#     user = json.loads(request.data)
+#     userID = user['userId']
+#     user = leave.query.filter_by(emp_id=userID).first()
+#     print(" USER : ",user)
+#     current_user='hr'
+#     if current_user=='hr':
+#         user.hr_approval='Approved'
+#         user.approved_by=userID
+#         db.session.commit()
+#         print("Hr Approval ", user.hr_approval)
+#         print("Status ", user.status)
+#         emit('leave_hr_approval_update', {'userId': userID, 'hr_approval': user.hr_approval}, broadcast=True)
+
+# @views.route('/leave_decline',methods=['POST','GET'])
+# def leave_decline():
+#     user = json.loads(request.data)
+#     userID = user['userId']
+#     user = leave.query.filter_by(emp_id=userID).first()
+#     print(" USER : ",user)
+#     current_user='hr'
+#     if current_user=='hr':
+#         user.hr_approval='Declined'
+#         user.status='Declined'
+#         db.session.commit()
+#         print("Hr Approval ", user.hr_approval)
+#         print("Status ", user.status)
+#         emit('leave_hr_approval_update', {'userId': userID, 'hr_approval': user.hr_approval}, broadcast=True)
+
+@views.route('/late_approve', methods=['POST', 'GET'])
+def late_approve():
+    user_data = json.loads(request.data)
+    userID = user_data['userId']
+    user = late.query.filter_by(emp_id=userID).first()
+    current_user = 'hr'
+    
+    if current_user == 'hr':
+        user.hr_approval = 'Approved'
+        user.approved_by=userID
+        db.session.commit()
+        
+        # Create a JSON response
+        response_data = {
+            'approved_by':user.approved_by,
+            'userId': userID,
+            'hr_approval': user.hr_approval
+        }
+
+        return jsonify(response_data)
+
+@views.route('/late_decline', methods=['POST', 'GET'])
+def late_decline():
+    user_data = json.loads(request.data)
+    userID = user_data['userId']
+    user = late.query.filter_by(emp_id=userID).first()
+    current_user = 'hr'
+    if current_user == 'hr':
+        user.hr_approval = 'Declined'
+        user.approved_by=userID
+        db.session.commit()
+        
+        # Create a JSON response
+        response_data = {
+            'approved_by':user.approved_by,
+            'userId': userID,
+            'hr_approval': user.hr_approval
+        }
+
+        return jsonify(response_data)
+
+
+@views.route('/leave_approve',methods=['POST','GET'])
+def leave_approve():
+    user_data = json.loads(request.data)
+    userID = user_data['userId']
+    user = leave.query.filter_by(emp_id=userID).first()
+    print(" USER : ",user)
+    current_user='hr'
+    if current_user=='hr':
+        user.hr_approval='Approved'
+        user.approved_by=userID
+        db.session.commit()
+        response_data = {
+            'approved_by':user.approved_by,
+            'userId': userID,
+            'hr_approval': user.hr_approval
+        }
+
+        return jsonify(response_data)
+
+@views.route('/leave_decline',methods=['POST','GET'])
+def leave_decline():
+    user = json.loads(request.data)
+    userID = user['userId']
+    user = leave.query.filter_by(emp_id=userID).first()
+    print(" USER : ",user)
+    current_user='hr'
+    if current_user=='hr':
+        user.hr_approval='Declined'
+        user.approved_by=userID
+        db.session.commit()
+        response_data = {
+            'approved_by':user.approved_by,
+            'userId': userID,
+            'hr_approval': user.hr_approval
+        }
+
+        return jsonify(response_data)

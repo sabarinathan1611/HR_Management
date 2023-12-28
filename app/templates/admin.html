@@ -161,13 +161,26 @@
                   <th>Extra Time</th>
                   <th>Status</th>
                 </tr>
+                {% if attendance %} {% for attendance in attendance %}
+                <td class="id">{{attendance.emp_id }}</td>
+                <td class="name">{{attendance.name}}</td>
+                <td>{{attendance.date}}</td>
+                <td>{{attendance.shiftInTime}}</td>
+                <td>{{attendance.shift_OutTime}}</td>
+                <td>{{attendance.inTime}}</td>
+                <td>{{attendance.outTime}}</td>
+                <td>{{attendance.lateBy}}</td>
+                <td>{{attendance.earlyGoingBy}}</td>
+                <td>{{attendance.TotalDuration}}</td>
+                <td class="extra">{{attendance.overtime}}</td>
+                <td><i class="fas fa-times-circle"></i></td>
+                {% endfor %} {% endif %}
               </thead>
               <tbody class="tableBody"></tbody>
             </table>
           </div>
         </div>
       </section>
-
       <script src="static/js/today_attendance.js"></script>
     </main>
     <script src="static/js/script.js"></script>
