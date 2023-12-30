@@ -74,10 +74,9 @@ body {
 }
 
 .option {
-  min-width: 120px;
+  width: 40px;
   height: 40px;
-  border-radius: 5px;
-  background: #0000ff;
+  border-radius: 50%;
   list-style: none;
   display: flex;
   align-items: center;
@@ -86,8 +85,20 @@ body {
   text-transform: capitalize;
   cursor: pointer;
   color: #fff;
-  border: 2px solid #0000ff;
   transition: all 0.3s;
+  background: #0000ff;
+  border: 2px solid #0000ff;
+  position: relative;
+}
+
+.icon-text {
+  position: absolute;
+  margin-top: 20px;
+  right: -17px;
+  padding: 5px 10px;
+  background: #3f3f3f;
+  border-radius: 5px;
+  display: none;
 }
 
 .option:hover {
@@ -95,34 +106,151 @@ body {
   box-shadow: 0px 0px 10px #0000ff;
 }
 
-.notification-icon {
+.option:hover .icon-text {
+  display: block;
+}
+
+.notify-count {
   position: absolute;
+  right: -10px;
+  top: -10px;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: rgb(255, 34, 34);
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
+  font-size: 13px;
+  color: #fff;
 }
 
-.notification-list {
-  display: none;
-}
-
-.notification-list.active {
-  width: 220px;
-  min-height: 50px;
-  max-height: 250px;
+.notifications {
   position: absolute;
-  top: 50px;
-  background: #fff;
-  border: 2px solid #707070;
-  border-radius: 4px;
-  list-style: none;
+  top: 40px;
+  right: -30px;
   padding: 10px;
-  overflow-y: scroll;
-  display: flex;
+  background: #fff;
+  border-radius: 5px;
+  box-shadow: 0px 0px 10px #9d9d9d;
+  max-width: 320px;
+  gap: 5px;
   flex-direction: column;
+  max-height: 500px;
+  overflow-y: scroll;
+  display: none;
+  border: 2px solid #676767;
+}
+
+.notifications.active {
+  display: flex;
+  animation: 0.4s pop-up ease-in forwards;
+}
+
+@keyframes pop-up {
+  0% {
+    margin-top: 100px;
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+    margin-top: 20px;
+  }
+}
+.notification-btn {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.notification-btn.active {
+  animation: 0.3s bell ease-in forwards;
+  transform: rotate(0);
+}
+
+@keyframes bell {
+  0% {
+    transform: rotate(-15deg);
+  }
+  25% {
+    transform: rotate(15deg);
+  }
+  50% {
+    transform: rotate(-15deg);
+  }
+  75% {
+    transform: rotate(15deg);
+  }
+  90% {
+    transform: rotate(-15deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+.notification-box {
+  display: flex;
   gap: 10px;
-  animation: move-top 1s ease forwards;
-  z-index: 9;
+  align-items: center;
+  position: relative;
+  max-height: 100px;
+  height: 70px;
+  border: 1px solid #9d9d9d;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.profile {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #ececec;
+  position: absolute;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notification-details {
+  position: relative;
+  margin-left: 60px;
+}
+
+.notification-user-name {
+  color: #3e3e3e;
+  font-size: 18px;
+  font-family: sans-serif;
+  margin-top: 3px;
+}
+
+.notification-message {
+  font-size: 14px;
+  white-space: nowrap; /* Prevents text from wrapping */
+  overflow: hidden; /* Hides overflowed content */
+  text-overflow: ellipsis; /* Displays an ellipsis (...) to represent overflow */
+  max-width: 220px;
+  color: #3e3e3e;
+  min-width: 200px;
+}
+
+.add-notification {
+  position: absolute;
+  left: -70px;
+  top: 0px;
+}
+
+.add {
+  padding: 10px 15px;
+  border-radius: 20px;
+  cursor: pointer;
+  border: none;
+  background: #00aaff;
+  color: #fff;
+  text-transform: capitalize;
 }
 
 @keyframes move-top {
@@ -138,17 +266,6 @@ body {
 
 li {
   list-style: none;
-}
-
-.notifications {
-  width: 100%;
-  padding: 10px;
-  background: #ebebeb;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  border-radius: 5px;
-  z-index: 9;
 }
 
 .sidebar {
@@ -433,6 +550,14 @@ li {
   border-radius: 5px;
   min-width: 280px;
   overflow-y: scroll;
+  width: -webkit-fill-available;
+}
+
+p.message-time,
+p.message-date {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .message-header {
@@ -504,17 +629,9 @@ li {
     display: none;
   }
 }
-a {
-  text-decoration: none;
-  color: black;
-}
 
-#approve:disabled {
-  background: rgb(0, 218, 0);
-  color: white;
-}
-
-#decline:disabled {
-  background: rgb(148, 3, 3);
-  color: white;
+a.eye-icon {
+  position: absolute;
+  right: 0;
+  top: -10px;
 }

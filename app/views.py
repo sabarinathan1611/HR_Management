@@ -1,6 +1,6 @@
 from flask_login import login_required, current_user,login_user
 from . import db
-from .models import Employee,Attendance,Shift_time,Backup, late, leave,notification,NewShift,Emp_login
+from .models import Attendance,Shift_time,Backup, late, leave,notifications ,NewShift,Emp_login
 from flask import Blueprint, render_template, request, flash, redirect, url_for,jsonify,session
 import json
 import datetime
@@ -26,6 +26,7 @@ from app import socketio
 @views.route('/',methods=['POST','GET'])
 @login_required
 def admin():     # not used ,,,, used in auth itself
+    
     try:
         inshift = Shift_time.query.filter_by(id=1).first()
         if not inshift:
@@ -39,11 +40,9 @@ def admin():     # not used ,,,, used in auth itself
         db.session.rollback()  # Rollback in case of error
 
     
-    # employee =Employee.query.order_by(Employee.id)
     employee =Attendance.query.order_by(Attendance.id)   
     late_permission=late.query.order_by(late.date).all()
     leave_permission=leave.query.order_by(leave.date).all()
-    # sihft=Shift_time.query.order_by(Shift_time.id) 
     return render_template('admin.html',employee=employee,late_permission=late_permission,leave_permission=leave_permission)
 
 @views.route('/edit', methods=['POST', 'GET'])
@@ -62,7 +61,7 @@ def empEdit():
         dob_date = datetime.strptime(dob, '%Y-%m-%d').date()
 
         # Query the database for an employee with the given 'empid'
-        emp = Employee.query.filter_by(id=empid).first()
+        emp = Emp_login.query.filter_by(id=empid).first()
 
         if emp:
             # Update the employee's data with the new information
@@ -98,7 +97,7 @@ def delete_employee():
         
 
         # Check if an employee with the given emp_id exists in the database
-        employee = Employee.query.filter_by(id=int(emp_id)).first()
+        employee = Emp_login.query.filter_by(id=int(emp_id)).first()
         
         attendance=Attendance.query.filter_by(id=int(emp_id)).all()
         for record in attendance:
@@ -120,15 +119,13 @@ def delete_employee():
 
     return "Employee deleted successfully!", 200
 
-   
-    
     
 @views.route('/profile-view')
 @login_required
 def profileView():
     try: 
         
-        employee =Employee.query.order_by(Employee.id)
+        employee =Emp_login.query.order_by(Employee.id)
         
         
     except Exception as error:
@@ -230,151 +227,6 @@ def backup_data():
     db.session.commit()
     return redirect(url_for('views.admin'))
 
-
-@views.route('/dashboard',methods=['POST','GET'])
-def dashboard():
-    return render_template('dashboard.html')
-
-
-#mahaveer
-# Your route handlers and SocketIO events go here
-# @views.route('/')
-# def index():
-#     return render_template('index.html')
-
-
-@views.route('/late_form_page')
-def late_form_page():
-    return render_template('emp_late.html')
-
-
-@views.route('/leave_form_page')
-def leave_form_page():
-    return render_template('emp_leave.html')
-
-
-@socketio.on('connect')
-def handle_connect():
-    print('Client Connected')
-
-
-@socketio.on('disconnect')
-def handle_disconnect():
-    print('Client disconnected')    
-
-@socketio.on('late')
-@login_required
-def handle_lateform_callback(lateDet):
-    emp_id=session.get('emp_id')
-    emp_name=session.get('name')
-    reason=lateDet['reason']
-    from_time=lateDet['from_time']
-    to_time=lateDet['to_time']
-    status='Pending'
-    hod_approval='Pending'
-    approved_by='Hod Name'
-    hr_approval='Pending'
-
-    user=Emp_login.query.filter_by(emp_id=emp_id).first()
-    if user:
-        user.late_balance -= 1
-        email=user.email
-        late_balance=user.late_balance
-        db.session.commit()
-    
-    else:
-        print(f"Employee with emp_id {emp_id} not found.")
-    user=Emp_login.query.filter_by(emp_id=emp_id).first()
-    if user:
-        email=user.email
-        try:
-            sub=" You Have Taken Late Permission "
-            body=" You Have Taken Late permission \n And You Have {} Late balance \n Have a Great Day".format(late_balance)
-            send_mail(email, sub, body)
-        except:
-            print("Mail Not Sent")
-
-    try:
-        user=Employee.query.filter_by(emp_id=emp_id).first()
-        phone=user.phoneNumber
-        body=" You Have Taken Late permission \n And You Have {} Late balance \n Have a Great Day".format(late_balance)
-        send_sms(phone,body)
-    except:
-        print("Sms Not Sent")
-
-    try:
-        print(reason)
-        new_request=late(emp_id=emp_id,emp_name=emp_name,reason=reason,from_time=from_time,to_time=to_time,status=status,hod_approval=hod_approval,approved_by=approved_by,hr_approval=hr_approval)
-        db.session.add(new_request)
-        db.session.commit()
-        print("new request : ",new_request.emp_id)
-        all_latedata = {'emp_id':emp_id, 'emp_name':emp_name, 'reason':reason, 'from_time':from_time, 'to_time':to_time, 'status':status, 'hod_approval':hod_approval, 'approved_by':approved_by, 'hr_approval':hr_approval}
-        print("EMP ID : ",all_latedata['emp_id'])
-
-        emit('late', all_latedata, broadcast=True)
-
-
-    except Exception as e:
-        print(f"An error occurred: {str(e)}")
-
-
-@views.route('/request_disp')
-def request_disp():
-    late_permission=late.query.order_by(late.date).all()
-    leave_permission=leave.query.order_by(leave.date).all()
-    return render_template('request_disp.html',late_permission=late_permission,leave_permission=leave_permission)
-
-@socketio.on('leave')
-def handle_leaveform_callback(leaveDet):
-    emp_id=session.get('emp_id')
-    emp_name=session.get('name')
-    reason=leaveDet['reason']
-    from_date=leaveDet['from_date']
-    to_date=leaveDet['to_date']
-    status='Pending'
-    hod_approval='Pending'
-    approved_by='Hod Name'
-    hr_approval='Pending'
-
-    user=Emp_login.query.filter_by(emp_id=emp_id).first()
-    if user:
-        user.leave_balance -= 1
-        email=user.email
-        leave_balance=user.leave_balance
-        db.session.commit()
-    else:
-        print(f"Employee with emp_id {emp_id} not found.")
-    user=Emp_login.query.filter_by(emp_id=emp_id).first()
-    if user:
-        email=user.email
-        try:
-            sub=" You Have Taken Leave "
-            body=" You Have Taken Leave \n And You Have {} Leave balance \n Have a Great Day".format(leave_balance)
-            send_mail(email, sub, body)
-        except:
-            print("Mail Not Sent")
-
-        try:
-            user=Employee.query.filter_by(emp_id=emp_id).first()
-            phone=user.phoneNumber
-            phone="+91"+phone
-            print(type(phone))
-            body=" You Have Taken leave permission \n And You Have {} leave balance \n Have a Great Day".format(leave_balance)
-            send_sms([phone],body)
-        except:
-            print("Sms Not Sent")
-
-    try:
-        new_request=leave(emp_id=emp_id,emp_name=emp_name,reason=reason,from_date=from_date,to_date=to_date,status=status,hod_approval=hod_approval,approved_by=approved_by,hr_approval=hr_approval)
-        db.session.add(new_request)
-        db.session.commit()
-        all_leaveData={'emp_id':emp_id,'emp_name':emp_name,'reason':reason,'from_date':from_date,'to_date':to_date,'status':status,'hod_approval':hod_approval,'approved_by':approved_by,'hr_approval':hr_approval}
-        print(all_leaveData)
-        emit('leave', all_leaveData, broadcast=True)
-
-    except Exception as e:
-        print(f"An error occurred: {str(e)}")
-
 @views.route('/upload_csv_page',methods=['POST','GET'])
 def upload_csv_page():
     return render_template("upload_csv.html")
@@ -460,34 +312,152 @@ def del_csv():
     db.session.commit()
     return redirect(url_for('upload_csv'))
 
-def process_csv_file(file_path):
-    with open(file_path, mode='r') as file:
-        csv_reader = csv.reader(file)
-        next(csv_reader)  # Skip the header row
 
-        for row in csv_reader:
-            employee_id, employee_name, *shifts = row
+@views.route('/dashboard',methods=['POST','GET'])
+def dashboard():
+    return render_template('dashboard.html')
 
-            # Create a new NewShift instance and set its attributes
-            new_shift_entry = NewShift(
-                name_date_day=employee_name,
-                filename=file_path,
-                monday=shifts[0],
-                tuesday=shifts[1],
-                wednesday=shifts[2],
-                thursday=shifts[3],
-                friday=shifts[4]
-            )
 
-            # Set the day_* attributes dynamically
-            for day_num, shift in enumerate(shifts[5:], start=1):
-                setattr(new_shift_entry, f"day_{day_num}", shift)
+@views.route('/late_form_page')
+def late_form_page():
+    return render_template('emp_late.html')
 
-            # Add the new entry to the database session
-            db.session.add(new_shift_entry)
 
-        # Commit the changes to the database
+@views.route('/leave_form_page')
+def leave_form_page():
+    return render_template('emp_leave.html')
+
+
+@socketio.on('connect')
+def handle_connect():
+    print('Client Connected')
+
+
+@socketio.on('disconnect')
+def handle_disconnect():
+    print('Client disconnected')    
+
+@socketio.on('late')
+@login_required
+def handle_lateform_callback(lateDet):
+    emp_id=session.get('emp_id')
+    emp_name=session.get('name')
+    reason=lateDet['reason']
+    from_time=lateDet['from_time']
+    to_time=lateDet['to_time']
+    status='Pending'
+    approved_by='hod name'
+    hr_approval='Pending'
+
+    new_request=notifications(reason=reason,emp_name=emp_name,permission='Late')
+    db.session.add(new_request)
+    db.session.commit()
+
+    user=Emp_login.query.filter_by(emp_id=emp_id).first()
+    if user:
+        user.late_balance -= 1
+        email=user.email
+        late_balance=user.late_balance
         db.session.commit()
+    
+    else:
+        print(f"Employee with emp_id {emp_id} not found.")
+    user=Emp_login.query.filter_by(emp_id=emp_id).first()
+    if user:
+        email=user.email
+        try:
+            sub=" You Have Taken Late Permission "
+            body=" You Have Taken Late permission \n And You Have {} Late balance \n Have a Great Day".format(late_balance)
+            send_mail(email, sub, body)
+        except:
+            print("Mail Not Sent")
+
+    try:
+        user=Emp_login.query.filter_by(emp_id=emp_id).first()
+        phone=user.phoneNumber
+        body=" You Have Taken Late permission \n And You Have {} Late balance \n Have a Great Day".format(late_balance)
+        send_sms(phone,body)
+    except:
+        print("Sms Not Sent")
+
+    try:
+        print(reason)
+        new_request=late(emp_id=emp_id,emp_name=emp_name,reason=reason,from_time=from_time,to_time=to_time,approved_by=approved_by,status=status,hr_approval=hr_approval)
+        db.session.add(new_request)
+        db.session.commit()
+        print("new request : ",new_request.from_time)
+        all_latedata = {'emp_id':emp_id, 'emp_name':emp_name, 'reason':reason, 'from_time':from_time, 'to_time':to_time,'approved_by':approved_by, 'status':status, 'hr_approval':hr_approval}
+        print("EMP ID : ",all_latedata['emp_id'])
+
+        emit('late', all_latedata, broadcast=True)
+
+
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+
+
+@views.route('/request_disp')
+def request_disp():
+    late_permission=late.query.order_by(late.date).all()
+    leave_permission=leave.query.order_by(leave.date).all()
+    return render_template('request_disp.html',late_permission=late_permission,leave_permission=leave_permission)
+
+@socketio.on('leave')
+def handle_leaveform_callback(leaveDet):
+    emp_id=session.get('emp_id')
+    emp_name=session.get('name')
+    reason=leaveDet['reason']
+    from_time=leaveDet['from_time']
+    to_time=leaveDet['to_time']
+    status='Pending'
+    approved_by='Hod Name'
+    hr_approval='Pending'
+
+    
+    new_request=notifications(reason=reason,emp_name=emp_name,permission='Leave')
+    db.session.add(new_request)
+    db.session.commit()
+
+    user=Emp_login.query.filter_by(emp_id=emp_id).first()
+    if user:
+        user.leave_balance -= 1
+        email=user.email
+        leave_balance=user.leave_balance
+        db.session.commit()
+    else:
+        print(f"Employee with emp_id {emp_id} not found.")
+    user=Emp_login.query.filter_by(emp_id=emp_id).first()
+    if user:
+        email=user.email
+        try:
+            sub=" You Have Taken Leave "
+            body=" You Have Taken Leave \n And You Have {} Leave balance \n Have a Great Day".format(leave_balance)
+            send_mail(email, sub, body)
+        except:
+            print("Mail Not Sent")
+
+        try:
+            user=Emp_login.query.filter_by(emp_id=emp_id).first()
+            phone=user.phoneNumber
+            phone="+91"+phone
+            print(type(phone))
+            body=" You Have Taken leave permission \n And You Have {} leave balance \n Have a Great Day".format(leave_balance)
+            send_sms([phone],body)
+        except:
+            print("Sms Not Sent")
+
+    try:
+        new_request=leave(emp_id=emp_id,emp_name=emp_name,reason=reason,from_time=from_time,to_time=to_time,approved_by=approved_by,status=status,hr_approval=hr_approval)
+        db.session.add(new_request)
+        db.session.commit()
+        all_leaveData={'emp_id':emp_id,'emp_name':emp_name,'reason':reason,'from_time':from_time,'to_time':to_time,'approved_by':approved_by,'status':status,'hr_approval':hr_approval}
+        print(all_leaveData)
+        emit('leave', all_leaveData, broadcast=True)
+
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+
+
 
 @views.route("/emp_login_page")
 def emp_login_page():
@@ -530,24 +500,25 @@ def user_dashboard():
     late_balance = user.late_balance
     return render_template("emp_req_choice.html",emp_id=emp_id,email=email,name=name,late_balance=late_balance,leave_balance=leave_balance)
 
-@views.route("/attendance_upload_page",methods=['POST','GET'])
-def attendance_upload_page():
-    return render_template('upload_attendance.html')
+# @views.route("/attendance_upload_page",methods=['POST','GET'])
+# @login_required
+# def attendance_upload_page():
+#     return render_template('upload_attendance.html')
 
 @views.route("/attendance_upload",methods=['POST','GET'])
+@login_required
 def upload_attendance():
-    if request.method=='POST':
+    if(request.method=='POST'):
         file=request.files['attendance']
         filename = secure_filename(file.filename)
         print(filename)
         file_path=os.path.join(app.config['EXCEL_FOLDER'], filename)
         file.save(file_path)
-        process_excel_data(file_path)
-        print("SUccess ")
+        attend_excel_data(file_path)
         return redirect(url_for('views.calculate'))
 
-    else:
-        return redirect(url_for('views.attendance_upload_page'))
+    
+    return render_template('upload_attendance.html')
 
 @views.route("/attendance_table")
 @login_required
@@ -556,17 +527,31 @@ def attendance_table():
     leave_permission=leave.query.order_by(leave.date).all()
     return render_template("admin.html",late_permission=late_permission,leave_permission=leave_permission)
 
-@views.route("/late_table")
-@login_required
-def late_table():
-    late_permission=late.query.order_by(late.date).all()
-    return render_template("late_table.html",late_permission=late_permission)
+# @views.route("/late_table")
+# @login_required
+# def late_table():
+#     late_permission=late.query.order_by(late.date).all()
+#     return render_template("late_table.html",late_permission=late_permission)
 
-@views.route("/leave_table")
+# @views.route("/leave_table")
+# @login_required
+# def leave_table(): 
+#     leave_permission=leave.query.order_by(leave.date).all()
+#     return render_template("leave_table.html",leave_permission=leave_permission)
+
+@views.route("/late_req_table")
 @login_required
-def leave_table(): 
-    leave_permission=leave.query.order_by(leave.date).all()
-    return render_template("leave_table.html",leave_permission=leave_permission)
+def late_req_table():
+    permission_details=late.query.order_by(late.date).all()
+    return render_template("req_table.html",permission=permission_details,permission_type='Late')
+
+
+@views.route("/leave_req_table")
+@login_required
+def leave_req_table():
+    permission_details=leave.query.order_by(leave.date).all()
+    return render_template("req_table.html",permission=permission_details,permission_type='Leave')
+
 
 @views.route("/today_attendance")
 @login_required
@@ -588,45 +573,170 @@ def month_attendance():
 def last_month_attendance():
     return render_template("month_attendance.html")
 
-@views.route('/late_req_profile/<int:emp_id>/<string:emp_name>/<string:from_time>/<string:to_time>/<string:reason>/<int:req_id>')
-def late_req_profile(emp_id, emp_name, from_time, to_time, reason,req_id):
+# @views.route('/late_req_profile/<int:emp_id>/<string:emp_name>/<string:from_time>/<string:to_time>/<string:reason>/<int:req_id>')
+# @login_required
+# def late_req_profile(emp_id, emp_name, from_time, to_time, reason,req_id):
+#     user = Emp_login.query.order_by(Emp_login.date.desc()).first()
+#     user_late=late.query.filter_by(id=req_id).first()
+#     req_date=user_late.date.strftime("%d-%m-%y")
+#     req_time=user_late.date.strftime("%H:%M")
+#     late_details={
+#         'late_balance':user.late_balance,
+#         'leave_balance':user.leave_balance,
+#         'approval':user_late.hr_approval,
+#         'req_date':req_date,
+#         'req_time':req_time,
+#         'from_time':from_time,
+#         'to_time':to_time,
+#         'approved_by':user_late.approved_by,
+#         'ph_number':user.phoneNumber,
+#         'id':user.id,
+#         'reason':reason,
+#         'emp_id':emp_id,
+#         'emp_name':emp_name
+#     }
+#     session['late_details']=late_details
+#     return render_template("late_req_profile.html",late_details=late_details)#,late_permission_dict=late_permission_dict
+
+# @views.route('/leave_req_profile/<int:emp_id>/<string:emp_name>/<string:from_date>/<string:to_date>/<string:reason>/<int:req_id>')
+# def leave_req_profile(emp_id, emp_name, from_date, to_date, reason,req_id):
+#     user = Emp_login.query.order_by(Emp_login.date.desc()).first()
+#     user_leave=leave.query.filter_by(id=req_id).first()
+#     leave_details={
+#         'leave_balance':user.leave_balance,
+#         'leave_balance':user.leave_balance,
+#         'approval':user_leave.hr_approval,
+#         'approved_by':user_leave.approved_by,
+#         'from_date':from_date,
+#         'to_date':to_date,
+#         'ph_number':user.phoneNumber,
+#         'id':user.id,
+#         'reason':reason,
+#         'emp_id':emp_id,
+#         'emp_name':emp_name
+#     }
+#     session['leave_details']=leave_details
+#     return render_template("leave_req_profile.html",leave_details=leave_details)#,late_permission_dict=late_permission_dict
+
+# @views.route('/late_req_profile/<int:emp_id>/<string:emp_name>/<string:from_time>/<string:to_time>/<string:reason>/<int:req_id>')
+# @login_required
+# def late_req_profile(emp_id, emp_name, from_time, to_time, reason,req_id):
+#     user = Emp_login.query.order_by(Emp_login.date.desc()).first()
+#     user_late=late.query.filter_by(id=req_id).first()
+#     req_date=user_late.date.strftime("%d-%m-%y")
+#     req_time=user_late.date.strftime("%H:%M")
+#     req_details={
+#         'late_balance':user.late_balance,
+#         'leave_balance':user.leave_balance,
+#         'approval':user_late.hr_approval,
+#         'req_date':req_date,
+#         'req_time':req_time,
+#         'from_time':from_time,
+#         'to_time':to_time,
+#         'approved_by':user_late.approved_by,
+#         'permission_type':'Late',
+#         'ph_number':user.phoneNumber,
+#         'id':user.id,
+#         'reason':reason,
+#         'emp_id':emp_id,
+#         'emp_name':emp_name
+#     }
+#     session['late_details']=req_details
+#     return render_template("req_profile.html",req_details=req_details)#,late_permission_dict=late_permission_dict
+
+# @views.route('/leave_req_profile/<int:emp_id>/<string:emp_name>/<string:from_time>/<string:to_time>/<string:reason>/<int:req_id>')
+# @login_required
+# def leave_req_profile(emp_id, emp_name, from_time, to_time, reason,req_id):
+#     user = Emp_login.query.order_by(Emp_login.date.desc()).first()
+#     user=leave.query.filter_by(id=req_id).first()
+#     req_date=user.date.strftime("%d-%m-%y")
+#     req_time=user.date.strftime("%H:%M")
+#     req_details={
+#         'late_balance':user.late_balance,
+#         'leave_balance':user.leave_balance,
+#         'approval':user.hr_approval,
+#         'req_date':req_date,
+#         'req_time':req_time,
+#         'from_time':from_time,
+#         'to_time':to_time,
+#         'approved_by':user.approved_by,
+#         'ph_number':user.phoneNumber,
+#         'permission_type':'Leave',
+#         'id':user.id,
+#         'reason':reason,
+#         'emp_id':emp_id,
+#         'emp_name':emp_name
+#     }
+#     session['leave_details']=req_details
+#     return render_template("req_profile.html",req_details=req_details)#,late_permission_dict=late_permission_dict
+
+@views.route('/late_req_profile')
+@login_required
+def late_req_profile():
+
+    emp_id = request.args.get('emp_id')
+    emp_name = request.args.get('emp_name')
+    from_time = request.args.get('from_time')
+    to_time = request.args.get('to_time')
+    reason = request.args.get('reason')
+    req_id = request.args.get('req_id')
+
     user = Emp_login.query.order_by(Emp_login.date.desc()).first()
     user_late=late.query.filter_by(id=req_id).first()
-    late_details={
+    req_date=user_late.date.strftime("%d-%m-%y")
+    req_time=user_late.date.strftime("%H:%M")
+    req_details={
         'late_balance':user.late_balance,
         'leave_balance':user.leave_balance,
         'approval':user_late.hr_approval,
+        'req_date':req_date,
+        'req_time':req_time,
         'from_time':from_time,
         'to_time':to_time,
         'approved_by':user_late.approved_by,
+        'permission_type':'Late',
         'ph_number':user.phoneNumber,
         'id':user.id,
         'reason':reason,
         'emp_id':emp_id,
         'emp_name':emp_name
     }
-    session['late_details']=late_details
-    return render_template("late_req_profile.html",late_details=late_details)#,late_permission_dict=late_permission_dict
+    session['late_details']=req_details
+    return render_template("req_profile.html",req_details=req_details)#,late_permission_dict=late_permission_dict
 
-@views.route('/leave_req_profile/<int:emp_id>/<string:emp_name>/<string:from_date>/<string:to_date>/<string:reason>/<int:req_id>')
-def leave_req_profile(emp_id, emp_name, from_date, to_date, reason,req_id):
+@views.route('/leave_req_profile')
+@login_required
+def leave_req_profile():
+    emp_id = request.args.get('emp_id')
+    emp_name = request.args.get('emp_name')
+    from_time = request.args.get('from_time')
+    to_time = request.args.get('to_time')
+    reason = request.args.get('reason')
+    req_id = request.args.get('req_id')
+    
     user = Emp_login.query.order_by(Emp_login.date.desc()).first()
-    user_leave=leave.query.filter_by(id=req_id).first()
-    leave_details={
+    user=leave.query.filter_by(id=req_id).first()
+    req_date=user.date.strftime("%d-%m-%y")
+    req_time=user.date.strftime("%H:%M")
+    req_details={
+        'late_balance':user.late_balance,
         'leave_balance':user.leave_balance,
-        'leave_balance':user.leave_balance,
-        'approval':user_leave.hr_approval,
-        'approved_by':user_leave.approved_by,
-        'from_date':from_date,
-        'to_date':to_date,
+        'approval':user.hr_approval,
+        'req_date':req_date,
+        'req_time':req_time,
+        'from_time':from_time,
+        'to_time':to_time,
+        'approved_by':user.approved_by,
         'ph_number':user.phoneNumber,
+        'permission_type':'Leave',
         'id':user.id,
         'reason':reason,
         'emp_id':emp_id,
         'emp_name':emp_name
     }
-    session['leave_details']=leave_details
-    return render_template("leave_req_profile.html",leave_details=leave_details)#,late_permission_dict=late_permission_dict
+    session['leave_details']=req_details
+    return render_template("req_profile.html",req_details=req_details)#,late_permission_dict=late_permission_dict
+
 
 # @views.route('/late_req_approve',methods=['POST','GET'])
 # def late_req_approve():

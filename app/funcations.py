@@ -3,7 +3,7 @@ import smtplib
 import os
 from flask import current_app as app
 from flask import  flash,redirect
-from .models import Attendance, Shift_time, Employee
+from .models import Attendance, Shift_time, Emp_login
 from . import db
 from os import path
 import datetime
@@ -60,7 +60,7 @@ def send_sms(numbers_to_message, message_body):
 def process_excel_data(file_path):
     if os.path.exists(file_path):
         sheet_names = pd.ExcelFile(file_path).sheet_names
-        print("FILE:  ",sheet_names)
+
         for sheet_name in sheet_names:
             df = None
             if file_path.lower().endswith('.xlsx'):
@@ -72,7 +72,7 @@ def process_excel_data(file_path):
                 return  # Handle unsupported format
 
             for index, row in df.iterrows():
-                shift_type = str(row['Shift'])
+                shift_type = row['Shift']
                 print("Processing: ", shift_type)
 
                 existing_shift = db.session.query(Shift_time).filter_by(shiftType=shift_type).first()
@@ -87,6 +87,7 @@ def process_excel_data(file_path):
                     db.session.add(shift)
 
                     attendance = Attendance(
+                        
                         shiftIntime=str(row['S. InTime']),
                         shift_Outtime=str(row['S. OutTime']),
                         shiftType=str(row['Shift']),
@@ -101,11 +102,11 @@ def process_excel_data(file_path):
 
 
 def calculate_Attendance(chunk_size=100):
-    total_employees = Employee.query.count()
+    total_employees = Emp_login.query.count()
     total_chunks = (total_employees + chunk_size - 1) // chunk_size
 
     for chunk_index in range(total_chunks):
-        employees = Employee.query.offset(chunk_index * chunk_size).limit(chunk_size).all()
+        employees = Emp_login.query.offset(chunk_index * chunk_size).limit(chunk_size).all()
         for employee in employees:
             attendance_records = Attendance.query.filter_by(emp_id=employee.id).all()
 
@@ -178,7 +179,7 @@ def update_wages_for_present_employees():
     current_date = datetime.datetime.now().date()
 
   
-    employees = Employee.query.filter_by(workType='employee').all()
+    employees = Emp_login.query.filter_by(role='employee').all()
 
     for employee in employees:
         
@@ -197,7 +198,7 @@ def update_wages_for_present_daily_workers():
     current_date = datetime.datetime.now().date()
 
   
-    employees = Employee.query.filter_by(workType='daily').all()
+    employees = Emp_login.query.filter_by(role='daily').all()
 
     for employee in employees:
         
@@ -234,7 +235,7 @@ def schedule_function(emp_id):
 
 
 def count_attendance_and_update_shift():
-    employees = Employee.query.all()  # Fetch all employees
+    employees = Emp_login.query.all()  # Fetch all employees
     
     for employee in employees:
         attendance_count = len(employee.attendances)
@@ -258,10 +259,10 @@ def count_attendance_and_update_shift():
 
 # def run_for_all_employees():
     # Assuming Employee is your SQLAlchemy model for employees
-    employees = Employee.query.filter_by(workType='employee').all()
+    # employees = Employee.query.filter_by(workType='employee').all()
 
-    for employee in employees:
-        count_attendance_and_update_shift_periodic(employee.id)
+    # for employee in employees:
+    #     count_attendance_and_update_shift_periodic(employee.id)
 
 
 
@@ -313,6 +314,36 @@ def count_attendance_and_update_shift():
       
 #     else:
 #         print("File not found")
+        
+def process_csv_file(file_path):
+    with open(file_path, mode='r') as file:
+        csv_reader = csv.reader(file)
+        next(csv_reader)  # Skip the header row
+
+        for row in csv_reader:
+            employee_id, employee_name, *shifts = row
+
+            # Create a new NewShift instance and set its attributes
+            new_shift_entry = NewShift(
+                name_date_day=employee_name,
+                filename=file_path,
+                monday=shifts[0],
+                tuesday=shifts[1],
+                wednesday=shifts[2],
+                thursday=shifts[3],
+                friday=shifts[4]
+            )
+
+            # Set the day_* attributes dynamically
+            for day_num, shift in enumerate(shifts[5:], start=1):
+                setattr(new_shift_entry, f"day_{day_num}", shift)
+
+            # Add the new entry to the database session
+            db.session.add(new_shift_entry)
+
+        # Commit the changes to the database
+        db.session.commit()
+
 
 
 def addemployee(file_path):
@@ -344,7 +375,7 @@ def addemployee(file_path):
                 print("Processing: ", empid)
                 dob = pd.to_datetime(row['dob']) if pd.notna(row['dob']) else None
 
-                existing_emp = db.session.query(Employee).filter_by(email=empid).first()
+                existing_emp = db.session.query(Emp_login).filter_by(email=empid).first()
                 if not existing_emp:
                     data_to_insert.append({
                         'id': empid,
@@ -363,7 +394,7 @@ def addemployee(file_path):
                     print(f"Employee with ID {empid} already exists.")
 
         if data_to_insert:
-            db.session.bulk_insert_mappings(Employee, data_to_insert)
+            db.session.bulk_insert_mappings(Emp_login, data_to_insert)
             db.session.commit()
             print("Data added successfully.")
         else:
@@ -390,7 +421,7 @@ def attend_excel_data(file_path):
                 empid = row['emp_id']
                 print("Processing: ", empid)
                 # date =datetime.date.today()
-                emp = db.session.query(Employee).filter_by(id=empid).first()
+                emp = db.session.query(Emp_login).filter_by(id=empid).first()
                 
                 attendance_status = 'Absent' if str(row['intime']) == "00:00" and str(row['outtime']) == "00:00" else 'Present'
                 shift_type = None

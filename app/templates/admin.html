@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>KKL - Project</title>
     <link rel="stylesheet" href="static/css/style.css" />
+    <script src="https://cdn.socket.io/4.7.2/socket.io.js"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+      integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
+      crossorigin="anonymous"
+    ></script>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
@@ -21,41 +27,51 @@
         <i class="fas fa-bars"></i>
       </div>
       <ul class="options">
-        <li class="option notification-menu">
-          <span class="notification-icon">
-            <i class="fas fa-bell"></i>
-            Notifications
-          </span>
-          <ul class="notification-list">
-            <li class="notifications">
-              <span class="user-name">Employee 1</span>
-              <div class="message-subject">Late Notification</div>
-            </li>
-            <li class="notifications">
-              <span class="user-name">Employee 1</span>
-              <div class="message-subject">Late Notification</div>
-            </li>
-            <li class="notifications">
-              <span class="user-name">Employee 1</span>
-              <div class="message-subject">Late Notification</div>
-            </li>
-            <li class="notifications">
-              <span class="user-name">Employee 1</span>
-              <div class="message-subject">Late Notification</div>
-            </li>
-            <li class="notifications">
-              <span class="user-name">Employee 1</span>
-              <div class="message-subject">Late Notification</div>
-            </li>
-          </ul>
+        <li class="option">
+            <div class="notification-btn">
+              <span class>
+                <i class="fas fa-bell"></i>
+            </span>
+            <div class="notify-count">
+                <p class="count">0</p>
+            </div>
+            </div>
+            
+            <ul class="notifications">
+                {% if notification %}
+                {% for single_notification in notification %}
+                <li class="notification-box">
+                    <div class="profile">
+                        <img src="icon/default-girl.jpeg" alt="default user">
+                    </div>
+                    <div class="notification-details">
+                        <div class="notification-user-name">
+                            {{single_notification.permission}}-{{single_notification.emp_name}}
+                        </div>
+                        <div class="notification-message">
+                            {{single_notification.reason}}
+                        </div>
+                    </div>
+                </li>
+                {% endfor %}
+                {% else %}
+                <li class="notification-box">
+                  <div class="notification-message">
+                      No notification Available
+                  </div>
+                </li>
+                {% endif %}
+            </ul>
         </li>
         <a href="/logout" class="option logout">
-          <span>
-            <i class="fas fa-sign-out-alt"></i>
-            Logout
-          </span>
+            <span>
+                <i class="fas fa-sign-out-alt"></i>
+                <span class="icon-text">
+                    Logout
+                </span>
+            </span>
         </a>
-      </ul>
+    </ul>
     </nav>
     <aside class="sidebar">
       <ul class="side-menu">
@@ -67,16 +83,16 @@
             <p class="menu-name">Attendance</p>
           </a>
         </form>
-        <form action="/late_table" class="menu-option">
-          <a href="/late_table">
+        <form action="/late_req_table" class="menu-option">
+          <a href="/late_req_table">
             <span class="icon">
               <i class="far fa-clock"></i>
             </span>
             <p class="menu-name">Late table</p>
           </a>
         </form>
-        <form action="/leave_table" class="menu-option">
-          <a href="/leave_table">
+        <form action="/leave_req_table" class="menu-option">
+          <a href="/leave_req_table">
             <span class="icon">
               <i class="fas fa-calendar-plus"></i>
             </span>
@@ -181,8 +197,124 @@
           </div>
         </div>
       </section>
-      <script src="static/js/today_attendance.js"></script>
+      <!-- <script src="static/js/today_attendance.js"></script> -->
     </main>
-    <script src="static/js/script.js"></script>
+    <script>
+const bell_btn = document.querySelector(".notification-btn");
+const notifications = document.querySelector(".notifications");
+const add = document.querySelector(".add");
+let count = notifications.childElementCount;
+
+if (count > 9) {
+    count = "9+";
+}
+
+document.querySelector(".count").innerHTML = 0;
+
+document.addEventListener('click', function (event) {
+    const isNotificationButton = event.target.closest('.notification-btn');
+    const isNotificationContainer = event.target.closest('.notifications');
+
+    if (!(isNotificationButton || isNotificationContainer)) {
+        notifications.classList.remove("active");
+        console.log("Removed active class");
+    }
+});
+
+bell_btn.addEventListener("click", () => {
+    notifications.classList.toggle("active");
+    console.log("Toggled active class");
+});
+
+      const socket = io();
+      socket.on("late", function (late_permission) {
+          console.log("Received late_permission:",late_permission.emp_id);
+          const notifications = document.querySelector(".notifications");
+          
+          if(document.querySelector(".notification-box")){
+                const default_notification=document.querySelector(".notification-box");
+                default_notification.style.display = "none";
+                default_notification.disabled = true;
+              }
+                  notifications.innerHTML += `
+                  <li class="notification-box">
+                      <div class="profile">
+                          <img src="icon/default.jpeg" alt="default user">
+                      </div>
+                      <div class="notification-details">
+                          <div class="notification-user-name">
+                              ${late_permission.emp_name} <a href="/late_req_table"> <i class="fas fa-eye eye-icon"></i></a>
+                          </div>
+                          <div class="notification-message">
+                              Late - ${late_permission.reason}
+                          </div>
+                      </div>
+                  </li>
+                                `;
+                  count = notifications.childElementCount;
+                  if (count > 10) {
+                      count = "9+";
+                  }
+
+                  document.querySelector(".count").innerHTML = count-1;
+                });
+
+          socket.on("leave", function (leave_permission) {
+              console.log("Received leave_permission:",leave_permission.emp_id);
+              const notifications = document.querySelector(".notifications");
+
+              if(document.querySelector(".notification-box")){
+                const default_notification=document.querySelector(".notification-box");
+                default_notification.style.display = "none";
+                default_notification.disabled = true;
+              }
+
+                  notifications.innerHTML += `
+                  <li class="notification-box">
+                      <div class="profile">
+                          <img src="icon/default.jpeg" alt="default user">
+                      </div>
+                      <div class="notification-details leave-notification">
+                          <div class="notification-user-name">
+                              ${leave_permission.emp_name}-<a href="/leave_req_table"> <i class="fas fa-eye eye-icon"></i></a>
+                          </div>
+                          <div class="notification-message">
+                              Leave - ${leave_permission.reason}
+                          </div>
+                      </div>
+                  </li>
+                                `;
+                  count = notifications.childElementCount;
+                  if (count > 10) {
+                      count = "9+";
+                  }
+
+                  document.querySelector(".count").innerHTML = count-1;
+                });
+
+  document.querySelector(".download-btn").addEventListener("click", function () {
+      let confirmation = confirm("are you sure..?");
+
+      if (confirmation) {
+        document.querySelector(".model-footer").style.display = "none";
+        html2canvas(document.querySelector(".notification-model")).then(
+          (canvas) => {
+            // Create an image and set its source to the canvas data
+            var image = canvas.toDataURL("image/png");
+            // Create a temporary link to trigger the download
+            var tmpLink = document.createElement("a");
+            tmpLink.download = "username.png"; // Set the download name
+            tmpLink.href = image;
+
+            // Temporarily add the link to the document and trigger the download
+            document.body.appendChild(tmpLink);
+            tmpLink.click();
+            document.body.removeChild(tmpLink);
+            document.querySelector(".model-footer").style.display = "flex";
+          }
+        );
+      }
+});
+    </script>
   </body>
 </html>

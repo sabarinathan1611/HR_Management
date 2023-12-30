@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KKL - Project</title>
+    <link rel="stylesheet" href="static/css/style.css" />
+    <link rel="stylesheet" href="static/css/attendance.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+    />
+    <script src="https://cdn.socket.io/4.7.2/socket.io.js"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+      integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.3.2/html2canvas.min.js"></script>
+  </head>
+  <body>
+    <script>
+      const socket = io();
+    </script>
+    <nav class="nav-bar">
+      <div class="toogle-sidebar">
+        <i class="fas fa-bars"></i>
+      </div>
+      <ul class="options">
+        <div class="add-notification" style="display: none">
+          <button class="add">add</button>
+        </div>
+        <li class="option">
+          <div class="notification-btn">
+            <span class>
+              <i class="fas fa-bell"></i>
+              <span class="icon-text"> notification </span>
+            </span>
+            <div class="notify-count">
+              <p class="count">0</p>
+            </div>
+          </div>
+
+          <ul class="notifications">
+            {% if notification %} {% for single_notification in notification %}
+            <li class="notification-box">
+              <div class="profile">
+                <img src="icon/default-girl.jpeg" alt="default user" />
+              </div>
+              <div class="notification-details">
+                <div class="notification-user-name">
+                  {{single_notification.permission}}-{{single_notification.emp_name}}
+                </div>
+                <div class="notification-message">
+                  {{single_notification.reason}}
+                </div>
+              </div>
+            </li>
+            {% endfor %} {% else %}
+            <li class="notification-box">
+              <div class="notification-message">No notification Available</div>
+            </li>
+            {% endif %}
+          </ul>
+        </li>
+        <a href="/logout" class="option logout">
+          <span>
+            <i class="fas fa-sign-out-alt"></i>
+            <span class="icon-text"> Logout </span>
+          </span>
+        </a>
+      </ul>
+    </nav>
+    <aside class="sidebar">
+      <ul class="side-menu">
+        <form class="menu-option active">
+          <a href="/attendance_table">
+            <span class="icon">
+              <i class="far fa-calendar-check"></i>
+            </span>
+            <p class="menu-name">Attendance</p>
+          </a>
+        </form>
+        <form action="/late_table" class="menu-option">
+          <a href="/late_table">
+            <span class="icon">
+              <i class="far fa-clock"></i>
+            </span>
+            <p class="menu-name">Late table</p>
+          </a>
+        </form>
+        <form action="/leave_table" class="menu-option">
+          <a href="/leave_table">
+            <span class="icon">
+              <i class="fas fa-calendar-plus"></i>
+            </span>
+            <p class="menu-name">Leave table</p>
+          </a>
+        </form>
+
+        <form action="" class="menu-option" style="display: none">
+          <span class="icon">
+            <i class="fas fa-clock"></i>
+          </span>
+          <p class="menu-name">Shift List</p>
+        </form>
+      </ul>
+    </aside>
+
+    <main class="main active">
+      <header class="details-bar">
+        <div class="user-details">
+          <h1 class="user-role">User ~ <span class="role tag">HR</span></h1>
+        </div>
+        <div class="date-time-details">
+          <p class="date"></p>
+          <p class="time"></p>
+        </div>
+      </header>
+
+      <link rel="stylesheet" href="static/css/late.css" />
+
+      <section class="leave-table-section">
+        <header class="leave-header">
+          <div class="frame-header">
+            <div class="frame-details">
+              <p class="shift name"><span class="tag">A</span> ~ shift</p>
+              <p class="frame-name">leave Table</p>
+            </div>
+            <div class="frame-options">
+              <select name="shift" id="shift" class="tag-btn">
+                <option value="">select Shift</option>
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+              </select>
+            </div>
+          </div>
+        </header>
+        <div class="table">
+          <table>
+            <thead>
+              <th>EmpId</th>
+              <th>Name</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>From Date</th>
+              <th>To Date</th>
+              <th>Subject</th>
+              <th>Message</th>
+              <th>Status</th>
+              <th>By</th>
+              <th>Action</th>
+            </thead>
+            <tbody class="leave-table" id="leave-table">
+              {% for leave_permission in leave_permission %}
+              <tr>
+                <td>#{{leave_permission.emp_id}}</td>
+                <td>{{leave_permission.emp_name}}</td>
+                <td>{{leave_permission.date.strftime('%d-%m-%Y') }}</td>
+                <td>{{leave_permission.date.strftime('%H:%M') }}</td>
+                <td>{{leave_permission.from_date}}</td>
+                <td>{{leave_permission.to_date}}</td>
+                <td>{{leave_permission.reason}}</td>
+                <td>{{leave_permission.reason}}</td>
+                <td class="status"><p class="tag">pending</p></td>
+                <td>N/A</td>
+                <td>
+                  <a
+                    href="{{ url_for('views.leave_req_profile',
+                                     emp_id=leave_permission.emp_id,
+                                     emp_name=leave_permission.emp_name,
+                                     from_date=leave_permission.from_date,
+                                     to_date=leave_permission.to_date,
+                                     reason=leave_permission.reason,
+                                     req_id=leave_permission.id )}}"
+                    ><i class="fas fa-eye"></i
+                  ></a>
+                </td>
+              </tr>
+              {% endfor %}
+              <script>
+                socket.on("leave", function (leave_permission) {
+                  var currentDate = new Date().toLocaleDateString();
+                  var currentTime = new Date().toLocaleTimeString();
+                  var tbody = document.getElementById("leave-table");
+                  tbody.innerHTML += `
+                                    <tr>
+                                    <td>${leave_permission.emp_id}</td>
+                                    <td>${leave_permission.emp_name}</td>
+                                    <td>${currentDate}</td>
+                                    <td>${currentTime}</td>
+                                    <td>${leave_permission.from_date}</td>
+                                    <td>${leave_permission.to_date}</td>
+                                    <td>${leave_permission.reason}</td>
+                                    <td>${leave_permission.reason}</td>
+                                    <td><i class="fas fa-eye"></i></td>
+                                    </tr>
+                                `;
+                });
+              </script>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+    <script src="static/js/script.js"></script>
+    <script>
+      const bell_btn = document.querySelector(".notification-btn");
+      const notifications = document.querySelector(".notifications");
+      const add = document.querySelector(".add");
+      let count = notifications.childElementCount;
+
+      if (count > 9) {
+        count = "9+";
+      }
+
+      document.querySelector(".count").innerHTML = 0;
+
+      document.addEventListener("click", function (event) {
+        const isNotificationButton = event.target.closest(".notification-btn");
+        const isNotificationContainer = event.target.closest(".notifications");
+
+        if (!(isNotificationButton || isNotificationContainer)) {
+          notifications.classList.remove("active");
+          console.log("Removed active class");
+        }
+      });
+
+      bell_btn.addEventListener("click", () => {
+        notifications.classList.toggle("active");
+        console.log("Toggled active class");
+      });
+      socket.on("late", function (late_permission) {
+        console.log("Received late_permission:", late_permission.emp_id);
+        const notifications = document.querySelector(".notifications");
+
+        if (document.querySelector(".notification-box")) {
+          const default_notification =
+            document.querySelector(".notification-box");
+          default_notification.style.display = "none";
+          default_notification.disabled = true;
+        }
+        notifications.innerHTML += `
+                  <li class="notification-box">
+                      <div class="profile">
+                          <img src="icon/default.jpeg" alt="default user">
+                      </div>
+                      <div class="notification-details">
+                          <div class="notification-user-name">
+                              ${late_permission.emp_name}-<a href="/leave_table"> <i class="fas fa-eye eye-icon"></i></a>
+                          </div>
+                          <div class="notification-message">
+                              Late - ${late_permission.reason}
+                          </div>
+                      </div>
+                  </li>
+                                `;
+        let count = notifications.childElementCount;
+        if (count > 10) {
+          count = "9+";
+        }
+
+        document.querySelector(".count").innerHTML = count - 1;
+      });
+
+      socket.on("leave", function (leave_permission) {
+        console.log("Received leave_permission:", leave_permission.emp_id);
+        const notifications = document.querySelector(".notifications");
+
+        if (document.querySelector(".notification-box")) {
+          const default_notification =
+            document.querySelector(".notification-box");
+          default_notification.style.display = "none";
+          default_notification.disabled = true;
+        }
+
+        notifications.innerHTML += `
+                  <li class="notification-box">
+                      <div class="profile">
+                          <img src="icon/default.jpeg" alt="default user">
+                      </div>
+                      <div class="notification-details">
+                          <div class="notification-user-name">
+                              ${leave_permission.emp_name}-<a href="/leave_table"> <i class="fas fa-eye eye-icon"></i></a>
+                          </div>
+                          <div class="notification-message">
+                              Leave - ${leave_permission.reason}
+                          </div>
+                      </div>
+                  </li>
+                                `;
+        let count = notifications.childElementCount;
+        if (count > 10) {
+          count = "9+";
+        }
+
+        document.querySelector(".count").innerHTML = count - 1;
+      });
+    </script>
+  </body>
+</html>

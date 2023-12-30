@@ -1,7 +1,7 @@
 from flask_login import login_required, login_user, logout_user, current_user
 from flask import Blueprint, render_template, request, flash, redirect, url_for,session
 from werkzeug.security import generate_password_hash, check_password_hash
-from .models import Employee,Attendance,Shift_time,Backup, late, leave,notification,NewShift,Emp_login
+from .models import Attendance,Shift_time,Backup, late, leave,notifications,NewShift,Emp_login
 from . import db
 import datetime
 from flask import current_app as app
@@ -28,12 +28,8 @@ def login():
                     login_user(dbemail, remember=True)
 
                     if dbemail.role == "admin":
-                        employee =Attendance.query.order_by(Attendance.id)   
-                        late_permission=late.query.order_by(late.date).all()
-                        leave_permission=leave.query.order_by(leave.date).all()
-                        return render_template('admin.html',employee=employee,late_permission=late_permission,leave_permission=leave_permission)
-
-                        #return redirect(url_for('views.admin'))
+                        
+                        return redirect(url_for('views.admin'))
 
                     elif dbemail.role == "employee":
                         session['emp_id'] = dbemail.emp_id
