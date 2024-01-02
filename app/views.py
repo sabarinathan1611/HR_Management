@@ -30,7 +30,7 @@ def admin():     # not used ,,,, used in auth itself
     try:
         inshift = Shift_time.query.filter_by(id=1).first()
         if not inshift:
-            file_path = os.path.join(app.config['EXCEL_FOLDER'], '01-08-23.xls')  # Use correct case 'EXCEL_FOLDER'
+            file_path = os.path.join(app.config['EXCEL_FOLDER'], '01-08-23.xlsx')  # Use correct case 'EXCEL_FOLDER'
             process_excel_data(file_path)  # Call the data processing function
         else:
             print("Shift not found")

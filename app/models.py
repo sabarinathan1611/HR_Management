@@ -22,7 +22,7 @@ class Emp_login(db.Model, UserMixin):
     role =db.Column(db.String(150), nullable=False)
     late_balance = db.Column(db.Integer, default=20)
     leave_balance = db.Column(db.Integer, default=20)
-    shift=db.Column(db.String(150))
+    shift=db.Column(db.String(150),default="8G")
     attendances = db.relationship('Attendance', back_populates='employee', cascade='all, delete-orphan')
 
 # class Employee(db.Model, UserMixin):

@@ -69,7 +69,7 @@ def process_excel_data(file_path):
                 df = pd.read_excel(file_path, sheet_name, engine='xlrd', skiprows=1)
             else:
                 print("Unsupported file format")
-                return  # Handle unsupported format
+                return  #Handle unsupported format
 
             for index, row in df.iterrows():
                 shift_type = row['Shift']
@@ -82,18 +82,19 @@ def process_excel_data(file_path):
                         shiftIntime=str(row['S. InTime']),
                         shift_Outtime=str(row['S. OutTime']),
                         shiftType=str(row['Shift']),
-                        work_Duration=str(row['Work Duration'])
+                        work_Duration="none"
+
                     )
                     db.session.add(shift)
 
-                    attendance = Attendance(
+                    # attendance = Attendance(
                         
-                        shiftIntime=str(row['S. InTime']),
-                        shift_Outtime=str(row['S. OutTime']),
-                        shiftType=str(row['Shift']),
-                        work_Duration=str(row['Work Duration'])
-                    )
-                    db.session.add(attendance)
+                    #     shiftIntime=str(row['S. InTime']),
+                    #     shift_Outtime=str(row['S. OutTime']),
+                    #     shiftType=str(row['Shift']),
+                        
+                    # )
+                    # db.session.add(attendance)
 
         db.session.commit()
         
@@ -380,14 +381,14 @@ def addemployee(file_path):
                     data_to_insert.append({
                         'id': empid,
                         'name': row['name'],
-                        'dob': dob,
-                        'designation': row['designation'],
-                        'workType': row['workType'],
+                        
+                        'role': row['designation'],
+                        
                         'email': row['email'],
                         'phoneNumber': row['phoneNumber'],
-                        'adharNumber': row['adharNumber'],
-                        'gender': row['gender'],
-                        'address': row['address'],
+                     
+                       
+                       
                         'shift': row['shift']
                     })
                 else:
@@ -422,6 +423,7 @@ def attend_excel_data(file_path):
                 print("Processing: ", empid)
                 # date =datetime.date.today()
                 emp = db.session.query(Emp_login).filter_by(id=empid).first()
+                print("Shift: ",emp.shift)
                 
                 attendance_status = 'Absent' if str(row['intime']) == "00:00" and str(row['outtime']) == "00:00" else 'Present'
                 shift_type = None
