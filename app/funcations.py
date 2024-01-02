@@ -154,15 +154,25 @@ def calculate_Attendance(chunk_size=100):
             db.session.commit()
 
 def calculate_time_difference(time1_str, time2_str):
+    print("DEBUG - time1_str:", time1_str)
+    print("DEBUG - time2_str:", time2_str)
+
     # Convert time strings to datetime objects (without seconds)
     time_format = '%H:%M'
-    time1 = datetime.strptime(time1_str, time_format)
-    time2 = datetime.strptime(time2_str, time_format)
     
+    try:
+        if time1_str == "00:00" or time2_str == "00:00":
+            return "00:00"
+            
+        time1 = datetime.strptime(time1_str, time_format)
+        time2 = datetime.strptime(time2_str, time_format)
+    except ValueError as e:
+        print("ValueError:", e)
+        return "00:00"
+
     # Calculate time difference in seconds
     time_difference_seconds = (time2 - time1).total_seconds()
-    print("TEST:",time_difference_seconds)
-    
+
     # Convert seconds to hours and minutes
     total_minutes = time_difference_seconds // 60
 
@@ -347,62 +357,6 @@ def process_csv_file(file_path):
 
 
 
-def addemployee(file_path):
-    if os.path.exists(file_path):
-        _, file_extension = os.path.splitext(file_path)
-        
-        if file_extension.lower() == '.xlsx' or file_extension.lower() == '.xls':
-            sheet_names = pd.ExcelFile(file_path).sheet_names
-        elif file_extension.lower() == '.csv':
-            sheet_names = [None]  # For CSV, we don't need sheet names
-        else:
-            return print("Unsupported file format")
-
-        data_to_insert = []
-
-        for sheet_name in sheet_names:
-            if file_extension.lower() == '.xlsx' or file_extension.lower() == '.xls':
-                if sheet_name:
-                    df = pd.read_excel(file_path, sheet_name, engine='openpyxl')
-                else:
-                    df = pd.read_excel(file_path, engine='openpyxl')
-            elif file_extension.lower() == '.csv':
-                df = pd.read_csv(file_path)
-            else:
-                return print("Unsupported file format")
-
-            for index, row in df.iterrows():
-                empid = row['emp_id']
-                print("Processing: ", empid)
-                dob = pd.to_datetime(row['dob']) if pd.notna(row['dob']) else None
-
-                existing_emp = db.session.query(Emp_login).filter_by(email=empid).first()
-                if not existing_emp:
-                    data_to_insert.append({
-                        'id': empid,
-                        'name': row['name'],
-                        
-                        'role': row['designation'],
-                        
-                        'email': row['email'],
-                        'phoneNumber': row['phoneNumber'],
-                     
-                       
-                       
-                        'shift': row['shift']
-                    })
-                else:
-                    print(f"Employee with ID {empid} already exists.")
-
-        if data_to_insert:
-            db.session.bulk_insert_mappings(Emp_login, data_to_insert)
-            db.session.commit()
-            print("Data added successfully.")
-        else:
-            print("No new data to add.")
-    else:
-        print("File not found")
-
 
 def attend_excel_data(file_path):
     if os.path.exists(file_path):
@@ -456,3 +410,76 @@ def delete_all_employees():
         print("An error occurred:", str(e))
         
 
+def read_excel_data(file_path, sheet_name=None):
+    if sheet_name:
+        return pd.read_excel(file_path, sheet_name, engine='openpyxl')
+    else:
+        return pd.read_excel(file_path, engine='openpyxl')
+
+def read_csv_data(file_path):
+    return pd.read_csv(file_path)
+
+def add_employee(file_path):
+    try:
+        if os.path.exists(file_path):
+            _, file_extension = os.path.splitext(file_path)
+
+            if file_extension.lower() == '.xlsx' or file_extension.lower() == '.xls':
+                sheet_names = pd.ExcelFile(file_path).sheet_names
+            elif file_extension.lower() == '.csv':
+                sheet_names = [None]  # For CSV, we don't need sheet names
+            else:
+                raise ValueError("Unsupported file format")
+
+            data_to_insert = []
+
+            for sheet_name in sheet_names:
+                if file_extension.lower() == '.xlsx' or file_extension.lower() == '.xls':
+                    df = read_excel_data(file_path, sheet_name)
+                elif file_extension.lower() == '.csv':
+                    df = read_csv_data(file_path)
+                else:
+                    raise ValueError("Unsupported file format")
+
+                for index, row in df.iterrows():
+                    emp_id = row['emp_id']
+                    print("Processing: ", emp_id)
+                    dob = pd.to_datetime(row['dob']) if pd.notna(row['dob']) else None
+
+                    existing_emp = db.session.query(Emp_login).filter_by(id=emp_id).first()
+                    if not existing_emp:
+                        data_to_insert.append({
+                            'emp_id': emp_id,
+                            'name': row['name'],
+                            'role': row['designation'],
+                            'email': row['email'],
+                            'phoneNumber': row['phoneNumber'],
+                            'shift': row['shift'],
+                            'gender':row['gender']
+                        })
+                    else:
+                        print(f"Employee with ID {emp_id} already exists. Updating instead of inserting.")
+                        
+                        # Update existing record if needed
+                        existing_emp.name = row['name']
+                        existing_emp.role = row['designation']
+                        existing_emp.email = row['email']
+                        existing_emp.phoneNumber = row['phoneNumber']
+                        existing_emp.shift = row['shift']
+                        existing_emp.gender=row['gender']
+
+            if data_to_insert:
+                with db.session.begin_nested():
+                    db.session.bulk_insert_mappings(Emp_login, data_to_insert)
+                    db.session.commit()
+                print("Data added successfully.")
+                
+            else:
+                print("No new data to add.")
+            
+            db.session.commit()  # Commit the main transaction
+        else:
+            print("File not found")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        db.session.rollback()  # Rollback changes in case of an exception

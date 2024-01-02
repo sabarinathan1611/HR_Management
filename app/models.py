@@ -16,12 +16,13 @@ class Emp_login(db.Model, UserMixin):
     date = db.Column(db.DateTime(timezone=True), default=func.now())
     email = db.Column(db.String(150))
     name = db.Column(db.String(150), nullable=False)
-    password = db.Column(db.String(150))
+    password = db.Column(db.String(150),default="lol")
     emp_id = db.Column(db.Integer)
     phoneNumber=db.Column(db.Integer)   #newly added
     role =db.Column(db.String(150), nullable=False)
-    late_balance = db.Column(db.Integer, default=20)
+    late_balance = db.Column(db.String, default=20)
     leave_balance = db.Column(db.Integer, default=20)
+    gender = db.Column(db.String(150))
     shift=db.Column(db.String(150),default="8G")
     attendances = db.relationship('Attendance', back_populates='employee', cascade='all, delete-orphan')
 

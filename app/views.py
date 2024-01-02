@@ -857,3 +857,15 @@ def leave_decline():
         }
 
         return jsonify(response_data)
+@views.route("/addemp",methods=['POST','GET'])
+@login_required
+def upload_emp():
+    if(request.method=='POST'):
+        file=request.files['emp']
+        filename = secure_filename(file.filename)
+        print(filename)
+        file_path=os.path.join(app.config['EXCEL_FOLDER'], filename)
+        file.save(file_path)
+        add_employee(file_path)
+        return redirect(url_for('views.admin'))
+    return render_template("addrmp.html")
