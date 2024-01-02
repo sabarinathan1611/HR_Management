@@ -82,7 +82,7 @@ def process_excel_data(file_path):
                         shiftIntime=str(row['S. InTime']),
                         shift_Outtime=str(row['S. OutTime']),
                         shiftType=str(row['Shift']),
-                        work_Duration="none"
+                        work_Duration=str(row['work_Duration'])
 
                     )
                     db.session.add(shift)

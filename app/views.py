@@ -145,7 +145,7 @@ def calculate():
     # print(lol.shift_Outtime)
     attendance=Attendance.query.all()
     
-    return render_template("admin.html",attendance=attendance)
+    return redirect('/')
             
 # @views.route('/getshift',methods=['POST','GET'])
 # def get_shift():
